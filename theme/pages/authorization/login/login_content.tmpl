@@ -1,0 +1,9 @@
+{{ define "login_content" }}
+
+  {{ if eq .Data.Mode "select" }}
+    {{ template "login_content_mode_idps_list" . }}
+  {{ else }}
+    {{ template "login_content_mode_static_idp" . }}
+  {{ end }}
+
+{{ end }}

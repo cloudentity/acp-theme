@@ -1,0 +1,45 @@
+{{ define "authn" }}
+
+  <form action="?login_id={{ .Data.SessionID }}&login_state={{ .Data.SessionState }}&server_id={{ .Data.ServerID }}" method="post" id="sign-in-form">
+    {{ .Data.CsrfField }}
+
+    {{ range .Data.FormError.Errors }}
+      <div class="error-container">
+        <i class="material-icons">error_outline</i>
+        {{ .Message }}
+      </div>
+    {{ end }}
+
+    {{ if eq .Data.AuthnView "password_view" }}
+      {{ template "authn_password" . }}
+    {{ else if eq .Data.AuthnView "otp_send_view" }}
+      {{ template "authn_otp_send" . }}
+    {{ else if eq .Data.AuthnView "otp_verify_view" }}
+      {{ template "authn_otp_verify" . }}
+    {{ else if eq .Data.AuthnView "otp_use_alternative_view" }}
+      {{ template "authn_use_otp_alternative" . }}
+    {{ else if eq .Data.AuthnView "web_authn_view" }}
+      {{ template "authn_web_authn" . }}
+    {{ end }}
+
+    <div class="pool-login-remember-idp-switch-container">
+      <div id="remember-my-sign-in-method">
+        {{ if .Data.AuthnModeSwitch }}
+          <label class="switch-container" tabindex="0">
+            <div class="switch">
+              <input type="checkbox" name="remember_my_sign_in_method" tabindex="-1" {{ if .Data.RememberAuthnMode }} checked {{ end }}>
+              <span class="slider"></span>
+            </div>
+            <span>Remember my selection</span>
+          </label>
+        {{ end }}
+      </div>
+
+      {{ if .Data.PublicRegistration }}
+        <button id="sign-up-button" type="submit" name="action" value="change_to_register">Sign Up</button>
+      {{ end }}
+    </div>
+
+  </form>
+
+{{ end }}

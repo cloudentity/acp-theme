@@ -1,0 +1,55 @@
+{{ define "demo-claims-tab" }}
+
+<div id="claims">
+  {{ if and .Data.BasicClaims (gt (len .Data.BasicClaims) 0) }}
+    <table class="demo-table">
+      <thead>
+        <tr>
+          <th role="columnheader" scope="col">Claim name</th>
+          <th role="columnheader" scope="col">Source path</th>
+          <th role="columnheader" scope="col">Value</th>
+          <th role="columnheader" scope="col" class="demo-table-action-col" />
+        </tr>
+      </thead>
+      <tbody>
+        {{ range $i, $c := .Data.BasicClaims }}
+          <tr data-idx="{{$i}}" class="{{ if gt (len $c.Value) 1 }}selectable{{ end }}">
+            <td scope="row">{{ $c.Name }}</td>
+            <td scope="row">{{ $c.Source }}</td>
+            <td scope="row">
+              {{ if gt (len $c.Value) 1 }}
+                <span>more values</span>
+                <span class="tag">{{len $c.Value}}</span>
+              {{ else }}
+                {{ range $c.Value }}{{.}}{{ end }}
+              {{ end }}
+            </td>
+            <td>
+              {{ if gt (len $c.Value) 1 }}
+                <i class="material-icons" data-more-values-icon-index="{{$i}}">expand_more</i>
+              {{ end }}
+            </td>
+          </tr>
+
+          {{ if gt (len $c.Value) 1 }}
+            <tr class="more-values collapsed" data-more-values-index="{{$i}}">
+              <td colspan="4" class="demo-table-collapsed-content">
+                <h4>Claims Values</h4>
+                <div>
+                  {{ range $i, $e := $c.Value }}
+                    {{ if gt $i 0 }}, {{ end }}
+                    {{$e}}
+                  {{ end }}
+                </div>
+              </td>
+            </tr>
+          {{ end }}
+        {{ end }}
+      </tbody>
+    </table>
+  {{ else }}
+    <div class="empty-info">No claims</div>
+  {{ end }}
+</div>
+
+{{ end }}

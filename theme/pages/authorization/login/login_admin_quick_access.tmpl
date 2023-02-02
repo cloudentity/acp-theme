@@ -1,0 +1,44 @@
+{{ define "login_admin_quick_access" }}
+
+<div id="quick-access" class="non-visible">
+  <div class="quick-access-content">
+    {{ if .Data.ServersWithQuickAccessByType.developer }}
+      <div>
+        <h3 id="developer-portals">Developer Portals</h3>
+
+        {{ range .Data.ServersWithQuickAccessByType.developer }}
+          <a class="href-card" id="developer-portal-card-{{ .ID }}" target="_blank" href="{{ .IssuerURL }}/app">
+            <div>
+              <span class="href-card-avatar href-card-avatar-color">{{ substr 0 1 .Name }}</span>
+              <span>{{ .Name }}</span>
+            </div>
+            <i class="material-icons">open_in_new</i>
+          </a>
+        {{ end }}
+      </div>
+    {{ end }}
+
+    {{ if .Data.ServersWithQuickAccessByType.regular }}
+      <div>
+        <h3 id="user-consent-portals">User Consent Portals</h3>
+
+        {{ range .Data.ServersWithQuickAccessByType.regular }}
+          <a class="href-card" id="user-portal-card-{{ .ID }}" target="_blank" href="{{ .IssuerURL }}/app">
+            <div>
+              <span class="href-card-avatar href-card-avatar-color">{{ substr 0 1 .Name }}</span>
+              <span>{{ .Name }}</span>
+            </div>
+            <i class="material-icons">open_in_new</i>
+          </a>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+
+  <div class="quick-access-info">
+    Quick access links can be added and removed from the workspace directory within the Admin application.
+    <a href="https://docs.authorization.cloudentity.com/features/portals/log-in-page/" target="_blank" rel="noopener noreferrer">Learn more</a>
+  </div>
+</div>
+
+{{ end }}

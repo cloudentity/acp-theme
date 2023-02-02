@@ -1,0 +1,21 @@
+{{ define "otp_scripts" }}
+
+<script nonce="{{.Config.Nonce}}">
+
+  function handleGoBackToMethods () {
+    var verificationMethodsContainer = document.querySelector("#other-verification-methods-container");
+    var defaultViewContainer = document.querySelector("#default-view-container");
+
+    if (!verificationMethodsContainer || !verificationMethodsContainer) return;
+
+    verificationMethodsContainer.style.display = "block";
+    defaultViewContainer.style.display = "none";
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("click", delegate("#go-back-to-methods-button", handleGoBackToMethods));
+  });
+
+</script>
+
+{{ end }}

@@ -1,0 +1,20 @@
+{{ define "demo-id-token-tab" }}
+
+ <div id="id-token" class="content non-visible">
+  <h3>Header</h3>
+  <pre>{{ .Data.IDTokenHeader }}</pre>
+
+  <h3>Payload</h3>
+  <pre>{{ .Data.IDTokenPayload }}</pre>
+
+  <h3>Raw</h3>
+  <pre class="with-copy">
+    <div class="pre-copy-button" data-copy-value="{{ .Data.IDTokenRaw }}">
+      <i class="material-icons">content_copy</i>
+      <span>copy code</span>
+    </div>
+    {{ .Data.IDTokenRaw }}
+  </pre>
+</div>
+
+{{ end }}

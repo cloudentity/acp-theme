@@ -1,0 +1,151 @@
+{{ define "login_content_mode_idps_list" }}
+
+<form action="?login_id={{ .Data.SessionID }}&prompt={{ .Data.Prompt }}&max_age={{ .Data.MaxAge }}" method="post" id="sign-in-form">
+  <input type="hidden" id="version" name="version" value="2">
+
+  <div class="error-container non-visible" id="idps-discovery-error">
+    <i class="material-icons">error_outline</i>
+    Failed to fetch IDPs
+  </div>
+
+  <div class="error-container non-visible" id="idps-empty-error">
+    <i class="material-icons">error_outline</i>
+    Authentication is not supported for this user/domain
+  </div>
+
+  {{ if .Data.RememberedSignInMethod }}
+    {{ template "login_content_remembered_idp" . }}
+  {{ else }}
+    {{ if .Data.IDPDiscoveryEnabled }}
+      <h2 id="log-in-header">Login to Continue</h2>
+      <div id="username-password-form">
+      {{ .Data.CsrfField }}
+
+      <div class="form-field">
+        <label for="text-field-username-input" class="label-with-link">
+          Username | Email | Phone
+          <button id="not-you-button" class="non-visible" type="button">Not You?</button>
+        </label>
+        <input id="text-field-username-input" name="username" autocomplete="off" data-lpignore="true" value="{{ .Data.Identifier }}">
+      </div>
+
+      <button class="submit-button" type="button" id="sign-in-button" disabled>
+        <span>Next</span>
+        <div class="non-visible">{{ template "loader" }}</div>
+      </button>
+    </div>
+
+    {{ else }}
+      <h2 id="log-in-header" class="header-small-margin">Login With</h2>
+      <input type="hidden" name="username" value="{{ .Data.Identifier }}">
+      <input type="hidden" name="password" value="">
+    {{ end }}
+  {{ end }}
+
+  <div
+    id="idps-list-header"
+    class="spacer-container {{ if .Data.HasNonHiddenIDP }}visible{{ else }}non-visible{{ end }}"
+    {{ if .Data.HasNonHiddenIDP }}
+      data-default-style-display="block"
+    {{ else }}
+      data-default-style-display="none"
+    {{ end }}
+  >
+    {{ if or .Data.RememberedSignInMethod .Data.IDPDiscoveryEnabled }}
+      <div>Log in with</div>
+    {{ end }}
+  </div>
+
+  <div id="idps-list">
+    {{ range $method := .Data.Methods }}
+    <button
+      type="submit"
+      class="href-card {{ if $.Data.RememberedSignInMethod }}{{ if eq .ID $.Data.RememberedIDP.ID }}visible-flex{{ else }}non-visible{{ end }}{{ else }}{{ if .Hidden }}non-visible{{ else }}visible-flex{{ end }}{{ end }}"
+      name="authentication_id"
+      value="{{ .ID }}"
+      title="{{ .Name }}"
+      form="sign-in-form"
+      formaction="?{{ $.Data.Query }}"
+      {{ if $.Data.RememberedSignInMethod }}
+        {{ if eq .ID $.Data.RememberedIDP.ID }}
+          data-default-style-display="flex"
+        {{ else }}
+          data-default-style-display="none"
+        {{ end }}
+      {{ else }}
+        {{ if .Hidden }}
+          data-default-style-display="none"
+        {{ else }}
+          data-default-style-display="flex"
+        {{ end }}
+      {{ end }}
+    >
+      <div>
+        <img
+          {{ if and .LogoURI (gt (len .LogoURI) 0) }}
+            src="{{ .LogoURI }}"
+          {{ else }}
+            {{ if eq .Method "github" }}
+              src="/static/images/idps/github.svg"
+            {{ else if eq .Method "okta" }}
+              src="/static/images/idps/okta.svg"
+            {{ else if eq .Method "auth0" }}
+              src="/static/images/idps/auth0-icon.svg"
+            {{ else if eq .Method "saml" }}
+              src="/static/images/idps/saml-icon.svg"
+            {{ else if eq .Method "azureb2c" }}
+              src="/static/images/idps/azure-b2c-icon.svg"
+            {{ else if eq .Method "azure" }}
+              src="/static/images/idps/azure-icon.svg"
+            {{ else if eq .Method "cognito" }}
+              src="/static/images/idps/cognito-icon.svg"
+            {{ else if eq .Method "intelli_trust" }}
+              src="/static/images/idps/entrust-icon.svg"
+            {{ else if eq .Method "oidc" }}
+              src="/static/images/idps/openid-icon.svg"
+            {{ else if eq .Method "custom" }}
+              src="/static/images/idps/custom-circle.svg"
+            {{ else if eq .Method "external" }}
+              src="/static/images/idps/external-icon.svg"
+            {{ else if eq .Method "identity_pool" }}
+              src="/static/images/idps/cloudentity-icon.svg"
+            {{ else if eq .Method "github_embedded" }}
+              src="/static/images/idps/github.svg"
+            {{ else if eq .Method "google_embedded" }}
+              src="/static/images/idps/google-icon.svg"
+            {{ else if eq .Method "google" }}
+              src="/static/images/idps/google-icon.svg"
+            {{ else if eq .Method "static" }}
+              src="/static/images/idps/sandbox-icon.svg"
+            {{ else }}
+              src=""
+            {{ end }}
+          {{ end }}
+          alt="{{ .Method }}"
+        >
+        <span>{{ .Name }}</span>
+      </div>
+      <i class="material-icons">navigate_next</i>
+    </button>
+    {{ end }}
+  </div>
+
+  <div id="remember-my-sign-in-method">
+    <div class="login-remember-idp-switch-container">
+      <label class="switch-container" tabindex="0">
+        <div class="switch">
+          <input type="checkbox" name="remember_my_sign_in_method" tabindex="-1" {{ if .Data.RememberedSignInMethod }} checked {{ end }}>
+          <span class="slider"></span>
+        </div>
+        <span>Remember me</span>
+      </label>
+    </div>
+  </div>
+
+  {{ if .Data.IDPDiscoveryEnabled }}
+    <input type="hidden" id="idp-discovery-authentication-id" name="authentication_id" value="">
+  {{ end }}
+
+</form>
+
+{{ end }}

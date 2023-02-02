@@ -1,0 +1,23 @@
+{{ define "form_text" }}
+
+<div class="form-field">
+  <label {{if .ID}}for="{{.ID}}"{{else}}for="text-field-{{.Name}}-input"{{end}}>
+    <div>
+      {{ .Label }}
+
+      {{ if .TooltipText }}
+        {{ template "tooltip" .TooltipText }}
+      {{ end }}
+    </div>
+  </label>
+
+  <input type="text" class="{{ if .Classes }}{{range .Classes}} {{.}}{{end}}{{end}}" style="{{range $k, $v := .CSS}}{{$k}}:{{$v}};{{end}}" {{ if .ID}}id="{{.ID}}"{{else}}id="text-field-{{.Name}}-input"{{end}} name="{{.Name}}" {{ if .Value}} value="{{.Value}}"{{end}} {{range $k, $v := .Params}} {{$k}}="{{$v}}"{{end}}>
+
+  {{ if .Errors }}
+    {{ range .Errors}}
+      <div class="alert-danger">{{.}}</div>
+    {{ end }}
+  {{ end }}
+</div>
+
+{{ end }}

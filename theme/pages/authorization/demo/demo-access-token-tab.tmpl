@@ -1,0 +1,24 @@
+{{ define "demo-access-token-tab" }}
+
+<div id="access-token" class="content non-visible">
+  {{ if .Data.AccessTokenHeader }}
+    <h3>Header</h3>
+    <pre>{{ .Data.AccessTokenHeader }}</pre>
+  {{ end }}
+
+  {{ if .Data.AccessTokenPayload }}
+    <h3>Payload</h3>
+    <pre>{{ .Data.AccessTokenPayload }}</pre>
+  {{ end }}
+
+  <h3>Raw</h3>
+  <pre class="with-copy">
+    <div class="pre-copy-button" data-copy-value="{{ .Data.AccessTokenRaw }}">
+      <i class="material-icons">content_copy</i>
+      <span>copy code</span>
+    </div>
+    <div id="access-token-raw">{{ .Data.AccessTokenRaw }}</div>
+  </pre>
+</div>
+
+{{ end }}

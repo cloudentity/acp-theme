@@ -1,0 +1,25 @@
+{{ template "base" . }}
+
+{{ define "title" }} User activated {{ end }}
+
+{{ define "content" }}
+
+  <div class="header-container">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="card">
+    <div class="content">
+      <h2>Success!</h2>
+      <div>You've successfully activated your account</div>
+
+      {{ if .Data.SessionID }}
+        <a href="{{ .Data.LoginPath }}">
+          <button class="submit-button" id="sign-in">Sign in</button>
+        </a>
+      {{ end }}
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}

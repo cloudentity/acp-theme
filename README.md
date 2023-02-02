@@ -1,2 +1,86 @@
 # acp-theme
+
 Theme templates and CLI tool for managing custom branding of ACP authorization and identity pool views
+
+## How create an ACP theme and bind it to a workspace (using ACP Admin UI)
+
+- In an ACP SaaS tenant, go to the actions menu in the upper right, and select "Appearance"
+- Select "Create Theme"
+- After creating your theme, locate your new theme in the list of themes
+- From the three-dot action menu of the new theme, select "Bind to Workspace" and select the workspace you want to use with the theme
+
+## How to work with these templates
+
+> **Note:** ACP uses Golang templates to render Theme views. See the [Go docs](https://pkg.go.dev/text/template) for info on template syntax.
+
+The templates in this repository are organized in the same file structure as the templates you can edit in the ACP Admin UI theme editor.
+
+The easiest/safest method to make theme modifications is to edit templates first in this repository, using your preferred code editor. Then, use the CLI instructions below to upload the theme template(s) to ACP. Using the CLI, is possible to upload individual templates (useful when testing changes in development on specific views), or to upload the entire theme (useful when migrating the entire theme to a new tenant/workspace).
+
+While it is possible to edit theme templates directly in ACP's Admin UI tool, this is recommended only for experimenting with a non-production "sandbox" theme, as it can be hard to track/compare/revert changes this way. By managing theme templates in this external repository, it's possible to track commit history, tag versions, easily revert if necessary, and quickly migrate a theme to a different tenant.
+
+If a situation comes up in which it's absolutely necessary for someone to make a change to a template in the ACP Admin UI tool, make sure the change gets synced with this repository as soon as possible.
+
+**IMPORTANT!** Uploading any changes will make those changes instantly visible for anyone who has access to the tenant/workspace associated with the theme configured in your CLI settings, so if there is a theme that is being used in production, make sure to verify changes in a dev workspace/theme first before deploying the changes to the prod theme.
+
+## How to use the Makefile/CLI
+
+You will need to create an ACP Client named 'manage-themes' in the Admin workspace with the application type `Service`.
+Confirm these OAuth settings after you have created the client:
+
+* Grant Types: Client Credentials
+* Response Types: Token
+* Token Endpoint Authentication Method: Client Secret Post
+
+Now create a file named `Makefile.inc` that overrides the following default values:
+```
+CLIENT_ID	= cb7m1u3hkdfq1of0led0
+CLIENT_SECRET	= Ir0Ll9dADhUqtsjAMO2Jm8fQ6f4BrejSzuUIxVJLnLU
+TENANT_ID	= default
+SERVER_ID	= default
+ISSUER_URL	= https://host.docker.internal:8443/${TENANT_ID}/admin
+THEME_ID	= demo
+```
+
+**IMPORTANT:** When working with a "vanity domain" that does not have a tenant ID in the URL params for API requests, leave the value of the `TENANT_ID` variable blank in the `Makefile.inc`, and set the value of `ISSUER_URL` without the `TENANT_ID` param, as shown below:
+
+```
+TENANT_ID	=
+ISSUER_URL	= https://vanity-domain.your-organization.com/admin
+```
+
+> **Note:** `SERVER_ID` refers to the ID of the workspace to which you intend to bind your theme.
+
+To test that the makefile is working, you can do `make list-base-templates` to query ACP:
+```
+$ make list-base-templates
+curl -sSLk -X GET 'https://host.docker.internal:8443/api/admin/default/themes/templates' \
+	--header 'Authorization: Bearer ...' \
+	| jq -M
+{
+  "fs_paths": [
+    "pages/authorization/ciba/simulator/index.tmpl",
+    "pages/authorization/consent/index.tmpl",
+    "pages/authorization/demo/index.tmpl",
+    ...
+```
+
+The other targets in the Makefile can be used to manage the theme and its templates:
+
+1. `make create-theme` will create the "demo" theme by default.
+1. `make bind-theme` will bind the "demo" theme by default.
+1. `make unbind-theme` will unbind whatever theme is bound to the workspace, or 404 if there is no binding.
+1. `make delete-theme` will delete the "demo" theme by default, and all its templates.
+1. `make upsert-templates` will create/update the "demo" templates by default.
+1. `make get-theme` will fetch the "demo" theme by default.
+1. `make get-templates` will list the "demo" theme's templates by default.
+1. `make list-base-templates` will list all of the built-in templates.
+1. `make export-theme` will download the theme templates in ZIP format.
+1. `make import-theme` will upload the theme templates in ZIP format, eg "demo.zip".
+
+For all of these targets, you can override the values of THEME_ID and TEMPLATE PATH.
+For example:
+
+1. `make create-theme THEME_ID=torgue` will create a new theme named "torgue".
+1. `make upsert-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will upsert the specified template.
+1. `make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will delete the specified template.

@@ -1,0 +1,65 @@
+{{ define "login_content_mode_static_idp" }}
+
+<form action="?login_id={{ .Data.SessionID }}&prompt={{ .Data.Prompt }}&max_age={{ .Data.MaxAge }}" method="post" id="sign-in-form">
+  <input type="submit" class="non-visible" />
+
+  <input type="hidden" id="version" name="version" value="2">
+
+  {{ range .Data.FormError.Errors }}
+    <div id="auth-error-container">
+      <div class="error-container">
+        <i class="material-icons">error_outline</i>
+        {{ .Message }}
+      </div>
+    </div>
+  {{ end }}
+
+  {{ if gt (len .Data.Methods) 1 }}
+    <button id="go-back-button" type="submit" name="mode" value="select">
+      <i class="material-icons">chevron_left</i>
+      Back
+    </button>
+  {{ end }}
+
+  <h2 id="log-in-header">Login to Continue</h2>
+
+  <div id="username-password-form">
+    {{ .Data.CsrfField }}
+
+    {{ if and .Data.IDP.SettingsHint (gt (len .Data.IDP.Credentials.Users) 0) }}
+      <div id="login-hint-description">
+        <p>This is a mock IDP login page.</p>
+        <div>
+          <div>Username: <b>{{ (index .Data.IDP.Credentials.Users 0).Username }}</b></div>
+          <div>Password: <b>{{ (index .Data.IDP.Credentials.Users 0).Password }}</b></div>
+        </div>
+      </div>
+    {{ end }}
+
+    <div class="form-field">
+      <label for="text-field-username-input" class="label-with-link">
+        Username | Email | Phone
+      </label>
+      <input id="text-field-username-input" name="username" value="{{ .Data.Identifier }}">
+    </div>
+
+    <div class="form-field">
+      <label for="text-field-password-input">Password</label>
+      <div class="input-with-button">
+        <input id="text-field-password-input" name="password" type="password">
+        <button id="toggle-password-visibility-button" type="button" aria-label="Toggle password visibility">
+          <i id="toggle-password-visibility-icon" class="material-icons">visibility_off</i>
+        </button>
+      </div>
+    </div>
+
+    <input type="hidden" id="remember_my_sign_in_method" name="remember_my_sign_in_method" value="{{ if .Data.RememberMySignInMethod }}on{{ end }}">
+
+    <button id="sign-in-button" class="submit-button no-bottom-margin" type="submit" disabled>
+      Continue
+    </button>
+  </div>
+
+</form>
+
+{{ end }}
