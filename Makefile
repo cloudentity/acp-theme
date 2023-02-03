@@ -7,11 +7,11 @@
 #
 # Create a file named Makefile.inc that overrides the following example values:
 #
-CLIENT_ID	= cb7m1u3hkdfq1of0led0
-CLIENT_SECRET	= Ir0Ll9dADhUqtsjAMO2Jm8fQ6f4BrejSzuUIxVJLnLU
-TENANT_ID	= default
-SERVER_ID	= default
-ISSUER_URL	= https://host.docker.internal:8443/${TENANT_ID}/admin
+CLIENT_ID	= PUT_YOUR_CLIENT_ID_HERE
+CLIENT_SECRET	= PUT_YOUR_CLIENT_SECRET_HERE
+TENANT_ID	= your-tenant
+SERVER_ID	= your-workspace-id
+ISSUER_URL	= https://your-tenant.your-region.authz.cloudentity.io/your-tenant/admin
 THEME_ID	= demo
 #
 # Set TENANT_ID and ISSUER_URL appropriately for your client.
@@ -112,13 +112,13 @@ list-base-templates:
 	--header 'Authorization: Bearer ${TOKEN}' \
 	| jq -M
 
-# 'make export-theme' will download the theme templates in ZIP format.
+# 'make export-templates' will download the theme templates in ZIP format.
 export-templates:
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/templates/zip' \
 	--header 'Authorization: Bearer ${TOKEN}' -o ${THEME_ID}.zip
 	unzip -l ${THEME_ID}.zip
 
-# 'make import-theme' will upload the theme templates in ZIP format, eg 'demo.zip'
+# 'make import-templates' will upload the theme templates in ZIP format, eg 'demo.zip'
 import-templates:
 	${CURL} -D - -X POST '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/templates/zip' \
 	--header 'Authorization: Bearer ${TOKEN}' \

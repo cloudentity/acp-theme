@@ -34,11 +34,11 @@ Confirm these OAuth settings after you have created the client:
 
 Now create a file named `Makefile.inc` that overrides the following default values:
 ```
-CLIENT_ID	= cb7m1u3hkdfq1of0led0
-CLIENT_SECRET	= Ir0Ll9dADhUqtsjAMO2Jm8fQ6f4BrejSzuUIxVJLnLU
-TENANT_ID	= default
-SERVER_ID	= default
-ISSUER_URL	= https://host.docker.internal:8443/${TENANT_ID}/admin
+CLIENT_ID	= PUT_YOUR_CLIENT_ID_HERE
+CLIENT_SECRET	= PUT_YOUR_CLIENT_SECRET_HERE
+TENANT_ID	= your-tenant
+SERVER_ID	= your-workspace-id
+ISSUER_URL	= https://your-tenant.your-region.authz.cloudentity.io/your-tenant/admin
 THEME_ID	= demo
 ```
 
