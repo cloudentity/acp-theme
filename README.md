@@ -4,7 +4,7 @@ Theme templates and CLI tool for managing custom branding of ACP authorization a
 
 ## How create an ACP theme and bind it to a workspace (using ACP Admin UI)
 
-- In an ACP SaaS tenant, go to the actions menu in the upper right, and select "Appearance"
+- In the Admin UI of your ACP SaaS tenant, go to the actions menu in the upper right, and select "Appearance"
 - Select "Create Theme"
 - After creating your theme, locate your new theme in the list of themes
 - From the three-dot action menu of the new theme, select "Bind to Workspace" and select the workspace you want to use with the theme
@@ -26,6 +26,9 @@ If a situation comes up in which it's absolutely necessary for someone to make a
 ## How to use the Makefile/CLI
 
 You will need to create an ACP Client named 'manage-themes' in the Admin workspace with the application type `Service`.
+
+> Note: If the `Service` application type is not available, in the Admin workspace, navigate to "Auth Setttings > OAuth," and under "Allowed Grant types," make sure "Client credentials" is selected.
+
 Confirm these OAuth settings after you have created the client:
 
 * Grant Types: Client Credentials
@@ -67,20 +70,20 @@ curl -sSLk -X GET 'https://host.docker.internal:8443/api/admin/default/themes/te
 
 The other targets in the Makefile can be used to manage the theme and its templates:
 
-1. `make create-theme` will create the "demo" theme by default.
-1. `make bind-theme` will bind the "demo" theme by default.
-1. `make unbind-theme` will unbind whatever theme is bound to the workspace, or 404 if there is no binding.
-1. `make delete-theme` will delete the "demo" theme by default, and all its templates.
-1. `make upsert-templates` will create/update the "demo" templates by default.
-1. `make get-theme` will fetch the "demo" theme by default.
-1. `make get-templates` will list the "demo" theme's templates by default.
-1. `make list-base-templates` will list all of the built-in templates.
-1. `make export-theme` will download the theme templates in ZIP format.
-1. `make import-theme` will upload the theme templates in ZIP format, eg "demo.zip".
+- `make create-theme` will create the "demo" theme by default.
+- `make bind-theme` will bind the "demo" theme by default.
+- `make unbind-theme` will unbind whatever theme is bound to the workspace, or 404 if there is no binding.
+- `make delete-theme` will delete the "demo" theme by default, and all its templates.
+- `make upsert-templates` will create/update the "demo" templates by default.
+- `make get-theme` will fetch the "demo" theme by default.
+- `make get-templates` will list the "demo" theme's templates by default.
+- `make list-base-templates` will list all of the built-in templates.
+- `make export-templates` will download the theme templates in ZIP format.
+- `make import-templates` will upload the theme templates in ZIP format, eg "demo.zip".
 
 For all of these targets, you can override the values of THEME_ID and TEMPLATE PATH.
 For example:
 
-1. `make create-theme THEME_ID=torgue` will create a new theme named "torgue".
-1. `make upsert-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will upsert the specified template.
-1. `make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will delete the specified template.
+- `make create-theme THEME_ID=example-theme` will create a new theme named "example-theme".
+- `make upsert-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will upsert the specified template.
+- `make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will delete the specified template.
