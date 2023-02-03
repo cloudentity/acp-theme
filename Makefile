@@ -37,14 +37,14 @@ TEMPLATE_PATH  	= pages/authorization/login/scripts.tmpl
 
 # 'make all' will create the default theme (demo), upload its templates,
 # and bind it to the tenant and workspace specified by TENANT_ID and SERVER_ID.
-all:	create-theme upsert-templates bind-theme
+all:	create-theme upsert-templates bind-theme  ## Make create-theme, upsert-templates, bind-theme
 
 # Note that the tenant_id in THEME_JSON, will be replaced by the URL path parameter.
 THEME_JSON   	= {"tenant_id":"${TENANT_ID}", "id":"${THEME_ID}", "name":"${THEME_ID}"}
 
 # 'make create-theme' will create the 'demo' theme by default.
 # 'make create-theme THEME_ID=torgue' will create a new theme named "torgue".
-create-theme:
+create-theme: ## Create a new theme
 	${CURL} -D - -X POST '${BASEURL}/api/admin/${TENANT_ID}/theme' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/json' \
@@ -55,33 +55,33 @@ BINDING_JSON   	= {"wid":"${SERVER_ID}", "theme_id":"${THEME_ID}"}
 
 # 'make bind-theme' will bind the 'demo' theme by default.
 # 'make bind-theme THEME_ID=torgue SERVER_ID=demo' will bind theme "torgue" to the demo workspace.
-bind-theme:
+bind-theme: ## Bind the theme to a workspace (make bind-theme THEME_ID=MyTheme SERVER_ID=demo')
 	${CURL} -D - -X POST '${BASEURL}/api/admin/${TENANT_ID}/servers/${SERVER_ID}/bind-theme/${THEME_ID}' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/json' \
 	--data   '${BINDING_JSON}'
 
 # 'make unbind-them' will unbind whatever theme is bound to the workspace, or 404 if there is no binding.
-unbind-theme:
+unbind-theme: ## Unbind a workspace them (set it back to the default)
 	${CURL} -D - -X POST '${BASEURL}/api/admin/${TENANT_ID}/servers/${SERVER_ID}/unbind-theme' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/json' \
 	--data   '{"wid":"${SERVER_ID}"}'
 
 # 'make delete-theme' will delete the 'demo' theme by default, and all its templates.
-delete-theme:
+delete-theme: ## Delete a theme
 	${CURL} -D - -X DELETE '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}' \
 	--header 'Authorization: Bearer ${TOKEN}'
 
 # 'make upsert-templates' will create/update the 'demo' templates by default.
-upsert-templates:
+upsert-templates: ## Insert or Update all templates
 	for f in $$(cd theme; find * -name '*.tmpl'); \
         do  make upsert-template THEME_ID=${THEME_ID} TEMPLATE_PATH="$$f" TOKEN=${TOKEN} ; \
 	done
 
 # To update a specific template, for example:
 # make upsert-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl
-upsert-template:
+upsert-template: ## Insert or Update one template (make upsert-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl)
 	${CURL} -D - -X PUT '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/template/${TEMPLATE_PATH}' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/json' \
@@ -89,37 +89,37 @@ upsert-template:
 
 # To delete a specific template, for example:
 # make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl
-delete-template:
+delete-template: ## Delete a template (make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl)
 	${CURL} -D - -X DELETE '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/template/${TEMPLATE_PATH}' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/json'
 
 # 'make get-theme' will fetch the 'demo' theme by default.
-get-theme:
+get-theme: ## Download a theme (templates)
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	| jq -M
 
 # 'make get-templates' will list the 'demo' theme's templates by default.
-get-templates:
+list-templates: ## List the theme templates
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/templates' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	| jq -M
 
 # 'make list-base-templates' will list all of the built-in templates.
-list-base-templates:
+list-base-templates: ## List the base templates
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/themes/templates' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	| jq -M
 
 # 'make export-templates' will download the theme templates in ZIP format.
-export-templates:
+export-templates: ## Download the theme templates to a ZIP file
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/templates/zip' \
 	--header 'Authorization: Bearer ${TOKEN}' -o ${THEME_ID}.zip
 	unzip -l ${THEME_ID}.zip
 
 # 'make import-templates' will upload the theme templates in ZIP format, eg 'demo.zip'
-import-templates:
+import-templates: ## Upload the theme templates from a zip file
 	${CURL} -D - -X POST '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/templates/zip' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/zip' \
@@ -127,7 +127,7 @@ import-templates:
 
 
 
-get-servers:
+list-workspaces: ## List all workspaces
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/servers' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	| jq -M '.servers[] | [ .id, .theme_id ]'
@@ -136,3 +136,7 @@ phony:
 	egrep -o '^[a-z0-9-]+:' Makefile | egrep -o '^[^:]+' | sort | xargs echo '.PHONY:' >> Makefile
 
 .PHONY: all bind-theme create-theme delete-theme export-templates get-servers get-templates get-theme import-templates list-base-templates phony unbind-theme upsert-template upsert-templates
+
+.DEFAULT_GOAL := help
+help: ## This help message
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed -E 's/.*Makefile://' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
