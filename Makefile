@@ -62,7 +62,7 @@ bind-theme: ## Bind the theme to a workspace (make bind-theme THEME_ID=MyTheme S
 	--data   '${BINDING_JSON}'
 
 # 'make unbind-them' will unbind whatever theme is bound to the workspace, or 404 if there is no binding.
-unbind-theme: ## Unbind a workspace them (set it back to the default)
+unbind-theme: ## Unbind a workspace theme (set it back to the default)
 	${CURL} -D - -X POST '${BASEURL}/api/admin/${TENANT_ID}/servers/${SERVER_ID}/unbind-theme' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/json' \
@@ -113,7 +113,7 @@ list-base-templates: ## List the base templates
 	| jq -M
 
 # 'make export-templates' will download the theme templates in ZIP format.
-export-templates: ## Download the theme templates to a ZIP file
+export-templates: ## Download the theme templates to a zip file
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/templates/zip' \
 	--header 'Authorization: Bearer ${TOKEN}' -o ${THEME_ID}.zip
 	unzip -l ${THEME_ID}.zip
@@ -139,4 +139,4 @@ phony:
 
 .DEFAULT_GOAL := help
 help: ## This help message
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed -E 's/.*Makefile://' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed -E 's/.*Makefile://' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-22s %s\n", $$1, $$2}'
