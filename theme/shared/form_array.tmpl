@@ -1,0 +1,38 @@
+{{ define "form_array" }}
+
+<div class="form-field">
+  <label {{ if .ID}}for="{{.ID}}"{{else}}for="text-field-{{.Name}}-input"{{end}}>
+    <div>
+      {{ .Label }}
+
+      {{ if .TooltipText }}
+        {{ template "tooltip" .TooltipText }}
+      {{ end }}
+    </div>
+  </label>
+
+  {{ $field := . }}
+  {{ range $k, $v := .Values }}
+
+    <div class="input-with-button array-item">
+      <input type="text" class="{{ if $field.Classes }}{{range $field.Classes}} {{.}}{{end}}{{end}}" style="{{range $k, $v := $field.CSS}}{{$k}}:{{$v}};{{end}}" {{ if $field.ID}}id="{{$field.ID}}"{{else}}id="text-field-{{$field.Name}}-input-{{$v}}"{{end}} name="{{$field.Name}}" {{ if $v}} value="{{$v}}"{{end}} {{range $k, $v := $field.Params}} {{$k}}="{{$v}}"{{end}}>
+      <button type="button" aria-label="Remove item" class="delete-input-array">
+        <i class="material-icons">delete</i>
+      </button>
+    </div>
+
+  {{ end }}
+
+  <button class="add-item" data-name="{{$field.Name}}" type="button">
+    <i class="material-icons">add</i>
+    Add item
+  </button>
+
+  {{ if .Errors }}
+    {{ range .Errors }}
+      <div class="alert-danger">{{.}}</div>
+    {{ end }}
+  {{ end }}
+</div>
+
+{{ end }}

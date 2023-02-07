@@ -1,0 +1,87 @@
+{{ template "base" . }}
+
+{{ define "title" }}Cloudentity - MFA verification{{ end }}
+
+{{ define "content" }}
+
+  {{ template "otp_scripts" . }}
+
+  <div class="header-container">
+
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="card">
+    <div class="color-bar"></div>
+
+    {{ if and .Data.Session .Data.Session.ClientInfo .Data.Session.ClientInfo.Name }}
+      <h3 class="header header-with-avatar">
+        <div>{{ substr 0 1 .Data.Session.ClientInfo.Name }}</div>
+        {{ .Data.Session.ClientInfo.Name }}
+      </h3>
+    {{ else }}
+      <h3 class="header">Log in to your account</h3>
+    {{ end }}
+
+    <form action="?login_id={{ .Data.Session.ID }}" method="post">
+      {{ .Data.CsrfField }}
+
+      <div class="content content-otp">
+        <div id="default-view-container">
+
+          {{ if .Data.SelectedMethod.ID }}
+
+            <div class="otp-send-header">
+              {{ if eq .Data.SelectedMethod.Mechanism "email"}}
+                <i class="material-icons otp-method-icon">mail_outline</i>
+                <h4>Email verification</h4>
+              {{ else if eq .Data.SelectedMethod.Mechanism "sms" }}
+                <i class="material-icons otp-method-icon">chat_bubble_outline</i>
+                <h4>SMS verification</sph4an>
+              {{ end }}
+            </div>
+
+            <p>Enter the security code sent to {{ .Data.Address }}</p>
+
+            <div class="form-field">
+              <div class="input-with-button input-with-prefix-button">
+                <button type="button" tabindex="-1">
+                  <i class="material-icons">vpn_key</i>
+                </button>
+                <input type="text" inputmode="numeric" autocomplete="one-time-code" aria-label="Verificaton code" name="otp" placeholder="Enter the verification code">
+              </div>
+            </div>
+
+            <button class="submit-button" type="submit" name="action" value="allow" id="sign-in">
+              Verify
+            </button>
+
+            {{ if .Data.Message }}
+              <div class="otp-verify-error">
+                <i class="material-icons" tabindex="-1">error_outline</i>
+                <span>{{ .Data.Message }}</span>
+              </div>
+            {{ end }}
+
+            <div class="otp-send-options">
+              <button type="submit" name="method" value="{{ .Data.SelectedMethod.ID }}">Re-send the code</button>
+              <a role="button" tabindex="0" id="go-back-to-methods-button">Other verification methods</a>
+            </div>
+
+          {{ else if not .Data.Methods }}
+            Cannot authenticate. You need to verify your email and/or phone number.
+          {{ else }}
+            {{ template "otp_select" . }}
+          {{ end }}
+        </div>
+
+        <div id="other-verification-methods-container" class="non-visible">
+          {{ template "otp_select" . }}
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {{ template "footer" }}
+
+{{ end }}

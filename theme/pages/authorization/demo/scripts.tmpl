@@ -1,0 +1,72 @@
+{{ define "demo_scripts" }}
+
+<script nonce="{{.Config.Nonce}}">
+
+  function changeTab(selectedContentId) {
+    return (e) => {
+      var tabButtons = document.querySelectorAll('button[role="tab"]');
+      tabButtons.forEach(function (tab) {
+        var contentDivId = tab.getAttribute("data-tabid");
+        var contentDiv = document.querySelector("#" + contentDivId);
+
+        if (contentDiv) {
+          if (contentDivId === selectedContentId) {
+              contentDiv.style.display = "block";
+              tab.classList.add("tab-button-active");
+          } else {
+              contentDiv.style.display = "none";
+              tab.classList.remove("tab-button-active");
+          }
+        }
+      });
+    }
+  }
+
+  function toggleAdvanced() {
+    var el = document.querySelector('#advanced');
+    el.classList.contains('aut-hidden') ? el.classList.remove('aut-hidden') : el.classList.add('aut-hidden');
+  }
+
+  function toggleMoreValues(event) {
+    var targetEl = event.targetSelector;
+    var index = targetEl.getAttribute("data-idx");
+    var el = document.querySelector("tr[data-more-values-index=\"" + index + "\"]");
+    var icon = document.querySelector("i[data-more-values-icon-index=\"" + index + "\"]");
+
+    if (el) {
+      if (el.classList.contains("collapsed")) {
+        el.classList.remove("collapsed");
+        el.classList.add("expanded");
+        icon.innerHTML = "expand_less";
+      } else {
+        el.classList.remove("expanded");
+        el.classList.add("collapsed");
+        icon.innerHTML = "expand_more";
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', delegate('#claims-tab', changeTab('claims')));
+    document.addEventListener('click', delegate('#access-token-tab', changeTab('access-token')));
+    document.addEventListener('click', delegate('#id-token-tab', changeTab('id-token')));
+    document.addEventListener('click', delegate('#refresh-token-tab', changeTab('refresh-token')));
+    document.addEventListener('click', delegate('#advanced-button', toggleAdvanced));
+    document.addEventListener('click', delegate('.selectable', toggleMoreValues));
+
+    document.querySelectorAll(".pre-copy-button").forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(el.getAttribute("data-copy-value"))
+          var textEl = el.querySelector("span");
+          textEl.innerText = "copied!";
+          setTimeout(function() {
+            textEl.innerText = "copy code";
+          }, 3000);
+        }
+      })
+    });
+  });
+</script>
+
+{{ end }}

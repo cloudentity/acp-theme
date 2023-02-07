@@ -1,0 +1,11 @@
+{{ define "header" }}
+
+<div class="aut-banner-logo">
+  {{ if .Styling.LogoURL }}
+    <img src="{{ .Styling.LogoURL }}" alt="Logo">
+  {{ else }}
+    <img src="{{ .Root }}/static/images/cloudentity-logo-wide-white.svg" alt="Cloudentity ACP">
+  {{ end }}
+</div>
+
+{{ end }}

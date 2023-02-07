@@ -1,0 +1,13 @@
+{{ define "submit_button_disabling_script" }}
+
+<script nonce="{{.Config.Nonce}}">
+  function enableSubmit () {
+    document.getElementById("submit-next").removeAttribute("disabled");
+  }
+
+  function disableSubmit () {
+    document.getElementById("submit-next").setAttribute("disabled", "");
+  }
+</script>
+
+{{ end }}

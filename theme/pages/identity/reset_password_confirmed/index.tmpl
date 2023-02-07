@@ -1,0 +1,29 @@
+{{ template "base" . }}
+
+{{ define "title" }} Password set {{ end }}
+
+{{ define "content" }}
+
+  <div class="header-container">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="card">
+    <div class="color-bar"></div>
+
+    <h3 class="header">Password set</h3>
+
+    <div class="content">
+      <h2>Success!</h2>
+      <div class="header-info">You've successfully set up your password.</div>
+
+      {{ if .Data.SessionID }}
+        <a href="{{ .Data.LoginPath }}">
+          <button class="submit-button" id="sign-in">Sign in</button>
+        </a>
+      {{ end }}
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}

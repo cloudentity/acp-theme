@@ -1,0 +1,36 @@
+{{ define "setup_with_web_authn" }}
+
+  <h2>Enroll Passkey Device</h2>
+
+  <div class="form-field">
+    <label for="text-field-username-input">
+      Email | Phone
+    </label>
+    <input id="text-field-username-input" name="username" autocomplete="off" data-lpignore="true" value="{{ .Data.Identifier }}" disabled>
+  </div>
+
+  {{ if .Data.ModeSwitch }}
+    <div class="spacer-container extra-top-margin-small">
+      <div>or register with</div>
+    </div>
+
+    <button class="href-card" type="submit" name="action" value="change_to_password">
+      <div>
+        <span class="href-card-avatar href-card-avatar-with-img small-icon">
+          <img src="{{ .Config.Assets }}/static/images/password-icon-2.svg" alt="icon" />
+        </span>
+        <span>Password</span>
+      </div>
+    </button>
+  {{ end }}
+
+  <div class="buttons-container-full-width extra-top-margin">
+    <button class="contained-button" type="submit" id="sign-up-button">
+      <span>Continue</span>
+      <div class="non-visible">{{ template "loader" }}</div>
+    </button>
+  </div>
+
+  <input type="hidden" name="web_authn_error" id="hidden-text-field-webauthn-error">
+
+{{ end }}

@@ -1,0 +1,38 @@
+{{ define "form" }}
+
+<form {{if .Data.Form.Name}}name="{{.Data.Form.Name}}"{{end}} {{if .Data.Form.ID}}id="{{.Data.Form.ID}}"{{end}}  method="{{ .Data.Form.Method }}" action="?login_id={{ .Data.Form.LoginID }}&login_state={{ .Data.Form.LoginState }}&server_id={{ .Data.ServerID }}"  {{if .Data.Form.CSS}}style="{{range $k, $v := .Data.Form.CSS}}{{$k}}: {{$v}}; {{end}}"{{end}} class="{{ if .Data.Form.Classes }}{{range .Data.Form.Classes}} {{.}}{{end}}{{end}}">
+  {{ .Data.CsrfField }}
+
+	<div class="row" name="row_main" id="row_main">
+    {{ range .Data.Form.FormElements }}
+      {{ if eq (.FieldType) "text" }}
+        {{ template "form_text" . }}
+      {{ else if eq (.FieldType) "password" }}
+        {{ template "form_password" . }}
+      {{ else if eq (.FieldType) "number" }}
+        {{ template "form_number" . }}
+      {{ else if eq (.FieldType) "button" }}
+        {{ template "form_button" . }}
+      {{ else if eq (.FieldType) "checkbox" }}
+        {{ template "form_checkbox" . }}
+      {{ else if eq (.FieldType) "array" }}
+        {{ template "form_array" . }}
+      {{ else if eq (.FieldType) "radio" }}
+        {{ template "form_radio" . }}
+      {{ else  }}
+        {{ template "form_unsupported" . }}
+      {{ end }}
+    {{ end }}
+	</div>
+
+  {{ if .Data.CaptchaSiteKey }}
+    <div class="g-recaptcha"
+      data-sitekey="{{ .Data.CaptchaSiteKey }}"
+      data-callback="enableSubmit"
+      data-expired-callback="disableSubmit"
+      data-error-callback="disableSubmit"
+    ></div>
+  {{ end }}
+</form>
+
+{{ end }}

@@ -1,0 +1,38 @@
+{{ template "base" . }}
+
+{{ define "title" }} Login {{ end }}
+
+{{ define "content" }}
+  {{ template "login_scripts" . }}
+  {{ template "password_visibility_script" . }}
+
+  <div class="header-container">
+    {{ template "header" .Config }}
+  </div>
+
+  {{ if not .Data.HasIDPs }}
+    {{ template "login_no_idp" . }}
+  {{ else }}
+    <div id="content-container">
+      <div class="card">
+        {{ if .Data.HasAdminTabs }}
+          {{ template "login_admin_tabs" }}
+        {{ end }}
+
+        <div id="sign-in">
+          <div class="content">
+            {{ template "login_content" . }}
+          </div>
+        </div>
+
+        {{ template "login_admin_quick_access" . }}
+      </div>
+
+      <div class="cancel-container">
+        <a href="?login_id={{ .Data.SessionID }}&action=cancel" id="cancel" name="cancel">Cancel</a>
+      </div>
+    </div>
+  {{ end }}
+
+  {{ template "footer" }}
+{{ end }}
