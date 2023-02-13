@@ -6,7 +6,7 @@
 
 <!--- DESCRIPTION USED IN THE RELEASE NOTES
 
-Remove this comment and replace it with the description of your changes for an external audience.
+Remove this comment and replace it with the description of your changes for an external audience. 
 This description will be pulled into public release notes.
 
 1. What changes are you introducing? Be clear and provide a detailed overview of your changes.
