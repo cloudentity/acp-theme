@@ -1,0 +1,28 @@
+{{ define "base" }}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ template "title" . }}</title>
+
+    <script src="{{ .Config.Assets }}/static/utils.js" nonce="{{.Config.Nonce}}"></script>
+    <script src="{{ .Config.Assets }}/static/zxcvbn.js" nonce="{{.Config.Nonce}}"></script>
+    <link href="{{ .Config.Assets }}/static/fonts.css" rel="stylesheet" nonce="{{.Config.Nonce}}">
+    <link href="{{ .Config.Assets }}/static/material-icons.css" rel="stylesheet" nonce="{{.Config.Nonce}}">
+    <!-- <link rel="stylesheet" href="{{ .Config.Assets }}/static/style.css" nonce="{{.Config.Nonce}}">
+    <link rel="stylesheet" href="{{ .Config.Assets }}/static/style-v2.css" nonce="{{.Config.Nonce}}"> -->
+    <link rel="icon" href="{{ .Config.Assets }}/favicon-v5.svg">
+    <script src="https://www.google.com/recaptcha/api.js" nonce="{{.Config.Nonce}}" async defer></script>
+
+    {{ template "styles_financroo" . }}
+
+  </head>
+  <body>
+    {{ template "content" . }}
+  </body>
+</html>
+
+{{ end }}
