@@ -67,7 +67,7 @@ delete-theme: ## Delete a theme
 	--header 'Authorization: Bearer ${TOKEN}'
 
 upsert-templates: ## Insert or Update all templates
-	for f in $$(cd theme; find * -name '*.tmpl'); \
+	for f in $$(cd ${THEME_DIR}; find * -name '*.tmpl'); \
         do  make upsert-template THEME_ID=${THEME_ID} TEMPLATE_PATH="$$f" TOKEN=${TOKEN} ; \
 	done
 
