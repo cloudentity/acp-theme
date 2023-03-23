@@ -13,6 +13,7 @@ TENANT_ID	= your-tenant
 SERVER_ID	= your-workspace-id
 ISSUER_URL	= https://your-tenant.your-region.authz.cloudentity.io/your-tenant/admin
 THEME_ID	= demo
+THEME_DIR = theme
 #
 # Set TENANT_ID and ISSUER_URL appropriately for your client.
 # Your client should be in the 'admin' workspace, but SERVER_ID can be any workspace
@@ -74,7 +75,7 @@ upsert-template: ## Insert or Update one template (make upsert-template TEMPLATE
 	${CURL} -D - -X PUT '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/template/${TEMPLATE_PATH}' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/json' \
-	--data-binary @<(jq -M --raw-input --slurp < 'theme/${TEMPLATE_PATH}' '{"content":.}')
+	--data-binary @<(jq -M --raw-input --slurp < '${THEME_DIR}/${TEMPLATE_PATH}' '{"content":.}')
 
 delete-template: ## Delete a template (make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl)
 	${CURL} -D - -X DELETE '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/template/${TEMPLATE_PATH}' \

@@ -43,6 +43,7 @@ TENANT_ID	= your-tenant
 SERVER_ID	= your-workspace-id
 ISSUER_URL	= https://your-tenant.your-region.authz.cloudentity.io/your-tenant/admin
 THEME_ID	= demo
+THEME_DIR = theme
 ```
 
 **IMPORTANT:** When working with a "vanity domain" that does not have a tenant ID in the URL params for API requests, leave the value of the `TENANT_ID` variable blank in the `Makefile.inc`, and set the value of `ISSUER_URL` without the `TENANT_ID` param, as shown below:
@@ -53,6 +54,8 @@ ISSUER_URL	= https://vanity-domain.your-organization.com/admin
 ```
 
 > **Note:** `SERVER_ID` refers to the ID of the workspace to which you intend to bind your theme.
+
+The `THEME_DIR` value indicates which directory should be used as the local source of the templates when 'upsert' commands are used. When creating a custom theme, it is possible to leave the default theme unedited as a reference, and set up a custom theme directory with a copy of the whole theme (or containing only a subset of templates to be altered, as long as the directory structure matches that of the default theme). In this case, change the value of `THEME_DIR` to the path of your custom directory. For example, this could be something like `my-custom-themes/demo-theme-1`, where `my-custom-themes` is located in the project root, and with `demo-theme-1` containing the `pages` and `shared` directories, etc.
 
 To test that the makefile is working, you can do `make list-base-templates` to query ACP:
 ```
