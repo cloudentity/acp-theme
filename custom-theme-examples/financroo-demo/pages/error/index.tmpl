@@ -7,12 +7,11 @@
   <div class="header-container">
     {{ template "header" .Config }}
   </div>
-  <h3>This is customized</h3>
 
   <div id="error-container">
     <input type="hidden" id="error" value="{{ .Data.Error }}">
     <input type="hidden" id="cause" value="{{ .Data.Cause }}">
-    <img src="{{ .Config.Assets }}/static/images/no-idp.svg" alt="icon" />
+    <!-- <img src="{{ .Config.Assets }}/static/images/no-idp.svg" alt="icon" /> -->
     <div id="error-title">{{ .Data.Name }}</div>
     <div id="error-description">{{ .Data.Description }}.</div>
 
