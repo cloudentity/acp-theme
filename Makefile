@@ -10,8 +10,8 @@
 CLIENT_ID	= PUT_YOUR_CLIENT_ID_HERE
 CLIENT_SECRET	= PUT_YOUR_CLIENT_SECRET_HERE
 TENANT_ID	= your-tenant
-SERVER_ID	= your-workspace-id
 ISSUER_URL	= https://your-tenant.your-region.authz.cloudentity.io/your-tenant/admin
+SERVER_ID	= your-workspace-id
 THEME_ID	= demo
 THEME_DIR = theme
 #
