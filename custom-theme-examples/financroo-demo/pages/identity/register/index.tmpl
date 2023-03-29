@@ -1,0 +1,47 @@
+{{ template "base" . }}
+
+{{ define "title" }}Register{{ end }}
+
+{{ define "content" }}
+
+<div class="content-wrapper">
+  <div class="content-flex" style="height: 100%;">
+    <div class="content-left">
+      <div class="content-background"></div>
+    </div>
+
+    <div class="content-right">
+      <div class="aut-content-wrapper">
+
+        <div class="header-container">
+          {{ template "header" .Config }}
+        </div>
+
+        {{ template "identity_register_scripts" . }}
+        {{ template "password_visibility_script" . }}
+        {{ template "submit_button_disabling_script" . }}
+
+        <div class="card-right">
+          <div class="content">
+            <h2>Sign up for a new account</h2>
+
+            {{ template "form" . }}
+
+              {{ range .Data.FormError.Errors }}
+                {{ template "error_message" . }}
+              {{ end }}
+
+            <div class="buttons-container">
+              <a href="{{ .Data.LoginPath }}">Back to sign in</a>
+            </div>
+          </div>
+        </div>
+
+        {{ template "footer" }}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ end }}
