@@ -1,0 +1,42 @@
+{{ template "base" . }}
+
+{{ define "title" }}Error{{ end }}
+
+{{ define "content" }}
+
+  <div class="header-container">
+    {{ template "header" .Config }}
+  </div>
+
+  <div id="error-container">
+    <input type="hidden" id="error" value="{{ .Data.Error }}">
+    <input type="hidden" id="cause" value="{{ .Data.Cause }}">
+    <!-- <img src="{{ .Config.Assets }}/static/images/no-idp.svg" alt="icon" /> -->
+    <div id="error-title">{{ .Data.Name }}</div>
+
+    <div class="error-container">
+      <i class="material-icons">error_outline</i>
+      {{ .Data.Description }}.
+    </div>
+
+    {{ if .Data.Hint  }}
+      <div id="error-hint">{{ .Data.Hint }}</div>
+    {{ end }}
+
+    {{ if .Data.RetryURL }}
+      <br/>
+      <a href="{{ .Data.RetryURL }}">Retry</a>
+    {{ end }}
+
+    {{ if .Data.Version }}
+      <div class="error-details">Version: {{ .Data.Version }}</div>
+    {{ end }}
+
+    {{ if .Data.TraceID }}
+      <div class="error-details">ID: {{ .Data.TraceID }}</div>
+    {{ end }}
+  </div>
+
+{{ template "footer" }}
+
+{{ end }}

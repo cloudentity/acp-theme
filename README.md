@@ -25,9 +25,12 @@ If a situation comes up in which it's absolutely necessary for someone to make a
 
 ## How to use the Makefile/CLI
 
+Prerequisites:
+- `jq` - A command line [JSON processor](https://github.com/stedolan/jq).
+
 You will need to create an ACP Client named 'manage-themes' in the Admin workspace with the application type `Service`.
 
-> Note: If the `Service` application type is not available, in the Admin workspace, navigate to "Auth Setttings > OAuth," and under "Allowed Grant types," make sure "Client credentials" is selected.
+> **Note:** If the `Service` application type is not available, in the Admin workspace, navigate to "Auth Settings > OAuth," and under "Allowed Grant types," make sure "Client credentials" is selected.
 
 Confirm these OAuth settings after you have created the client:
 
@@ -40,10 +43,13 @@ Now create a file named `Makefile.inc` that overrides the following default valu
 CLIENT_ID	= PUT_YOUR_CLIENT_ID_HERE
 CLIENT_SECRET	= PUT_YOUR_CLIENT_SECRET_HERE
 TENANT_ID	= your-tenant
-SERVER_ID	= your-workspace-id
 ISSUER_URL	= https://your-tenant.your-region.authz.cloudentity.io/your-tenant/admin
+SERVER_ID	= your-workspace-id
 THEME_ID	= demo
+THEME_DIR = theme
 ```
+
+> **Note:** The `ISSUER_URL` is related to the OAuth client in the Admin workspace, thus the path pattern is `your-tenant/admin`. The `SERVER_ID` refers to the ID of the **workspace** to which the theme is to be bound. **NEVER** put `admin` as the value for `SERVER_ID`, as using a custom theme that is bound to the admin workspace has the potential to lock you out of your tenant if you make an edit in the custom theme templates that results in certain types of errors. Always use a dedicated test workspace for actively developing the theme.
 
 **IMPORTANT:** When working with a "vanity domain" that does not have a tenant ID in the URL params for API requests, leave the value of the `TENANT_ID` variable blank in the `Makefile.inc`, and set the value of `ISSUER_URL` without the `TENANT_ID` param, as shown below:
 
@@ -53,6 +59,8 @@ ISSUER_URL	= https://vanity-domain.your-organization.com/admin
 ```
 
 > **Note:** `SERVER_ID` refers to the ID of the workspace to which you intend to bind your theme.
+
+The `THEME_DIR` value indicates which directory should be used as the local source of the templates when 'upsert' commands are used. When creating a custom theme, it is possible to leave the default theme unedited as a reference, and set up a custom theme directory with a copy of the whole theme (or containing only a subset of templates to be altered, as long as the directory structure matches that of the default theme). In this case, change the value of `THEME_DIR` to the path of your custom directory. For example, this could be something like `my-custom-themes/demo-theme-1`, where `my-custom-themes` is located in the project root, and with `demo-theme-1` containing the `pages` and `shared` directories, etc.
 
 To test that the makefile is working, you can do `make list-base-templates` to query ACP:
 ```

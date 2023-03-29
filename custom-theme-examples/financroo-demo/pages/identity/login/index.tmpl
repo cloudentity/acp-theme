@@ -1,0 +1,40 @@
+{{ template "base" . }}
+
+{{ define "title" }}Login{{ end }}
+
+{{ define "content" }}
+  {{ template "identity_login_scripts" . }}
+  {{ template "password_visibility_script" . }}
+
+  <div class="content-wrapper">
+    <div class="content-flex" style="height: 100%;">
+      <div class="content-left">
+        <div class="content-background"></div>
+      </div>
+
+      <div class="content-right">
+        <div class="aut-content-wrapper">
+          <div class="header-container">
+            {{ template "header" .Config }}
+          </div>
+
+          <div class="card-right">
+            <div class="content">
+
+              {{ if .Data.AuthnView }}
+                {{ template "authn" . }}
+              {{ else }}
+                <div class="alert-danger">No Authentication Mechanisms Enabled</div>
+              {{ end }}
+
+            </div>
+          </div>
+
+          {{ template "footer" }}
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+{{ end }}
