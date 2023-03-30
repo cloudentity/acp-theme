@@ -207,6 +207,14 @@
       usernameInput.disabled = false;
     });
 
+    usernameInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        clearDebounce();
+        searchIdps(usernameInput.value);
+      }
+    });
+
     usernameInput.addEventListener('input', function (e) {
       nextButton.disabled = !e.target.value;
       debouncedSearchIdps(e.target.value);
