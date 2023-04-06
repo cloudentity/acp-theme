@@ -1,6 +1,6 @@
 {{ define "form_button" }}
 
-<button id="submit-next" class="submit-button" type="submit" id="sign-in" {{range $k, $v := .Params}} {{$k}}="{{$v}}"{{end}}>
+<button id="submit-next" class="submit-button" type="submit" id="sign-in" {{if .Name}} name="{{.Name}}"{{end}} {{if .Value}} value="{{.Value}}"{{end}} {{range $k, $v := .Params}} {{$k}}="{{$v}}"{{end}}>
   <i class="material-icons">lock</i>
   {{ .Label }}
 </button>

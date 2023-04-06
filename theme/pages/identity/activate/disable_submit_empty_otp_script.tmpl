@@ -1,0 +1,26 @@
+{{ define "identity_activate_disable_submit_empty_otp_script" }}
+
+  <script nonce="{{.Config.Nonce}}">
+
+    var otpLength = {{ .Data.OtpLength }};
+
+    document.addEventListener("DOMContentLoaded", onPageLoad);
+
+    function onPageLoad() {
+      disableButtonsOnEmptyInputs();
+      setButtonEnablementOnInput();
+    }
+
+    function setButtonEnablementOnInput() {
+      var otpInput = document.getElementById("otp-input")
+      if (!!otpInput) otpInput.addEventListener('input', disableButtonsOnEmptyInputs);
+    }
+
+    function disableButtonsOnEmptyInputs() {
+      var otpInput = document.getElementById("otp-input")
+      var submitButton = document.getElementById("sign-in-button");
+      if(submitButton && otpInput) submitButton.disabled = !otpInput.value || otpInput.value.length < otpLength;
+    }
+
+  </script>
+{{ end }}

@@ -11,7 +11,7 @@
     </div>
   </label>
 
-  <input type="text" class="{{ if .Classes }}{{range .Classes}} {{.}}{{end}}{{end}}" style="{{range $k, $v := .CSS}}{{$k}}:{{$v}};{{end}}" {{ if .ID}}id="{{.ID}}"{{else}}id="text-field-{{.Name}}-input"{{end}} name="{{.Name}}" {{ if .Value}} value="{{.Value}}"{{end}} {{range $k, $v := .Params}} {{$k}}="{{$v}}"{{end}}>
+  <input type="text" class="{{ if .Classes }}{{range .Classes}} {{.}}{{end}}{{end}}" style="{{range $k, $v := .CSS}}{{$k}}:{{$v}};{{end}}" {{ if .ID}}id="{{.ID}}"{{else}}id="text-field-{{.Name}}-input"{{end}} name="{{.Name}}" {{ if .Value}} value="{{.Value}}"{{end}} {{range $k, $v := .Params}} {{$k}}="{{$v}}"{{end}} {{range $k, $v := .DataParams}} data-{{$k}}="{{$v}}"{{end}}>
 
   {{ if .Errors }}
     {{ range .Errors}}

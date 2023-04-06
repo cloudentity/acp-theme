@@ -5,6 +5,7 @@
   <div class="form-field">
     <label for="text-field-username-input" class="label-with-link">
       <span id="username-label">Username | Email | Phone</span>
+      <a href="{{ .Data.ResetWebAuthnPath }}" id="forgot-passkey" class="input-above-link">Lost passkey?</a>
       <button id="not-you-button" type="button" class="non-visible">Not You?</button>
     </label>
     <input id="text-field-username-input" name="identifier" value="{{ .Data.Identifier }}">

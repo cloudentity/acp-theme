@@ -3,6 +3,7 @@
 <script nonce="{{.Config.Nonce}}">
 
   var view = "{{ .Data.Mode }}";
+  var otpLength = {{ .Data.OtpLength }};
 
   document.addEventListener("DOMContentLoaded", function() {
     if (view === "web_authn") {
@@ -10,6 +11,7 @@
     } else if (view === "password") {
       initPassword();
     }
+    initOtpInput('otp-input-container', otpLength );
   });
 
   function initPassword() {
