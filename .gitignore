@@ -1,0 +1,13 @@
+# Idea based project files
+*.iml
+.idea
+.run
+
+# Eclipse based project files
+.project
+**/*.prefs
+**/*.classpath
+**/*.factorypath
+
+# VSCode based project files
+.vscode
