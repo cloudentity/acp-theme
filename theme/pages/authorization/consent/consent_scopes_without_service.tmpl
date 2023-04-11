@@ -1,13 +1,13 @@
 {{ define "consent_scopes_without_service" }}
-
+ 
 <div class="consent-scopes-container">
   {{ range .Data.ScopesWithoutService }}
     <div class="consent-scopes-container-row-container">
       <div class="form-field consent-scope-row">
         <label for="{{ .RequestedScopeName }}">
           <div class="form-field-checkbox">
-            <input type="checkbox" name="scopes" value="{{ .RequestedScopeName }}" id="{{ .RequestedScopeName }}" {{ if not .GrantAllowed }} disabled {{ else }} checked {{ end }} >
-
+            <input type="checkbox" name="scopes" value="{{ .RequestedScopeName }}" id="{{ .RequestedScopeName }}" {{ if not .GrantAllowed }} disabled {{ else }} checked {{ end }} >          
+            
             {{ if .IsDynamic }}
               {{ if .DisplayName }} {{ .DisplayName }}: {{ .RequestedScopeName }} {{ end }}
             {{ else }}

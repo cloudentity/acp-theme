@@ -1,0 +1,34 @@
+{{ template "base" . }}
+
+{{ define "title" }}Authorization Control Plane - Landing page{{ end }}
+
+{{ define "content" }}
+
+  <div class="header-container">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="card">
+    <div class="color-bar"></div>
+
+    <h3 class="header">Welcome to<br/> Authorization Control Plane</h3>
+
+    <div class="content">
+      <p>Find out how to</p>
+
+      <a class="href-card" href="https://docs.authorization.cloudentity.com/howto/configure/tenants/" target="_blank" rel="noopener noreferrer">
+        <div>
+          <span class="href-card-avatar"><i class="material-icons">business</i></span>
+          <span>Create a tenant</span>
+        </div>
+        <i class="material-icons">navigate_next</i>
+      </a>
+      
+      <div class="caption">
+        Need more technical details? Access <a href="https://cloudentity.com/developers/" target="_blank" rel="noopener noreferrer">Documentation</a>
+      </div>
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}

@@ -18,7 +18,7 @@
   {{ if .Data.AuthnModeSwitch }}
 
     <div id="authn-mode-switch-container">
-
+    
       <div class="spacer-container">
         <div>or log in with</div>
       </div>
@@ -36,7 +36,7 @@
             <i class="material-icons">navigate_next</i>
           </button>
         {{ end }}
-
+          
         {{ if .Data.AuthenticationMechanismsAvailability.otp }}
           <button class="href-card" type="submit" name="action" value="change_to_otp" id="login-option-code" style="display: flex">
             <div>

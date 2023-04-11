@@ -1,0 +1,99 @@
+{{ define "identity_reset_passkey_scripts" }}
+
+  <script nonce="{{.Config.Nonce}}">
+
+    var otpLength = {{ .Data.OtpLength }};
+
+    window.addEventListener("pageshow", () => {
+      document.querySelector("#reset-form").reset();
+    });
+
+    document.addEventListener("DOMContentLoaded", onPageLoad);
+
+    function onPageLoad() {
+      initOtpInput('otp-input-container', otpLength );
+      initWebAuthn();
+      disableButtonsOnEmptyInputs();
+      setButtonEnablementOnInput();
+    }
+
+    function setButtonEnablementOnInput() {
+      var otpInput = document.getElementById("otp-input")
+      if (!!otpInput) otpInput.addEventListener('input', disableButtonsOnEmptyInputs);
+    }
+
+    function disableButtonsOnEmptyInputs() {
+      var otpInput = document.getElementById("otp-input")
+      var submitButton = document.getElementById("reset-button");
+      if(submitButton && otpInput) submitButton.disabled = !otpInput.value || otpInput.value.length < otpLength;
+    }
+
+    function initWebAuthn () {
+      document.querySelector("#reset-form").addEventListener("submit", event => {
+        event.preventDefault();
+        registerUser();
+      });
+    }
+
+    function bufferEncode(value) {
+      return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+    }
+
+    function bufferDecode(value) {
+      return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+    }
+
+    function registerUser() {
+      var webauthnError = document.querySelector("#hidden-text-field-webauthn-error");
+      var server_id = (new URL(document.location)).searchParams.get("server_id");
+      var identifier = document.querySelector("#text-field-identifier-input").value;
+
+      webauthnError.value = '';
+
+      fetch(window.location.pathname + "/webauthn/begin?" + new URLSearchParams({ server_id: server_id }), {
+        method: "POST",
+        body: JSON.stringify({
+          identifier: identifier,
+        }),
+      })
+      .then(function (response) {
+        return response.json();
+      })
+      .then((credentialCreationOptions) => {
+        credentialCreationOptions.publicKey.challenge = bufferDecode(credentialCreationOptions.publicKey.challenge);
+        credentialCreationOptions.publicKey.user.id = bufferDecode(credentialCreationOptions.publicKey.user.id);
+        return navigator.credentials.create({
+          publicKey: credentialCreationOptions.publicKey,
+        });
+      })
+      .then((credential) => {
+        var attestationObject = credential.response.attestationObject;
+        var clientDataJSON = credential.response.clientDataJSON;
+        var rawId = credential.rawId;
+
+        return fetch(window.location.pathname + "/webauthn/finish?" + new URLSearchParams({ server_id: server_id }), {
+          method: "POST",
+          body: JSON.stringify({
+            id: credential.id,
+            rawId: bufferEncode(rawId),
+            type: credential.type,
+            response: {
+              attestationObject: bufferEncode(attestationObject),
+              clientDataJSON: bufferEncode(clientDataJSON),
+            },
+          }),
+        });
+      })
+      .catch((error) => {
+        webauthnError.value = error;
+      })
+      .finally(() => {
+        document.querySelector("#reset-form").submit();
+      });
+    }
+
+  </script>
+{{ end }}

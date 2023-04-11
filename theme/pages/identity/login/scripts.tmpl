@@ -74,7 +74,7 @@
       if (e.submitter.id !== "web-authn-sign-in-button") {
         return;
       }
-
+      
       e.preventDefault();
       webAuthnLogin();
     });
@@ -84,7 +84,7 @@
     var webAuthnError = document.querySelector("#hidden-text-field-webauthn-error");
     var server_id = (new URL(document.location)).searchParams.get("server_id");
     var identifier = document.querySelector("#text-field-username-input").value;
-
+    
     webAuthnError.value = '';
 
     fetch(window.location.pathname + "/webauthn/options?" + new URLSearchParams({ server_id: server_id }), {
@@ -112,7 +112,7 @@
       let rawId = assertion.rawId;
       let sig = assertion.response.signature;
       let userHandle = assertion.response.userHandle;
-
+      
       return fetch(window.location.pathname + "/webauthn/finish?" + new URLSearchParams({ server_id: server_id }), {
         method: "POST",
         body: JSON.stringify({
@@ -127,7 +127,7 @@
           },
         }),
       });
-
+      
     })
     .catch((error) => {
       webAuthnError.value = error;

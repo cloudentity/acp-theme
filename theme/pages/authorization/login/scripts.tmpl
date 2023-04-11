@@ -157,12 +157,17 @@
       var authenticationIdInput = document.querySelector('#idp-discovery-authentication-id');
       if (!loginForm || !authenticationIdInput) return;
 
-      idps.forEach(function (idp) {
-        if (idp.instant_redirect) {
-          authenticationIdInput.value = idp.id;
-          loginForm.submit();
-        }
+      var idpToRedirectTo = idps.find(function (idp) {
+        return idp.instant_redirect;
       });
+
+      if (idpToRedirectTo) {
+        authenticationIdInput.value = idpToRedirectTo.id;
+        loginForm.submit();
+        return true;
+      }
+
+      return false;
     }
 
     function searchIdps(username) {
@@ -186,15 +191,17 @@
           return idp.id;
         })
         idpsDiscoveryError.style.display = 'none';
-        rerenderButtons(idpsIds);
-        handleInstantRedirect(idps);
+
+        var redirectTriggered = handleInstantRedirect(idps);
+        if (!redirectTriggered) {
+          rerenderButtons(idpsIds);
+          handleNextButtonState(username, false);
+        }
       })
       .catch(function (error) {
         console.error(error);
         idpsDiscoveryError.style.display = 'flex';
         resetButtons();
-      })
-      .finally(function () {
         handleNextButtonState(username, false);
       });
     }

@@ -1,0 +1,24 @@
+{{ define "register_init" }}
+
+{{ template "identity_register_ux_improved_scripts" . }}
+
+<div class="steps-container">STEP <b>1</b> OF <b>3</b></div>
+<h2 class="no-bottom-margin">Provide Your Information</h2>
+<div class="header-bottom-info">Already have an account? <a href="{{ .Data.LoginPath }}">Sign In</a></div>
+
+{{ template "form" . }}
+
+<button id="submit-next" class="submit-button" type="submit" name="action" value="change_to_credential_entry" form="sign-up-form">
+  <i class="material-icons">lock</i>
+  Continue
+</button>
+
+<input id="from-view-input" name="from-view" type="text" value="user" form="sign-up-form" hidden>
+
+{{ range .Data.FormError.Errors }}
+  {{ template "error_message" . }}
+{{ end }}
+
+<!-- FIXME: disable submit button on empty fields -->
+
+{{ end }}
