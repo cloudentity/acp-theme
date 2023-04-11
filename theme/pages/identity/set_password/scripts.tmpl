@@ -1,0 +1,41 @@
+{{ define "identity_set_password_scripts" }}
+
+<script nonce="{{.Config.Nonce}}">
+
+  var otpLength = {{ .Data.OtpLength }};
+
+  document.addEventListener("DOMContentLoaded", onPageLoad);
+
+  function onPageLoad() {
+    initOtpInput('otp-input-container', otpLength, true);
+    disableButtonsOnEmptyInputs();
+    setButtonEnablementOnInput();
+  }
+
+  function setButtonEnablementOnInput() {
+      var inputNodes = document.querySelectorAll("input");
+
+      inputNodes.forEach(inputNode => {
+          inputNode.addEventListener('input', disableButtonsOnEmptyInputs);
+      });
+  }
+
+  function disableButtonsOnEmptyInputs() {
+      var submitButton = document.getElementById("sign-in");
+      var otpInput = document.getElementById("otp-input");
+      if(!!submitButton) {
+          var inputNodes = Array.from(document.querySelectorAll("input"));
+
+          var shouldDisableSubmit = inputNodes.some(inputNode => {
+              return !inputNode.value;
+          });
+
+          if(otpInput) shouldDisableSubmit = shouldDisableSubmit || otpInput.value.length < otpLength;
+
+          submitButton.disabled = shouldDisableSubmit;
+      }
+  }
+
+</script>
+
+{{ end }}

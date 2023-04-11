@@ -1,6 +1,6 @@
 {{ define "login_content_mode_idps_list" }}
 
-<form action="?login_id={{ .Data.SessionID }}&prompt={{ .Data.Prompt }}&max_age={{ .Data.MaxAge }}" method="post" id="sign-in-form">
+<form action="?{{ $.Data.Query }}" method="post" id="sign-in-form">
   <input type="hidden" id="version" name="version" value="2">
 
   <div class="error-container non-visible" id="idps-discovery-error">

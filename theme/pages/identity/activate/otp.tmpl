@@ -1,5 +1,36 @@
 {{ define "setup_with_otp" }}
 
+{{ if .Data.UserSelfRegistrationImproved }}
+
+    {{ template "identity_activate_disable_submit_empty_otp_script" . }}
+
+    <div class="steps-container">STEP <b>3</b> OF <b>3</b></div>
+    <h2>Activate Your Account</h2>
+
+    <div class="form-field">
+        <label for="text-field-username-input">
+            Email | Phone
+        </label>
+        <input id="text-field-username-input" name="username" autocomplete="off" data-lpignore="true" value="{{.Data.Identifier}}" disabled>
+    </div>
+
+    <div class="form-field extra-top-margin" id="otp-container">
+        <div id="otp-input-container" class="form-field otp-input-container">
+            <input type="hidden" name="otp" value="" id="otp-input">
+        </div>
+        <div class="footer-with-link">
+            Still didn't receive?
+            <a href="{{ .Data.ResendPath }}">Resend code</a>
+        </div>
+    </div>
+
+    <button class="submit-button no-bottom-margin extra-top-margin" type="submit" id="sign-in-button">
+        <span>Continue</span>
+        <div class="non-visible">{{ template "loader" }}</div>
+    </button>
+
+{{else}}
+
     <h2 class="header">Activate</h2>
 
     <div class="header-info">Enter the security code sent to your identifier.</div>
@@ -22,5 +53,7 @@
         <i class="material-icons">lock</i>
         Activate
     </button>
+
+{{end}}
 
 {{ end }}
