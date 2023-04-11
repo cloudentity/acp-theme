@@ -8,8 +8,8 @@
         <div class="form-field consent-scope-row">
           <label for="{{ .Name }}">
             <div class="form-field-checkbox">
-              <input type="checkbox" name="scopes" value="{{ .RequestedScopeName }}" id="{{ .RequestedScopeName }}" {{ if not .GrantAllowed }} disabled {{ else }} checked {{ end }} >
-
+              <input type="checkbox" name="scopes" value="{{ .RequestedScopeName }}" id="{{ .RequestedScopeName }}" {{ if not .GrantAllowed }} disabled {{ else }} checked {{ end }} >          
+              
               {{ if .IsDynamic }}
                 {{ if .DisplayName }} {{ .DisplayName }}: {{ .RequestedScopeName }} {{ end }}
               {{ else }}

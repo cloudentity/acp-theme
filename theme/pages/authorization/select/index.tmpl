@@ -1,0 +1,39 @@
+{{ template "base" . }}
+
+{{ define "title" }}Select authentication method{{ end }}
+
+{{ define "content" }}
+
+  <div class="header-container">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="card">
+    <div class="color-bar"></div>
+
+    <h3 class="header">Log in</h3>
+
+    <div class="content">
+      {{ range .Data.FormError.Errors }}
+        {{ template "error_message" . }}
+      {{ end }}
+
+      <form action="?{{ .Data.Query }}" method="post">
+        {{ .Data.CsrfField }}
+        <div class="select-content">
+          {{ range $method := .Data.Methods }}
+            <button class="href-card" name="authentication_id" type="submit" value="{{ .ID }}" title="{{ .Name }}">
+              <div>
+                <span class="href-card-avatar href-card-avatar-color">{{ substr 0 1 .Name }}</span>
+                <span>{{ .Name }}</span>
+              </div>
+              <i class="material-icons">navigate_next</i>
+            </button>
+          {{ end }}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}

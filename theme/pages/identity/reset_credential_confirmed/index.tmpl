@@ -1,6 +1,6 @@
 {{ template "base" . }}
 
-{{ define "title" }} Password set {{ end }}
+{{ define "title" }} Credential set {{ end }}
 
 {{ define "content" }}
 
@@ -11,11 +11,11 @@
   <div class="card">
     <div class="color-bar"></div>
 
-    <h3 class="header">Password set</h3>
+    <h3 class="header">Credential set</h3>
 
     <div class="content">
       <h2>Success!</h2>
-      <div class="header-info">You've successfully set up your password.</div>
+      <div class="header-info">You've successfully set up your credential.</div>
 
       {{ if .Data.SessionID }}
         <a href="{{ .Data.LoginPath }}">

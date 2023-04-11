@@ -3,7 +3,7 @@
 <div class="form-field">
   <label {{ if .ID}}for="{{.ID}}"{{else}}for="text-field-{{.Name}}-input"{{end}}>
     <div>
-      {{ .Label }}
+      {{ .Label }} 
 
       {{ if .TooltipText }}
         {{ template "tooltip" .TooltipText }}

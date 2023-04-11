@@ -1,0 +1,165 @@
+{{ define "identity_register_scripts" }}
+
+  <script nonce="{{.Config.Nonce}}">
+    function removeInputArrayField (button) {
+      button.parentElement.remove();
+    }
+
+    function bufferEncode(value) {
+      return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+    }
+
+    function bufferDecode(value) {
+      return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+    }
+
+    function registerUser() {
+      var webauthnError = document.querySelector("#hidden-text-field-webauthn-error");
+      var server_id = (new URL(document.location)).searchParams.get("server_id");
+      var identifier = document.querySelector("#text-field-identifier-input").value;
+
+      webauthnError.value = '';
+
+      fetch(window.location.pathname + "/webauthn/begin?" + new URLSearchParams({ server_id: server_id }), {
+        method: "POST",
+        body: JSON.stringify({
+          identifier: identifier,
+        }),
+      })
+      .then(function (response) {
+        return response.json();
+      })
+      .then((credentialCreationOptions) => {
+        credentialCreationOptions.publicKey.challenge = bufferDecode(credentialCreationOptions.publicKey.challenge);
+        credentialCreationOptions.publicKey.user.id = bufferDecode(credentialCreationOptions.publicKey.user.id);
+        return navigator.credentials.create({
+          publicKey: credentialCreationOptions.publicKey,
+        });
+      })
+      .then((credential) => {
+        var attestationObject = credential.response.attestationObject;
+        var clientDataJSON = credential.response.clientDataJSON;
+        var rawId = credential.rawId;
+
+        return fetch(window.location.pathname + "/webauthn/finish?" + new URLSearchParams({ server_id: server_id }), {
+          method: "POST",
+          body: JSON.stringify({
+            id: credential.id,
+            rawId: bufferEncode(rawId),
+            type: credential.type,
+            response: {
+              attestationObject: bufferEncode(attestationObject),
+              clientDataJSON: bufferEncode(clientDataJSON),
+            },
+          }),
+        });
+      })
+      .catch((error) => {
+        webauthnError.value = error;
+      })
+      .finally(() => {
+        document.querySelector("#sign-up-form").submit();
+      });
+    }
+
+    function initWebAuthn () {
+      var form = document.querySelector("#sign-up-form");
+      var container = document.querySelector("#radio-button-registration-type");
+      var passwordInput = document.querySelector("#text-field-password-input-container");
+      var repeatPasswordInput = document.querySelector("#text-field-repeat-password-input-container");
+
+      if (form && container ) {
+        var hiddenCheckboxInput = container.querySelector("input");
+
+        if (container.getAttribute("checked") === "checked") {
+          hiddenCheckboxInput.setAttribute("checked", "on");
+        }
+
+        if (passwordInput && repeatPasswordInput){
+          var passwordButton = container.querySelector('[data-value="password"]');
+          var webAuthnButton = container.querySelector('[data-value="webauthn"]');
+          if (passwordButton && webAuthnButton) {
+            passwordButton.addEventListener("click", function (el) {
+              passwordButton.classList.add("active");
+              webAuthnButton.classList.remove("active");
+
+              passwordInput.style.display = "block";
+              repeatPasswordInput.style.display = "block";
+
+              hiddenCheckboxInput.removeAttribute("checked");
+            });
+
+            webAuthnButton.addEventListener("click", function (el) {
+              passwordButton.classList.remove("active");
+              webAuthnButton.classList.add("active");
+
+              passwordInput.style.display = "none";
+              repeatPasswordInput.style.display = "none";
+
+              hiddenCheckboxInput.setAttribute("checked", "on");
+            });
+          }
+        }
+
+        form.addEventListener("submit", function (e) {
+          if (hiddenCheckboxInput.checked) {
+            e.preventDefault();
+            registerUser();
+          }
+        });
+      }
+    }
+
+    window.addEventListener("pageshow", () => {
+      document.querySelector("#sign-up-form").reset();
+    });
+    
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelector("#hidden-text-field-webauthn-error").style.display = 'none';
+      Array.from(document.getElementsByClassName("add-item")).forEach(function (myElement) {
+        myElement.addEventListener("click", function () {
+          var parent = this.parentNode;
+          var name = this.getAttribute("data-name");
+          var div = document.createElement("div");
+          div.className = "input-with-button array-item";
+          div.innerHTML = 
+            "<input type=\"text\" name=\""+ name +"\" >" +
+            "<button type=\"button\" aria-label=\"Remove item\" class=\"delete-input-array\"><i class=\"material-icons\">delete</i></button>"
+          ;
+
+          parent.insertBefore(div, parent.lastElementChild);
+
+          var elements = div.getElementsByClassName("delete-input-array");
+          for (var i = 0; i < elements.length; ++i) {
+            elements[i].addEventListener("click", function () {
+              removeInputArrayField(this);
+            });
+          }
+        });
+      });
+
+      var elements = document.getElementsByClassName("delete-input-array");
+      for (var i = 0; i < elements.length; ++i) {
+        elements[i].addEventListener("click", function () {
+          removeInputArrayField(this);
+        });
+      }
+
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            checkbox.checked = !checkbox.checked;
+            e.preventDefault();
+          }
+        })
+      });
+
+      initWebAuthn();
+    });
+
+  </script>
+{{ end }}
