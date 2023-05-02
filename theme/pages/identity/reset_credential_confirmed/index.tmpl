@@ -17,7 +17,7 @@
       <h2>Success!</h2>
       <div class="header-info">You've successfully set up your credential.</div>
 
-      {{ if .Data.SessionID }}
+      {{ if .Data.LoginPath}}
         <a href="{{ .Data.LoginPath }}">
           <button class="submit-button" id="sign-in">Sign in</button>
         </a>
