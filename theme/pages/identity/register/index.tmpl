@@ -4,8 +4,6 @@
 
 {{ define "content" }}
 
-  {{ if .Data.UserSelfRegistrationImproved }}
-
     <div class="header-container">
       {{ template "header" .Config }}
     </div>
@@ -21,31 +19,6 @@
         {{ end }}
       </div>
     </div>
-  {{ else }}
-    {{ template "identity_register_scripts" . }}
-    {{ template "password_visibility_script" . }}
-    {{ template "submit_button_disabling_script" . }}
-
-    <div class="header-container">
-      {{ template "header" .Config }}
-    </div>
-
-    <div class="card">
-      <div class="content">
-        <h2>Register</h2>
-
-        {{ template "form" . }}
-
-          {{ range .Data.FormError.Errors }}
-            {{ template "error_message" . }}
-          {{ end }}
-
-        <div class="buttons-container">
-          <a href="{{ .Data.LoginPath }}">Sign In</a>
-        </div>
-      </div>
-    </div>
-  {{ end }}
 
   {{ template "footer" }}
 {{ end }}
