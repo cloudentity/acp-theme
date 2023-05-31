@@ -1,0 +1,12 @@
+{{ template "base_email" . }}
+
+{{ define "content" }}
+
+<div class="heading2">Credentials reset</div>
+<div class="main-text">
+We've received a request to reset your credentials.<br />
+Your credentials reset code is:
+</div>
+<div class="code-container">{{ .Data.OTP.Code }}</div>
+
+{{ end }}

@@ -46,9 +46,11 @@
         </button>
       </form>
 
-      <div class="buttons-container">
-        <a href="{{ .Data.LoginPath }}">Sign In</a>
-      </div>
+      {{ if not .Data.ResetWithoutAuthentication }}
+        <div class="buttons-container">
+          <a href="{{ .Data.LoginPath }}">Sign In</a>
+        </div>
+      {{ end }}
 
     </div>
   </div>

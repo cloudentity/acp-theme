@@ -42,12 +42,13 @@
         <button id="submit-next" class="submit-button" type="submit" {{ if .Data.CaptchaSiteKey }} disabled {{ end }} >
           Next
         </button>
-
       </form>
 
-      <div class="buttons-container">
-        <a href="{{ .Data.LoginPath }}">Sign In</a>
-      </div>
+      {{ if not .Data.ResetWithoutAuthentication }}
+        <div class="buttons-container">
+          <a href="{{ .Data.LoginPath }}">Sign In</a>
+        </div>
+      {{ end }}
 
     </div>
   </div>
