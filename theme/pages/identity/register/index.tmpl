@@ -10,7 +10,9 @@
 
     <div class="card">
       <div class="content">
-        {{ if eq .Data.TargetView "user" }}
+        {{ if not .Data.PublicRegistrationAllowed }}
+        {{ template "registration_not_allowed" . }}
+        {{ else if eq .Data.TargetView "user" }}
         {{ template "register_init" . }}
         {{ else if eq .Data.TargetView "password" }}
         {{ template "register_with_password" . }}

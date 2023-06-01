@@ -4,7 +4,10 @@
 
 <div class="steps-container">STEP <b>1</b> OF <b>3</b></div>
 <h2 class="no-bottom-margin">Provide Your Information</h2>
-<div class="header-bottom-info">Already have an account? <a href="{{ .Data.LoginPath }}">Sign In</a></div>
+
+{{ if not .Data.RegistrationWithoutAuthentication }}
+  <div class="header-bottom-info">Already have an account? <a href="{{ .Data.LoginPath }}">Sign In</a></div>
+{{ end }}
 
 {{ template "form" . }}
 

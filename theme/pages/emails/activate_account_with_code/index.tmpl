@@ -1,0 +1,12 @@
+{{ template "base_email" . }}
+
+{{ define "content" }}
+
+<div class="heading2">
+Excellent!
+<b> Your account is almost ready.</b>
+</div>
+<div class="main-text">Just one more step to access it</div>
+<div class="code-container">{{ .Data.OTP.Code }}</div>
+
+{{ end }}

@@ -1,0 +1,9 @@
+{{ template "base_email" . }}
+
+{{ define "content" }}
+
+<div class="heading2">We've received a OTP Code request.</div>
+<div class="code-container">{{ .Data.OTP.Code }}</div>
+<div class="main-text">Here is the OTP code that you have requested.</div>
+
+{{ end }}

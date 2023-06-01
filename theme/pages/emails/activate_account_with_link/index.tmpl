@@ -1,0 +1,18 @@
+{{ template "base_email" . }}
+
+{{ define "content" }}
+
+<div class="heading2">
+Excellent!
+<b> Your account is almost ready.</b>
+</div>
+<div class="main-text">Just one more step to access it</div>
+<div class="link-container">
+	<a href="{{ .Data.OTP.Link }}" rel="noopener noreferrer">Activate account</a>
+</div>
+<div class="helper-link-container">
+Alternatively, copy this link and follow it in your browser
+<div class="link-container-box">{{ .Data.OTP.Link }}</div>
+</div>
+
+{{ end }}
