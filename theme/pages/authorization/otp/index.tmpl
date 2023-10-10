@@ -43,12 +43,13 @@
 
             <p>Enter the security code sent to {{ .Data.Address }}</p>
 
-            <div class="form-field">
-              <div class="input-with-button input-with-prefix-button">
-                <button type="button" tabindex="-1">
-                  <i class="material-icons">vpn_key</i>
-                </button>
-                <input type="text" inputmode="numeric" autocomplete="one-time-code" aria-label="Verificaton code" name="otp" placeholder="Enter the verification code">
+            <div class="form-field" id="otp-container">
+              <div id="otp-input-container" class="form-field otp-input-container">
+                <input type="hidden" name="otp" value="" id="otp-input">
+              </div>
+              <div class="footer-with-link">
+                Still didn't receive?
+                <button id="resend-otp" type="submit" name="method" value="{{ .Data.SelectedMethod.ID }}">Resend Code</button>
               </div>
             </div>
 
@@ -64,7 +65,6 @@
             {{ end }}
 
             <div class="otp-send-options">
-              <button type="submit" name="method" value="{{ .Data.SelectedMethod.ID }}">Re-send the code</button>
               <a role="button" tabindex="0" id="go-back-to-methods-button">Other verification methods</a>
             </div>
 

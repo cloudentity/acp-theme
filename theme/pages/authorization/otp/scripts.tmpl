@@ -2,6 +2,8 @@
 
 <script nonce="{{.Config.Nonce}}">
 
+  var otpLength = {{ .Data.OtpLength }};
+
   function handleGoBackToMethods () {
     var verificationMethodsContainer = document.querySelector("#other-verification-methods-container");
     var defaultViewContainer = document.querySelector("#default-view-container");
@@ -14,6 +16,8 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("click", delegate("#go-back-to-methods-button", handleGoBackToMethods));
+
+    initOtpInput('otp-input-container', otpLength);
   });
 
 </script>

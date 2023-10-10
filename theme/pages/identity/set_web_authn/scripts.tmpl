@@ -91,7 +91,11 @@
         webauthnError.value = error;
       })
       .finally(() => {
-        document.querySelector("#reset-form").submit();
+        if(!webauthnError.value.startsWith("NotAllowedError:")) {
+          document.querySelector("#reset-form").submit();
+        } else {
+          webauthnError.value = '';
+        }
       });
     }
 

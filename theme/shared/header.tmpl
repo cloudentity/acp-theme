@@ -1,8 +1,9 @@
 {{ define "header" }}
 
 <div class="aut-banner-logo">
-  {{ if .Styling.LogoURL }}
-    <img src="{{ .Styling.LogoURL }}" alt="Logo">
+  {{ if eq .Styling.LogoURL "/static/images/no-logo.svg" }}
+  {{ else if .Styling.LogoURL }}
+    <img src="{{ .Styling.LogoURL }}" alt="Logo" crossorigin="anonymous">
   {{ else }}
     <img src="{{ .Root }}/static/images/cloudentity-logo.svg" alt="Cloudentity ACP">
   {{ end }}
