@@ -75,6 +75,10 @@
         color: #626576;
       }
 
+      .content-caption {
+        margin-top: 24px;
+      }
+
       .code-container {
         background-color: #e9ebec;
         text-align: center;
@@ -460,17 +464,10 @@
                             </table>
                           </td>
                         </tr>
-                        <!-- Spacing -->
-                        <tr>
-                          <td height="24" class="td-spacing">&nbsp;</td>
-                        </tr>
-                        <!-- Spacing -->
 
                         <tr>
                           <td>
                             <div class="caption">
-                              You received this email because you have
-                              registered a tenant with Cloudentity.<br />
                               If you are not sure why you are receiving this
                               email, please
                               <a
@@ -492,6 +489,7 @@
                                 />
                               </a>
                             </div>
+                            <div style="display: none;">{{ .Config.Assets }}</div>
                           </td>
                         </tr>
 
