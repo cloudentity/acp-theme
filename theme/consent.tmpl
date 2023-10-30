@@ -1,0 +1,299 @@
+{{ template "base" . }}
+
+{{ define "title" }}Consent{{ end }}
+
+{{ define "content" }}
+  <script nonce="{{.Config.Nonce}}">
+    function showDescription (el, scope) {
+      el.classList.remove("aut-scope-desc-hidden");
+      el.classList.add("aut-scope-desc-visible");
+      document.querySelector("[data-icon-id='" + scope + "']").innerText = "keyboard_arrow_up";
+    }
+
+    function hideDescription (el, scope) {
+      el.classList.remove("aut-scope-desc-visible");
+      el.classList.add("aut-scope-desc-hidden");
+      document.querySelector("[data-icon-id='" + scope + "']").innerText = "keyboard_arrow_down";
+    }
+
+    function toggle (e) {
+      var targetEl = e.targetSelector;
+      var scope = targetEl.getAttribute("data-scope-name");
+      var el = document.querySelector("[data-desc-id='" + scope + "']");
+      var elAdditionalInfo = document.querySelector("[data-desc-id='" + scope + "-additional-info']");
+
+      if (el) {
+        if (el.classList.contains('aut-scope-desc-visible')) {
+          hideDescription(el, scope)
+        } else {
+          showDescription(el, scope)
+        }
+      }
+
+      if (elAdditionalInfo) {
+        if (elAdditionalInfo.classList.contains('aut-scope-desc-visible')) {
+          hideDescription(elAdditionalInfo, scope)
+        } else {
+          showDescription(elAdditionalInfo, scope)
+        }
+      }
+
+      setBoxShadowForContent();
+      return false;
+    }
+
+    function setBoxShadowForContent () {
+      var content = document.querySelector(".aut-content");
+      var scrollAtTop = content.scrollTop === 0;
+      var scrollAtBottom = content.scrollHeight - content.offsetHeight - content.scrollTop < 1;
+
+      if (content.scrollHeight > content.clientHeight) {
+        scrollAtTop
+          ? content.classList.remove("aut-content-with-top-shadow")
+          : content.classList.add("aut-content-with-top-shadow");
+
+        scrollAtBottom
+          ? content.classList.remove("aut-content-with-bottom-shadow")
+          : content.classList.add("aut-content-with-bottom-shadow");
+
+      } else {
+        content.classList.remove("aut-content-with-top-shadow");
+        content.classList.remove("aut-content-with-bottom-shadow");
+      }
+    }
+
+    window.addEventListener('load', function () {
+      setBoxShadowForContent();
+
+      document.addEventListener('click', delegate('.scope-desc-toggle', toggle));
+      document.querySelector(".aut-content").addEventListener('scroll', function () { setBoxShadowForContent(); });
+
+      [].forEach.call(document.querySelectorAll('.mdc-form-field'), function (formFieldElement) {
+        var checkboxElement = formFieldElement.querySelector('.mdc-checkbox')
+        if (!checkboxElement) return;
+        var checkbox = new window.mdc.checkbox.MDCCheckbox(checkboxElement);
+        var formField = new window.mdc.formField.MDCFormField(formFieldElement);
+        formField.input = checkbox;
+        var input = checkboxElement.querySelector('input')
+        if (input && input.getAttribute('data-indeterminate') === 'true') {
+          checkbox.indeterminate = true
+        }
+      });
+    });
+  </script>
+
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="mdc-card aut-container">
+    <form action="?login_id={{ .Data.Session.ID }}" method="post">
+        {{ .Data.CsrfField }}
+
+      <div class="aut-header">
+        <h6 class="aut-header-user-name">{{ or .Data.Session.AuthenticationContext.name .Data.Session.Subject }},</h6>
+        <h6 class="body1">Your consent is requested by</h6>
+        <div class="aut-app-box">
+          <div class="aut-app-icon">
+              {{if .Data.Session.ClientInfo.LogoURI}}
+                <img src="{{.Data.Session.ClientInfo.LogoURI}}" width="42px" height="42px"/>
+              {{else}}
+                <i class="material-icons">apps</i>
+              {{end}}
+          </div>
+          <div class="aut-app-name-and-desc">
+            <div class="aut-app-name">{{ .Data.Session.ClientInfo.Name }}</div>
+              {{if .Data.Session.ClientInfo.ClientURI }}
+                <div class="aut-app-desc"><a href="{{ .Data.Session.ClientInfo.ClientURI }}" target="_blank">{{ .Data.Session.ClientInfo.ClientURI }}</a></div>
+              {{end}}
+          </div>
+        </div>
+        <div class="body1">This application would like access to</div>
+      </div>
+
+      <div class="aut-content">
+          {{if .Data.ScopesWithoutService }}
+            <div class="aut-content-scopes-group">
+                {{range .Data.ScopesWithoutService}}
+                  <div class="mdc-form-field">
+                    <div class="mdc-checkbox">
+                      <input type="checkbox"
+                              class="mdc-checkbox__native-control"
+                              name="scopes"
+                              value="{{ .RequestedScopeName }}"
+                              id="{{ .RequestedScopeName }}"
+                              {{ if not .GrantAllowed }} disabled
+                              {{ else }} checked
+                              {{ end }}
+                      />
+                      <div class="mdc-checkbox__background">
+                        <svg class="mdc-checkbox__checkmark"
+                              viewBox="0 0 24 24">
+                          <path class="mdc-checkbox__checkmark-path"
+                                fill="none"
+                                d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                        </svg>
+                        <div class="mdc-checkbox__mixedmark"></div>
+                      </div>
+                      <div class="mdc-checkbox__ripple"></div>
+                    </div>
+                    <div class="aut-scope">
+                      <div class="aut-scope-header">
+                        <label for="{{ .Name }}" class="aut-scope-label">
+                        {{ if .IsDynamic }}
+                            {{ if .DisplayName }} {{ .DisplayName }}: {{ .RequestedScopeName }} {{ end }}
+                        {{ else }}
+                            {{ or .DisplayName .Name }}
+                        {{ end }}
+                        </label>
+                        {{ if (or .Description (not .GrantAllowed)) }}
+                          <button id="show-scope-desc"
+                                  type="button"
+                                  class="mdc-icon-button scope-desc-toggle"
+                                  aria-label="Show scope desc"
+                                  data-scope-name="{{ .RequestedScopeName }}"
+                                  aria-hidden="true"
+                                  aria-pressed="false">
+                            <i class="material-icons mdc-icon-button__icon" data-icon-id="{{ .RequestedScopeName }}">keyboard_arrow_down</i>
+                          </button>
+                        {{end}}
+                      </div>
+                        {{ if .Description }}
+                          <div class="aut-scope-desc aut-scope-desc-hidden" data-desc-id="{{ .RequestedScopeName }}">
+                            <div class="aut-scope-desc-text">{{ .Description }}</div>
+                          </div>
+                        {{end}}
+                    </div>
+                  </div>
+                {{end}}
+            </div>
+          {{end}}
+
+          {{range .Data.ServicesWithScopes}}
+            <div class="overline">{{ .ServiceName }}</div>
+            <div class="aut-content-scopes-group">
+                {{range .Scopes }}
+                  <div class="mdc-form-field">
+                    <div class="mdc-checkbox">
+                      <input type="checkbox"
+                              class="mdc-checkbox__native-control"
+                              name="scopes"
+                              value="{{ .RequestedScopeName }}"
+                              id="{{ .RequestedScopeName }}"
+                              {{ if not .GrantAllowed }}
+                              data-indeterminate="true"
+                              disabled
+                              {{ else }}
+                              checked
+                              {{ end }}
+                      />
+
+                      {{ if not .GrantAllowed }}
+                        {{ template "tooltip-additional-verification" }}
+                      {{ end }}
+
+                      <div class="mdc-checkbox__background">
+                        <svg class="mdc-checkbox__checkmark"
+                              viewBox="0 0 24 24">
+                          <path class="mdc-checkbox__checkmark-path"
+                                fill="none"
+                                d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                        </svg>
+                        <div class="mdc-checkbox__mixedmark"></div>
+                      </div>
+                      <div class="mdc-checkbox__ripple"></div>
+                    </div>
+                    <div class="aut-scope">
+                      <div class="aut-scope-header">
+                        <label for="{{ .Name }}" class="aut-scope-label">
+                        {{ if .IsDynamic }}
+                            {{ if .DisplayName }} {{ .DisplayName }}: {{ .RequestedScopeName }} {{ end }}
+                        {{ else }}
+                            {{ or .DisplayName .Name }}
+                        {{ end }}
+                        </label>
+                        {{ if (or .Description (not .GrantAllowed)) }}
+                          <button id="show-scope-desc"
+                                  type="button"
+                                  class="mdc-icon-button scope-desc-toggle"
+                                  aria-label="Show scope desc"
+                                  aria-hidden="true"
+                                  aria-pressed="false"
+                                  data-scope-name="{{ .RequestedScopeName }}">
+                            <i class="material-icons mdc-icon-button__icon" data-icon-id="{{ .RequestedScopeName }}"> keyboard_arrow_down</i>
+                          </button>
+                        {{end}}
+                      </div>
+                       {{ if .Description }}
+                          <div class="aut-scope-desc aut-scope-desc-hidden" data-desc-id="{{ .RequestedScopeName }}">
+                            <div class="aut-scope-desc-text">{{ .Description }}</div>
+                          </div>
+                        {{end}}
+                    </div>
+                  </div>
+
+                  {{ if not .GrantAllowed }}
+                    <div class="aut-scope-desc aut-scope-desc-hidden mfa-additional-info" data-desc-id="{{ .RequestedScopeName }}-additional-info">
+                      <div class="aut-scope-desc-text">
+                        {{ if .HasRecovery }}
+                          <div class="mfa-addditional-info--content">
+                            <div class="mfa-addditional-info--row">
+                              <div class="mfa-addditional-info--text">
+                                <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" style="font-size: 20px; color: #BD271E; padding-top: 2px; margin-right: 8px;">error_outline</i>
+                                <span class="heading5">Additional verification required</span>
+                              </div>
+                              <button class="mdc-button mdc-button--outlined danger-button" type="submit" name="verify_scope" value="{{ .RequestedScopeName }}">
+                                <span class="mdc-button__ripple"></span>
+                                <span class="mdc-button__label">Verify now</span>
+                              </button>
+                            </div>
+                            <div class="base-caption" style="padding-left: 35px; padding-top: 20px;">
+                              Application features or functionality may be limited if you continue without granting this permission
+                            </div>
+                          </div>
+                        {{ else }}
+                          <div class="mfa-addditional-info--content">
+                            <div class="mfa-addditional-info--row">
+                              <div class="mfa-addditional-info--text">
+                                <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" style="font-size: 20px; color: #BD271E; padding-top: 2px; margin-right: 8px;">error_outline</i>
+                                <span class="heading5">Access to this scope is not authorized</span>
+                              </div>
+                            </div>
+                          </div>
+                        {{ end }}
+                      </div>
+                    </div>
+                  {{ end }}
+
+                {{end}}
+            </div>
+          {{end}}
+      </div>
+      <div class="aut-footer">
+      {{ if and .Data.Session.ClientInfo.PolicyURI .Data.Session.ClientInfo.TosURI }}
+          By accepting these permissions, you allow this application to use your data
+          as defined in their <a href="{{ .Data.Session.ClientInfo.PolicyURI }}" target="_blank">Privacy Policy</a>
+          and <a href="{{ .Data.Session.ClientInfo.TosURI }}" target="_blank">Terms and Conditions</a>.
+        {{ else if and .Data.Session.ClientInfo.PolicyURI (not .Data.Session.ClientInfo.TosURI) }}
+          By accepting these permissions, you allow this app to use your data
+          as defined in their <a href="{{.Data.Session.ClientInfo.PolicyURI }}" target="_blank">Privacy Policy</a>.
+        {{ else if and (not .Data.Session.ClientInfo.PolicyURI) .Data.Session.ClientInfo.TosURI }}
+          By accepting these permissions, you allow this app to use your data
+          as defined in their <a href="{{ .Data.Session.ClientInfo.TosURI }}" target="_blank">Terms and Conditions</a>.
+        {{ else }}
+          By accepting these permissions, you allow this app to use your data.
+        {{ end }}
+      </div>
+      <div class="aut-form-actions">
+        <button class="mdc-button" type="submit" name="action" value="deny">
+          <div class="mdc-button__ripple"></div>
+          <span class="mdc-button__label">Cancel</span>
+        </button>
+        <button class="mdc-button mdc-button--raised" type="submit" name="action" value="allow">
+          <div class="mdc-button__ripple"></div>
+          <span class="mdc-button__label">Allow access</span>
+        </button>
+      </div>
+    </form>
+  </div>
+{{ end }}

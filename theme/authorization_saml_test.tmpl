@@ -1,0 +1,31 @@
+{{ template "base" . }}
+
+{{ define "title" }}SAML Test{{ end }}
+
+{{ define "content" }}
+    <div class="aut-banner-contained">
+        {{ template "header" .Config }}
+    </div>
+
+    <div class="mdc-card" style="width: 80%; margin: 80px auto 20px auto;">
+        <div class="aut-header" style="margin-bottom: 10px;">
+            <div style="text-align: center">
+                <h1 class="aut-list-header">SAML Test</h1>
+            </div>
+        </div>
+
+        {{ if .Data.Response  }}
+            <pre class="with-copy">
+                <div id="saml-response-raw">{{ .Data.Response }}</div>
+            </pre>
+        {{ else }}
+            <form action="?action=login" method="post" class="basic-form">
+                <div style="text-align: center; margin-top: 26px">
+                    <button id="login-button" class="mdc-button mdc-button--raised">
+                        <span class="mdc-button__ripple"></span>Login
+                    </button>
+                </div>
+            </form>
+        {{ end }}
+    </div>
+{{ end }}
