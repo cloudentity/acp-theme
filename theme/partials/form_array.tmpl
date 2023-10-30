@@ -1,0 +1,64 @@
+{{ define "form_array" }}
+
+<div class="form-field array-input">
+    <div class="form-field">
+      <label {{ if .ID}}for="{{.ID}}"{{else}}for="text-field-{{.Name}}-input"{{end}} class="form-field--label">
+        <div class="base-label form-field--label">
+            {{.Label}} 
+
+
+
+            {{if .TooltipText}}
+          <div class="tooltip">
+              <img src="/static/images/info-icon.svg" alt="info" style="width: 16px; height: 16px; position: relative; top: 3px;"/>
+
+              <div class="tooltip-content">
+                  {{.TooltipText}}
+              </div>
+              <svg id="triangle" width="40" height="26">
+                  <defs>
+                      <filter id="f" width="150%" height="130%">
+                          <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" />
+                          <feComponentTransfer>
+                              <feFuncA type="linear" slope="0.6" />
+                          </feComponentTransfer>
+                          <feMerge>
+                              <feMergeNode />
+                              <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                      </filter>
+                  </defs>
+                  <path filter="url(#f)" d="M0,0 h40 l-20,20z" fill="#212533" />
+              </svg>
+          </div>
+          {{end}}
+        </div>
+      </label>
+    {{ $field := . }}
+    {{range $k, $v := .Values}}
+
+      <div class="mdc-text-field mdc-text-field--outlined input-field">
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input type="text" class="mdc-text-field__input {{ if $field.Classes }}{{range $field.Classes}} {{.}}{{end}}{{end}}" style="{{range $k, $v := $field.CSS}}{{$k}}:{{$v}};{{end}}" {{ if $field.ID}}id="{{$field.ID}}"{{else}}id="text-field-{{$field.Name}}-input-{{$v}}"{{end}} name="{{$field.Name}}" {{ if $v}} value="{{$v}}"{{end}} {{range $k, $v := $field.Params}} {{$k}}="{{$v}}"{{end}}>
+
+        <button class="delete-input-array MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1j7qk7u" tabindex="-1" type="button" style="flex: 1 1 0%; padding-left: 6px; padding-right: 6px; font-weight: bold; min-width: 0px;"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-1k33q06" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RemoveIcon"><path d="M19 13H5v-2h14v2z"></path></svg><span class="MuiTouchRipple-root css-w0pj6f"></span></button>
+        </div>
+
+{{ end }}
+
+<button class="add-item" data-name="{{$field.Name}}" tabindex="0" type="button"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-vubbuv" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg> Add Item<span class="MuiTouchRipple-root css-w0pj6f"></span></button>
+
+{{if .Errors}}
+  {{ range .Errors}}
+    <div class="alert-danger">
+      {{.}}
+    </div>
+  {{end}}
+{{end}}
+    </div>
+  </div>
+
+{{end}}
