@@ -1,0 +1,15 @@
+{{ define "header" }}
+ <div class="aut-banner-logo">
+    {{ if .Styling.LogoURL }}
+      <img src="{{ .Styling.LogoURL }}" alt="Logo">
+    {{ else }}
+      <img src="{{ .Root }}/static/images/cloudentity-logo-wide-white.svg" alt="Cloudentity ACP">
+    {{ end }}
+  </div>
+  <div class="aut-banner-contact">
+    <!--<button class="mdc-button mdc-button--raised" type="button" name="action" value="">
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Contact support</span>
+    </button>-->
+  </div>
+{{ end }}
