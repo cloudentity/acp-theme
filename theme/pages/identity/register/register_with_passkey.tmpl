@@ -1,6 +1,6 @@
 {{ define "register_with_passkey" }}
 
-{{ template "identity_register_ux_improved_webauthn_scripts" . }}
+{{ template "identity_register_ux_improved_scripts" . }}
 {{ template "submit_button_disabling_script" . }}
 
 <div class="steps-container">STEP <b>2</b> OF <b>3</b></div>
@@ -19,6 +19,7 @@
 
 {{ template "form" . }}
 
+<!-- FIXME: disable submit button on empty fields -->
 <div class="buttons-container-full-width extra-top-margin">
   <button type="submit" name="action" value="change_to_user" class="text-button" form="sign-up-form">
     Back

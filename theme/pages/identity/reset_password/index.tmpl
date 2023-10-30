@@ -4,7 +4,6 @@
 
 {{ define "content" }}
   {{ template "submit_button_disabling_script" . }}
-  {{ template "identity_reset_password_disable_submit_script" . }}
 
   <div class="header-container">
     {{ template "header" .Config }}
@@ -46,11 +45,9 @@
         </button>
       </form>
 
-      {{ if not .Data.ResetWithoutAuthentication }}
-        <div class="buttons-container">
-          <a href="{{ .Data.LoginPath }}">Sign In</a>
-        </div>
-      {{ end }}
+      <div class="buttons-container">
+        <a href="{{ .Data.LoginPath }}">Sign In</a>
+      </div>
 
     </div>
   </div>

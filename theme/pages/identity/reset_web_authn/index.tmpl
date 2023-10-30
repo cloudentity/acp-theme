@@ -4,7 +4,6 @@
 
 {{ define "content" }}
   {{ template "submit_button_disabling_script" . }}
-{{ template "identity_reset_passkey_disable_submit_script" . }}
 
   <div class="header-container">
     {{ template "header" .Config }}
@@ -14,7 +13,7 @@
     <div class="content">
 
       <form action="?login_id={{ .Data.SessionID }}&user_id={{ .Data.UserID}}&login_state={{ .Data.SessionState }}&server_id={{ .Data.ServerID }}" method="post">
-
+      
         <h2>Lost Passkey</h2>
 
         <div class="form-field">
@@ -42,13 +41,12 @@
         <button id="submit-next" class="submit-button" type="submit" {{ if .Data.CaptchaSiteKey }} disabled {{ end }} >
           Next
         </button>
+
       </form>
 
-      {{ if not .Data.ResetWithoutAuthentication }}
-        <div class="buttons-container">
-          <a href="{{ .Data.LoginPath }}">Sign In</a>
-        </div>
-      {{ end }}
+      <div class="buttons-container">
+        <a href="{{ .Data.LoginPath }}">Sign In</a>
+      </div>
 
     </div>
   </div>
