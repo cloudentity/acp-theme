@@ -1,0 +1,19 @@
+{{ define "consent_verified_claims" }}
+
+<div class="consent-scopes-container">
+<h3>Verified Claims</h3>
+  {{ range .Data.VerifiedClaims.Claims }}
+    <div class="consent-scopes-container-row-container">
+      <div class="form-field consent-scope-row">
+        <label for="{{ .Name }}">
+          <div class="form-field-checkbox">
+            <input type="checkbox" name="verified_claims" value="{{ .Name }}" id="{{ .Name }}" checked >
+              {{ .Name }}
+          </div>
+        </label>
+      </div>
+    </div>
+  {{ end }}
+</div>
+
+{{ end }}
