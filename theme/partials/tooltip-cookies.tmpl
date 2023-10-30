@@ -1,0 +1,28 @@
+
+{{ define "tooltip-cookies" }}
+
+<div class="tooltip">
+    <img src="/static/images/info-icon.svg" alt="info" style="width: 16px; height: 16px;"/>
+
+    <div class="tooltip-content">
+        We use cookies to improve your experience on our product. 
+        To find out more read our <a href="#">cookie policy</a>
+    </div>
+    <svg id="triangle" width="40" height="26">
+        <defs>
+            <filter id="f" width="150%" height="130%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" />
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.6" />
+                </feComponentTransfer>
+                <feMerge>
+                    <feMergeNode />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+        </defs>
+        <path filter="url(#f)" d="M0,0 h40 l-20,20z" fill="#212533" />
+    </svg>
+</div>
+
+{{ end }}

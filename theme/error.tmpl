@@ -1,0 +1,19 @@
+{{ template "base" . }}
+
+{{ define "title" }}Error{{ end }}
+
+{{ define "content" }}
+  <div class="aut-banner-contained">
+    {{ template "header" .Styling }}
+  </div>
+
+  <div class="mdc-card aut-container">
+    <div style="padding: 20px 90px 40px 90px; text-align: center;">
+      <input type="hidden" id="error" value="{{ .Data.Error }}">
+      <input type="hidden" id="cause" value="{{ .Data.Cause }}">
+      <h2 id="error-title">{{ .Data.Name }}</h2>
+      <p id="error-description">{{ .Data.Description }}.</p>
+      <p id="error-hint">{{ .Data.Hint }}</p>
+    </div>
+  </div>
+{{ end }}
