@@ -1,0 +1,113 @@
+{{ template "base" . }}
+
+{{ define "title" }} Register {{ end }}
+
+{{ define "content" }}
+  <script nonce="{{.Config.Nonce}}">
+    function togglePasswordVisibility (inputId, iconId) {
+      var isPasswordVisible = false;
+      return function () {
+        var passwordInput = document.getElementById(inputId);
+        var visibilityIcon = document.getElementById(iconId);
+
+        passwordInput.type = isPasswordVisible ? 'password' : 'text';
+        visibilityIcon.innerText = isPasswordVisible ? 'visibility_off' : 'visibility';
+        isPasswordVisible = !isPasswordVisible;
+        return false;
+      }
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+      document.addEventListener('click', delegate('#toggle-password-visibility-button', togglePasswordVisibility('text-field-password-input', 'toggle-password-visibility-icon')));
+      document.addEventListener('click', delegate('#toggle-repeatPassword-visibility-button', togglePasswordVisibility('text-field-repeat-password-input', 'toggle-repeatPassword-visibility-icon')));
+    });
+
+    function enableSubmit(){
+      document.getElementById('submit-next').removeAttribute('disabled');
+    }
+
+    function disableSubmit(){
+      document.getElementById('submit-next').setAttribute('disabled', '');
+    }
+
+    function removeInputArrayField(button) {
+      button.parentElement.remove()
+    }
+
+    
+    document.addEventListener("DOMContentLoaded", function() {
+      Array.from(document.getElementsByClassName("add-item")).forEach(function (myElement) {
+        myElement.addEventListener("click",function(){
+            var parent = this.parentNode;
+            name = this.getAttribute('data-name')
+            var div = document.createElement('div');
+            div.className = "mdc-text-field mdc-text-field--outlined input-field";
+            div.innerHTML = " <span class=\"mdc-notched-outline array-input\">" +
+          "<span class=\"mdc-notched-outline__leading\"></span>" +
+          "<span class=\"mdc-notched-outline__trailing\"></span>" +
+        "</span>" +
+        "<input type=\"text\" class=\"mdc-text-field__input\" name=\""+ name +"\" >"
+        +
+        "<button class=\"delete-input-array MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1j7qk7u\" tabindex=\"-1\" type=\"button\" style=\"flex: 1 1 0%; padding-left: 6px; padding-right: 6px; font-weight: bold; min-width: 0px;\"><svg class=\"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-1k33q06\" focusable=\"false\" aria-hidden=\"true\" viewBox=\"0 0 24 24\" data-testid=\"RemoveIcon\"><path d=\"M19 13H5v-2h14v2z\"></path></svg><span class=\"MuiTouchRipple-root css-w0pj6f\"></span></button>"
+        ;
+            parent.insertBefore(div, parent.lastElementChild)
+            var elements=div.getElementsByClassName("delete-input-array");
+            for (var i = 0; i < elements.length; ++i) {
+              elements[i].addEventListener("click",function(){
+                removeInputArrayField(this)
+              })
+            }
+        });
+        });
+
+      
+      var elements=document.getElementsByClassName("delete-input-array");
+      for (var i = 0; i < elements.length; ++i) {
+        elements[i].addEventListener("click",function(){
+          removeInputArrayField(this)
+        })
+      }
+
+      });
+
+
+  </script>
+
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="mdc-card aut-container">
+    <div class="color-bar"></div>
+
+    <div id="sign-up">
+      <div class="aut-header">
+        <div style="text-align: center">
+          <div class="aut-list-header">
+            <div class="header-avatar-name">
+              <h3>Register</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sign-in-content">
+
+          {{ template "form" .}}
+
+          {{ if .Data.Error }}
+            <div class="alert-danger">
+                {{ .Data.Error }}
+            </div>
+          {{ end }}
+
+
+        <div class="base-label subheader">
+          Already have an account? <a href="{{ .Data.LoginPath }}">Sign In</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}

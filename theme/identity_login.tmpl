@@ -1,0 +1,192 @@
+{{ template "base" . }}
+
+{{ define "title" }}Login{{ end }}
+
+{{ define "content" }}
+  <script nonce="{{.Config.Nonce}}">
+
+  var isPasswordVisible = false;
+  var passwordMode = {{ if .Data.PasswordMode }} true {{ else }} false {{ end }};
+  var authnMode = {{ .Data.AuthnMode }};
+  var resendPath = {{ if .Data.ResendPath }} true {{ else }} false {{ end }};
+
+  function dynamicIdentifier(obj) {
+    obj.preventDefault();
+
+    const identifier = document.getElementById('text-field-username-input').value;
+
+    var searchParams = new URLSearchParams(window.location.search);
+    searchParams.set("identifier", identifier);
+    searchParams.set("resend", 1);
+    searchParams.set("passwordMode", passwordMode);
+    searchParams.set("authnMode", authnMode);
+    window.location.search = searchParams.toString();
+  }
+
+
+  function togglePasswordVisibility () {
+    var passwordInput = document.getElementById('text-field-password-input');
+    var visibilityIcon = document.getElementById('toggle-password-visibility-icon');
+
+    passwordInput.type = isPasswordVisible ? 'password' : 'text';
+    visibilityIcon.innerText = isPasswordVisible ? 'visibility_off' : 'visibility';
+    isPasswordVisible = !isPasswordVisible;
+    return false;
+  }
+
+  function togglePasswordModel(){
+    if(authnMode !== "password") authnMode = "password";
+    else authnMode = "otp";
+    applyAuthnMode();
+  }
+
+  function applyAuthnMode() {
+    var forgotPassword = document.getElementById('forgot-password');
+    var sendOTP = document.getElementById('resend-otp');
+    var passwdLabel = document.getElementById('passwd-label');
+    passwordMode = authnMode === "password";
+
+    if (authnMode === "password") {
+      sendOTP.style.display = 'none';
+      forgotPassword.style.display = '';
+      passwdLabel.innerText = 'Password *';
+    } else if (authnMode === "otp") {
+      sendOTP.style.display = resendPath ? '' : 'none';
+      forgotPassword.style.display = 'none';
+      passwdLabel.innerText = 'Verification code *';
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener('click', delegate('#toggle-password-visibility-button', togglePasswordVisibility));
+    document.addEventListener('click', delegate('#resend-otp', dynamicIdentifier));
+
+    [].map.call(document.querySelectorAll('.mdc-switch'), function (el) {
+      var switchControl = new window.mdc.switchControl.MDCSwitch(el);
+      var input = el.querySelector('input')
+      if (input && input.name === 'passwordMode') {
+        switchControl.checked = authnMode === "password";
+
+        input.addEventListener('change', togglePasswordModel);
+      }
+    });
+
+    applyAuthnMode();
+  });
+
+  </script>
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="mdc-card aut-container">
+    <div class="color-bar"></div>
+
+    <div id="sign-in">
+      <div class="aut-header">
+        <div style="text-align: center">
+          <div class="aut-list-header">
+            <div class="header-avatar-name">
+              <h3>Log in to your account</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sign-in-content">
+
+        {{ if .Data.AuthnMode }}
+          <form action="?login_id={{ .Data.SessionID }}&login_state={{ .Data.SessionState }}" method="post" id="sign-in-form">
+            {{ .Data.CsrfField }}
+
+            <h2 class="header-sign-in" id="sign-in">Sign in</h2>
+
+            <div class="form-field">
+              <label for="username" class="form-field--label">
+                <div class="base-label form-field--label">
+                  Identifier *
+                  {{ template "tooltip-identifier" .Config }}
+                </div>
+              </label>
+              <div class="mdc-text-field mdc-text-field--outlined input-field">
+                <span class="mdc-notched-outline">
+                  <span class="mdc-notched-outline__leading"></span>
+                  <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <input class="mdc-text-field__input" id="text-field-username-input" name="identifier" value="{{ .Data.Identifier }}">
+              </div>
+            </div>
+
+            <div class="form-field" id="password-container">
+
+            <label for="password" class="form-field--label">
+              <div class="base-label form-field--label password-label">
+                  <span id="passwd-label"> Password * </span>
+                  <a href="{{ .Data.ResendPath }}" id="resend-otp" style="float:right; margin-left:12px; display:none;">Send OTP</a>
+                  <a href="{{ .Data.ResetPasswordPath }}" id="forgot-password"  style="float:right; margin-left:12px; display:none;">Forgot?</a>
+              </div>
+            </label>
+              <div class="mdc-text-field mdc-text-field--outlined input-field">
+                <span class="mdc-notched-outline">
+                  <span class="mdc-notched-outline__leading"></span>
+                  <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <input class="mdc-text-field__input" id="text-field-password-input" name="password" type="password">
+                <button id="toggle-password-visibility-button"
+                        type="button"
+                        class="mdc-icon-button"
+                        style="opacity: 0.38;"
+                        aria-label="Toggle password visibility"
+                        aria-hidden="true"
+                        aria-pressed="false">
+                  <i id="toggle-password-visibility-icon" class="material-icons mdc-icon-button__icon">visibility_off</i>
+                </button>
+              </div>
+            </div>
+
+            {{ if .Data.AuthnModeSwitch }}
+              <div style="display: flex; align-items: center;">
+                <div class="mdc-switch">
+                  <div class="mdc-switch__track"></div>
+                  <div class="mdc-switch__thumb-underlay mdc-ripple-upgraded mdc-ripple-upgraded--unbounded" style="--mdc-ripple-fg-size: 28px; --mdc-ripple-fg-scale: 1.7142857142857142; --mdc-ripple-left: 10px; --mdc-ripple-top: 10px;">
+                    <div class="mdc-switch__thumb"></div>
+                    <input type="checkbox" name="passwordMode" id="passwordMode" class="mdc-switch__native-control" role="switch">
+                  </div>
+                </div>
+                <label for="passwordMode" class="label-caption">
+                  Use password instead of OTP
+                </label>
+              </div>
+            {{ end }}
+
+            {{ if .Data.Error }}
+              <div class="alert-danger">
+                  {{ .Data.Error }}
+              </div>
+            {{ end }}
+
+            <button class="mdc-button mdc-button--raised base-confirm-button" type="submit">
+              <span class="mdc-button__ripple"></span>
+              Sign in
+            </button>
+          </form>
+        {{ else }}
+          <div class="alert-danger">No Authentication Mechanisms Enabled</div>
+        {{ end }}
+
+        {{ if .Data.PublicRegistration }}
+          <div class="base-label subheader">
+            Don't have an account? <a href="{{ .Data.PublicRegistrationPath }}" id="public-registration">Sign Up</a>
+          </div>
+        {{ end }}
+
+      </div>
+    </div>
+  </div>
+
+  <div id="cancel-container">
+    <a href="?login_id={{ .Data.SessionID }}&action=cancel" id="cancel" name="cancel">Cancel</a>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}
