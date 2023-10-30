@@ -1,0 +1,118 @@
+{{ template "base" . }}
+
+{{ define "title" }}Login{{ end }}
+
+{{ define "content" }}
+  <script>
+    var isPasswordVisible = false;
+
+    function togglePasswordVisibility () {
+      var passwordInput = document.getElementById('text-field-password-input');
+      var visibilityIcon = document.getElementById('toggle-password-visibility-icon');
+
+      passwordInput.type = isPasswordVisible ? 'password' : 'text';
+      visibilityIcon.innerText = isPasswordVisible ? 'visibility_off' : 'visibility';
+      isPasswordVisible = !isPasswordVisible;
+      return false;
+    }
+
+    window.addEventListener('load', function () {
+      var textFields = [].map.call(document.querySelectorAll('.mdc-text-field'), function (el) {
+        var textFieldElement = new window.mdc.textField.MDCTextField(el);
+        if (textFieldElement.value) {
+          textFieldElement.foundation_.activateFocus();
+        }
+        return textFieldElement;
+      });
+    });
+  </script>
+  <div class="mdc-card aut-container" style="margin-top: 55px;">
+    <div class="aut-banner-contained">
+      {{ template "header" .server }}
+    </div>
+    <div class="aut-header" style="margin-bottom: 30px;">
+      <div style="text-align: center">
+        <h1 class="aut-list-header">Log in to your account</h6>
+      </div>
+    </div>
+    <form action="?login_id={{ .sessionID }}&prompt={{ .prompt }}&max_age={{ .max_age }}" method="post" style="padding: 10px 90px 40px 90px;">
+
+      {{ .csrfField }}
+
+      {{ if and .settings.Hint (gt (len .settings.Users) 0) }}
+      <p class="mdc-typography--body1">
+        This is a mock IDP login page.
+      </p>
+      <p class="mdc-typography--body1">
+        Username: <b>{{ (index .settings.Users 0).Username }}</b><br/>
+        Password: <b>{{ (index .settings.Users 0).Password }}</b>
+      </p>
+      {{ end }}
+
+      <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%">
+        <input class="mdc-text-field__input" id="text-field-username-input" name="username" value="{{ .username }}">
+        <div class="mdc-notched-outline">
+          <div class="mdc-notched-outline__leading"></div>
+          <div class="mdc-notched-outline__notch">
+            <label for="text-field-username-input" class="mdc-floating-label">Username</label>
+          </div>
+          <div class="mdc-notched-outline__trailing"></div>
+        </div>
+      </div>
+      <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+        <input class="mdc-text-field__input" id="text-field-password-input" name="password" type="password">
+        <div class="mdc-notched-outline">
+          <div class="mdc-notched-outline__leading"></div>
+          <div class="mdc-notched-outline__notch">
+            <label for="text-field-password-input" class="mdc-floating-label">Password</label>
+          </div>
+          <div class="mdc-notched-outline__trailing"></div>
+        </div>
+        <button id="toggle-password-visibility-button"
+                type="button"
+                class="mdc-icon-button"
+                style="margin: 4px 10px 0 0; opacity: 0.38;"
+                aria-label="Toggle password visibility"
+                aria-hidden="true"
+                aria-pressed="false"
+                onclick="return togglePasswordVisibility();">
+          <i id="toggle-password-visibility-icon" class="material-icons mdc-icon-button__icon">visibility_off</i>
+        </button>
+      </div>
+
+        {{ if .error }}
+          <div class="alert-danger">
+              {{ .error }}
+          </div>
+        {{ end }}
+
+      <div class="mdc-form-field" style="margin-top: 20px;">
+        <div class="mdc-checkbox">
+          <input type="checkbox"
+                 class="mdc-checkbox__native-control"
+                 name="remember_me"
+                 id="remember_me"
+          />
+          <div class="mdc-checkbox__background">
+            <svg class="mdc-checkbox__checkmark"
+                 viewBox="0 0 24 24">
+              <path class="mdc-checkbox__checkmark-path"
+                    fill="none"
+                    d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+            </svg>
+            <div class="mdc-checkbox__mixedmark"></div>
+          </div>
+          <div class="mdc-checkbox__ripple"></div>
+        </div>
+        <label for="remember_me">Remember me</label>
+      </div>
+
+      <div style="text-align: right; margin-top: 26px">
+        <a href="?login_id={{ .sessionID }}&action=cancel" id="cancel" name="cancel">
+          <button type=button class="mdc-button mdc-button--text" style="width: 160px; height: 44px; color: #000000; opacity: 0.5;">Cancel</button>
+        </a>
+        <button class="mdc-button mdc-button--raised" style="width: 160px; height: 44px; margin-left: 20px;"><span class="mdc-button__ripple"></span>Log in</button>
+      </div>
+    </form>
+  </div>
+{{ end }}

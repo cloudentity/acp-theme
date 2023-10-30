@@ -1,0 +1,70 @@
+{{ template "base" . }}
+
+{{ define "title" }}Authorization Control Plane - Landing page{{ end }}
+
+{{ define "content" }}
+  <div class="mdc-card aut-container" style="margin-top: 55px;">
+    <div class="aut-banner-contained">
+      {{ template "header" .server }}
+    </div>
+    <div class="aut-header-tenant-selection">
+      <div style="text-align: left;">
+        <span class="aut-helper-text" style="color: #ffffff;">Welcome to</span>
+        <h1 class="aut-list-header-tenant-selection">Authorization Control Plane</h6>
+      </div>
+    </div>
+    <div class="aut-header-tenant-selection" style="padding: 30px 90px 10px 90px;">
+      <span class="aut-helper-text" style="color: #ffffff;">Start here</span>
+      <ul class="mdc-list mdc-list--avatar-list">
+        <a href="/app/{{ .tenantID }}/admin" target="_blank">
+          <li class="mdc-list-item aut-list aut-list-tenant-selection" style="box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.24);">
+            <span class="mdc-list-item__graphic material-icons aut-avatar-icon" aria-hidden="true">dvr</span>
+            <span class="mdc-list-item__text aut-list-link">Administrator Portal</span>
+            <span class="mdc-list-item__meta material-icons" aria-hidden="true">navigate_next</span>
+          </li>
+        </a>
+      </ul>
+    </div>
+    <div style="padding: 10px 90px 0 90px;">
+      <div style="margin: 20px 0 5px 0;">
+        <span class="aut-helper-text">Also explore</span>
+      </div>
+      <ul class="mdc-list mdc-list--avatar-list">
+        <a href="/app/{{ .tenantID }}/developer" target="_blank">
+          <li class="mdc-list-item aut-list aut-list-tenant-selection">
+            <span class="mdc-list-item__graphic material-icons aut-avatar-icon" aria-hidden="true">laptop_chromebook</span>
+            <span class="mdc-list-item__text aut-list-link">Developer Portal</span>
+            <span class="mdc-list-item__meta material-icons" aria-hidden="true">navigate_next</span>
+          </li>
+        </a>
+        <a href="/app/{{ .tenantID }}/default" target="_blank">
+          <li class="mdc-list-item aut-list aut-list-tenant-selection">
+            <span class="mdc-list-item__graphic material-icons aut-avatar-icon" aria-hidden="true">person</span>
+            <span class="mdc-list-item__text aut-list-link">User Portal</span>
+            <span class="mdc-list-item__meta material-icons" aria-hidden="true">navigate_next</span>
+          </li>
+        </a>
+        {{ if .demo }}
+        <a href="/{{ .tenantID }}/default/demo" target="_blank">
+          <li class="mdc-list-item aut-list aut-list-tenant-selection">
+            <span class="mdc-list-item__graphic material-icons aut-avatar-icon" aria-hidden="true">web</span>
+            <span class="mdc-list-item__text aut-list-link">Demo Application</span>
+            <span class="mdc-list-item__meta material-icons" aria-hidden="true">navigate_next</span>
+          </li>
+        </a>
+        <a href="/api/swagger/{{ .tenantID }}" target="_blank">
+          <li class="mdc-list-item aut-list aut-list-tenant-selection">
+            <span class="mdc-list-item__graphic material-icons aut-avatar-icon" aria-hidden="true">widgets</span>
+            <span class="mdc-list-item__text aut-list-link">Explore APIs</span>
+            <span class="mdc-list-item__meta material-icons" aria-hidden="true">navigate_next</span>
+          </li>
+        </a>
+        {{ end }}
+      </ul>
+    </div>
+    <div class="aut-footer-tenant-selection">
+      <p>Need more technical details?</p>
+      <p>Access <a href="https://docs.authorization.cloudentity.com" target="_blank" rel="noopener">Documentation</a></p>
+    </div>
+  </div>
+{{ end }}
