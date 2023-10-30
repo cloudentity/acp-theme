@@ -1,0 +1,166 @@
+{{ template "base" . }}
+
+{{ define "title" }} Register {{ end }}
+
+{{ define "content" }}
+ <script nonce="{{.Config.Nonce}}">
+    function togglePasswordVisibility (inputId, iconId) {
+      var isPasswordVisible = false;
+      return function () {
+        var passwordInput = document.getElementById(inputId);
+        var visibilityIcon = document.getElementById(iconId);
+
+        passwordInput.type = isPasswordVisible ? 'password' : 'text';
+        visibilityIcon.innerText = isPasswordVisible ? 'visibility_off' : 'visibility';
+        isPasswordVisible = !isPasswordVisible;
+        return false;
+      }
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+      document.addEventListener('click', delegate('#toggle-password-visibility-button', togglePasswordVisibility('text-field-password-input', 'toggle-password-visibility-icon')));
+      document.addEventListener('click', delegate('#toggle-repeat-password-visibility-button', togglePasswordVisibility('text-field-repeat-password-input', 'toggle-repeat-password-visibility-icon')));
+    });
+  </script>
+
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="mdc-card aut-container" style="width: 480px;">
+    <div class="color-bar"></div>
+
+    <div id="sign-up">
+      <div class="aut-header">
+        <div style="text-align: center">
+          <div class="aut-list-header">
+            <div class="header-avatar-name">
+              <h3>Register</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sign-in-content">
+        <form action="?login_id={{ .Data.sessionID }}&login_state={{ .Data.sessionState }}" method="post" id="sign-up-form">
+          {{ .Data.csrfField }}
+
+          <div>
+            <div class="form-field" style="float:left; width:200px;">
+              <label for="password" class="form-field--label">
+                <div class="base-label form-field--label">
+                  First name
+                </div>
+              </label>
+              <div class="mdc-text-field mdc-text-field--outlined input-field">
+                <span class="mdc-notched-outline">
+                  <span class="mdc-notched-outline__leading"></span>
+                  <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <input class="mdc-text-field__input" id="text-field-first-name-input" name="firstName" value="{{ .Data.Form.firstName }}">
+              </div>
+            </div>
+
+            <div class="form-field" style="float:right; width:200px;">
+              <label for="password" class="form-field--label">
+                <div class="base-label form-field--label">
+                  Last name
+                </div>
+              </label>
+              <div class="mdc-text-field mdc-text-field--outlined input-field">
+                <span class="mdc-notched-outline">
+                  <span class="mdc-notched-outline__leading"></span>
+                  <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <input class="mdc-text-field__input" id="text-field-last-name-input" name="lastName" value="{{ .Data.Form.lastName }}">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field" id="identifier-container">
+            <label for="identifier" class="form-field--label">
+              <div class="base-label form-field--label">
+                Identifier *
+
+                {{ template "tooltip-identifier" .Config }}
+              </div>
+            </label>
+            <div class="mdc-text-field mdc-text-field--outlined input-field">
+              <span class="mdc-notched-outline">
+                <span class="mdc-notched-outline__leading"></span>
+                <span class="mdc-notched-outline__trailing"></span>
+              </span>
+              <input class="mdc-text-field__input" id="text-field-identifier-input" name="identifier" value="{{ .Data.Form.identifier }}">
+            </div>
+          </div>
+
+          <div class="form-field" id="password-container">
+            <label for="password" class="form-field--label">
+              <div class="base-label form-field--label">
+                Password *
+              </div>
+            </label>
+            <div class="mdc-text-field mdc-text-field--outlined input-field">
+              <span class="mdc-notched-outline">
+                <span class="mdc-notched-outline__leading"></span>
+                <span class="mdc-notched-outline__trailing"></span>
+              </span>
+              <input class="mdc-text-field__input" id="text-field-password-input" name="password" type="password">
+              <button id="toggle-password-visibility-button"
+                      type="button"
+                      class="mdc-icon-button"
+                      style="opacity: 0.38;"
+                      aria-label="Toggle password visibility"
+                      aria-hidden="true"
+                      aria-pressed="false">
+                <i id="toggle-password-visibility-icon" class="material-icons mdc-icon-button__icon">visibility_off</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-field" id="repeat-password-container">
+            <label for="password" class="form-field--label">
+              <div class="base-label form-field--label">
+                Repeat password *
+              </div>
+            </label>
+            <div class="mdc-text-field mdc-text-field--outlined input-field">
+              <span class="mdc-notched-outline">
+                <span class="mdc-notched-outline__leading"></span>
+                <span class="mdc-notched-outline__trailing"></span>
+              </span>
+              <input class="mdc-text-field__input" id="text-field-repeat-password-input" name="repeatPassword" type="password">
+              <button id="toggle-repeat-password-visibility-button"
+                      type="button"
+                      class="mdc-icon-button"
+                      style="opacity: 0.38;"
+                      aria-label="Toggle password visibility"
+                      aria-hidden="true"
+                      aria-pressed="false">
+                <i id="toggle-repeat-password-visibility-icon" class="material-icons mdc-icon-button__icon">visibility_off</i>
+              </button>
+            </div>
+          </div>
+
+          {{ if .Data.error }}
+            <div class="alert-danger">
+                {{ .Data.error }}
+            </div>
+          {{ end }}
+
+          <button class="mdc-button mdc-button--raised base-confirm-button" type="submit">
+            <svg style="margin-right:5px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock button-icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span class="mdc-button__ripple"></span>
+            Create account
+          </button>
+        </form>
+
+        <div class="base-label subheader">
+          Already have an account? <a href="{{ .Data.loginPath }}">Sign In</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}
