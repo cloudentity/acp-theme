@@ -2,8 +2,6 @@
 
   <script nonce="{{.Config.Nonce}}">
 
-    var otpLength = {{ .Data.OtpLength }};
-
     window.addEventListener("pageshow", () => {
       document.querySelector("#reset-form").reset();
     });
@@ -11,21 +9,7 @@
     document.addEventListener("DOMContentLoaded", onPageLoad);
 
     function onPageLoad() {
-      initOtpInput('otp-input-container', otpLength );
       initWebAuthn();
-      disableButtonsOnEmptyInputs();
-      setButtonEnablementOnInput();
-    }
-
-    function setButtonEnablementOnInput() {
-      var otpInput = document.getElementById("otp-input")
-      if (!!otpInput) otpInput.addEventListener('input', disableButtonsOnEmptyInputs);
-    }
-
-    function disableButtonsOnEmptyInputs() {
-      var otpInput = document.getElementById("otp-input")
-      var submitButton = document.getElementById("reset-button");
-      if(submitButton && otpInput) submitButton.disabled = !otpInput.value || otpInput.value.length < otpLength;
     }
 
     function initWebAuthn () {
@@ -91,11 +75,7 @@
         webauthnError.value = error;
       })
       .finally(() => {
-        if(!webauthnError.value.startsWith("NotAllowedError:")) {
-          document.querySelector("#reset-form").submit();
-        } else {
-          webauthnError.value = '';
-        }
+        document.querySelector("#reset-form").submit();
       });
     }
 
