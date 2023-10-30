@@ -9,10 +9,10 @@
 
     <!--[if !mso]><!-->
     <style type="text/css">
-      {{if .Config.Styling.FontURL}}
+      {{if .Styling.FontURL}}
         @font-face {
           font-family: customBrandingFont;
-          src: url({{ .Config.Styling.FontURL }});
+          src: url({{ .Styling.FontURL }});
         }
         * {
           font-family: customBrandingFont !important;
@@ -24,17 +24,17 @@
     <style type="text/css">
 
       .styling--logo-image {
-        {{ if .Config.Styling.LogoURL }}
-          {{with (eq .Config.Styling.LogoSize "S")}} height: 24px; {{end}}
-          {{with (eq .Config.Styling.LogoSize "")}} height: 36px; {{end}}
-          {{with (eq .Config.Styling.LogoSize "L")}} height: 48px; {{end}}
+        {{ if .Styling.LogoURL }}
+          {{with (eq .Styling.LogoSize "S")}} height: 24px; {{end}}
+          {{with (eq .Styling.LogoSize "")}} height: 36px; {{end}}
+          {{with (eq .Styling.LogoSize "L")}} height: 48px; {{end}}
         {{else}}
           height: 64px;
         {{end}}
       }
 
       body {
-        background-color: {{if .Config.Styling.Colors.Background}}{{.Config.Styling.Colors.Background}}{{else}}#f7faff{{end}};
+        background-color: {{if .Styling.Colors.Background}}{{.Styling.Colors.Background}}{{else}}#f7faff{{end}};
         font-family: Helvetica, arial, sans-serif;
       }
 
@@ -54,7 +54,7 @@
         text-align: center;
         margin-bottom: 32px;
         padding: 10px 20px;
-        background-color: {{if .Config.Styling.Colors.Primary}}{{.Config.Styling.Colors.Primary}}30{{else}}#0083ff30{{end}};
+        background-color: {{if .Styling.Colors.Primary}}{{.Styling.Colors.Primary}}30{{else}}#0083ff30{{end}};
         color: #212533;
         border-radius: 4px;
       }
@@ -75,10 +75,6 @@
         color: #626576;
       }
 
-      .content-caption {
-        margin-top: 24px;
-      }
-
       .code-container {
         background-color: #e9ebec;
         text-align: center;
@@ -97,7 +93,7 @@
       }
 
       .link-container > a {
-        background-color: {{if .Config.Styling.Colors.Primary}}{{.Config.Styling.Colors.Primary}}{{else}}#0083ff{{end}};
+        background-color: {{if .Styling.Colors.Primary}}{{.Styling.Colors.Primary}}{{else}}#0083ff{{end}};
         color: white;
         padding: 8px 12px;
         border-radius: 4px;
@@ -227,7 +223,7 @@
       }
 
       a {
-        color: {{if .Config.Styling.Colors.Primary}}{{.Config.Styling.Colors.Primary}}{{else}}#0083ff{{end}};
+        color: {{if .Styling.Colors.Primary}}{{.Styling.Colors.Primary}}{{else}}#0083ff{{end}};
         text-decoration: none;
         text-decoration: none !important;
       }
@@ -243,7 +239,7 @@
         a[href^="tel"],
         a[href^="sms"] {
           text-decoration: none;
-          color: {{if .Config.Styling.Colors.Primary}}{{.Config.Styling.Colors.Primary}}{{else}}#0083ff{{end}};
+          color: {{if .Styling.Colors.Primary}}{{.Styling.Colors.Primary}}{{else}}#0083ff{{end}};
           /* or whatever your want */
           pointer-events: none;
           cursor: default;
@@ -252,7 +248,7 @@
         .mobile_link a[href^="tel"],
         .mobile_link a[href^="sms"] {
           text-decoration: default;
-          color: {{if .Config.Styling.Colors.Primary}}{{.Config.Styling.Colors.Primary}}{{else}}#0083ff{{end}} !important;
+          color: {{if .Styling.Colors.Primary}}{{.Styling.Colors.Primary}}{{else}}#0083ff{{end}} !important;
           pointer-events: auto;
           cursor: default;
         }
@@ -283,7 +279,7 @@
         a[href^="tel"],
         a[href^="sms"] {
           text-decoration: none;
-          color: {{if .Config.Styling.Colors.Primary}}{{.Config.Styling.Colors.Primary}}{{else}}#0083ff{{end}};
+          color: {{if .Styling.Colors.Primary}}{{.Styling.Colors.Primary}}{{else}}#0083ff{{end}};
           /* or whatever your want */
           pointer-events: none;
           cursor: default;
@@ -292,7 +288,7 @@
         .mobile_link a[href^="tel"],
         .mobile_link a[href^="sms"] {
           text-decoration: default;
-          color: {{if .Config.Styling.Colors.Primary}}{{.Config.Styling.Colors.Primary}}{{else}}#0083ff{{end}} !important;
+          color: {{if .Styling.Colors.Primary}}{{.Styling.Colors.Primary}}{{else}}#0083ff{{end}} !important;
           pointer-events: auto;
           cursor: default;
         }
@@ -382,7 +378,7 @@
                                   <td width="169" align="center">
                                     <div class="imgpop">
                                       <img src={{if
-                                      .Config.Styling.LogoURL}}"{{.Config.Styling.LogoURL}}"{{else}}"https://us.authz.cloudentity.io/static/images/email/logo.png"{{end}}
+                                      .Styling.LogoURL}}"{{.Styling.LogoURL}}"{{else}}"https://us.authz.cloudentity.io/static/images/email/logo.png"{{end}}
                                       alt="" border="0"
                                       class="styling--logo-image logo-image" />
                                     </div>
@@ -464,10 +460,17 @@
                             </table>
                           </td>
                         </tr>
+                        <!-- Spacing -->
+                        <tr>
+                          <td height="24" class="td-spacing">&nbsp;</td>
+                        </tr>
+                        <!-- Spacing -->
 
                         <tr>
                           <td>
                             <div class="caption">
+                              You received this email because you have
+                              registered a tenant with Cloudentity.<br />
                               If you are not sure why you are receiving this
                               email, please
                               <a
@@ -489,7 +492,6 @@
                                 />
                               </a>
                             </div>
-                            <div style="display: none;">{{ .Config.Assets }}</div>
                           </td>
                         </tr>
 

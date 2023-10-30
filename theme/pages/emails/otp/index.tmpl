@@ -2,11 +2,8 @@
 
 {{ define "content" }}
 
-<div class="heading2">We have received verification code request.</div>
-<div class="main-text">Here is the verification code that you have requested.</div>
+<div class="heading2">We've received a OTP Code request.</div>
 <div class="code-container">{{ .Data.OTP.Code }}</div>
+<div class="main-text">Here is the OTP code that you have requested.</div>
 
-<div class="caption content-caption">
-If you received this email although you haven't requested the code please do not use the verification code.
-</div>
 {{ end }}
