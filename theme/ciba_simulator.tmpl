@@ -1,0 +1,83 @@
+{{ template "base" . }}
+
+{{ define "title" }}CIBA Simulator{{ end }}
+
+{{ define "content" }}
+    {{ if .Data.LoginHint }}
+        <div class="aut-banner-contained">
+            {{ template "header" .Styling }}
+        </div>
+
+        <div class="mdc-card aut-container">
+            <div class="aut-header" style="margin-bottom: 10px;">
+                <div style="text-align: center">
+                    <h6 class="aut-list-header">CIBA Simulator</h6>
+                </div>
+            </div>
+            <form method="post" style="padding: 24px;" id="form-request">
+                <div>
+                    <h6>Welcome <strong>{{ .Data.LoginHint }}</strong>,</h6>
+                    <div class="body1" style="height: auto; margin-top: 16px;"><strong>{{ .Data.ClientName }}</strong> would like access to the following
+                        permissions:
+                    </div>
+
+                    <ul style="margin-top: 12px;">
+                        {{range .Data.Scope}}
+                            <li style="margin-bottom: 8px;">{{ . }}</li>
+                        {{end}}
+                    </ul>
+
+                    {{ if .Data.BindingMessage }}
+                        <div class="body1" style="height: auto; margin-top: 48px;">{{ .Data.BindingMessage }}</div>
+                    {{ end }}
+                </div>
+                <div style="text-align: right; margin-top: 32px">
+                    <button form="form-request" formaction="?action=deny" id="deny-button" class="mdc-button"><span
+                                class="mdc-button__ripple"></span>Deny
+                    </button>
+                    <button form="form-request" formaction="?action=allow" id="allow-button" class="mdc-button mdc-button--raised"><span
+                                class="mdc-button__ripple"></span>Allow
+                    </button>
+                </div>
+            </form>
+        </div>
+    {{ else }}
+        <div class="aut-banner-contained">
+            {{ template "header" .Styling }}
+        </div>
+
+        <div class="mdc-card aut-container">
+            <div class="aut-header" style="margin-bottom: 10px;">
+                <div style="text-align: center">
+                    <h6 class="aut-list-header">CIBA Simulator</h6>
+                </div>
+            </div>
+            <form action="?action=continue" method="post" style="padding: 24px;">
+                <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%">
+                    <input class="mdc-text-field__input" id="text-field-hero-input" name="login_hint"
+                           value="{{ .Data.LoginHint }}"
+                           required
+                    >
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="text-field-hero-input" class="mdc-floating-label">Login hint</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 26px">
+                    <button id="login-button" class="mdc-button mdc-button--raised"><span
+                                class="mdc-button__ripple"></span>Continue
+                    </button>
+                </div>
+            </form>
+        </div>
+    {{ end }}
+
+    <script>
+        var textFields = [].map.call(document.querySelectorAll('.mdc-text-field'), function (el) {
+            return new window.mdc.textField.MDCTextField(el)
+        });
+    </script>
+{{ end }}
