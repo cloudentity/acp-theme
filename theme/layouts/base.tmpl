@@ -1,0 +1,60 @@
+{{ define "base" }}
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ template "title" . }}</title>
+
+    <link rel="stylesheet" href="/static/material-components-web.min.css">
+    <script src="/static/material-components-web.min.js"></script>
+    <link href="/static/fonts.css" rel="stylesheet">
+    <link href="/static/material-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="/favicon.png">
+    
+    {{if .Styling }}
+      <style> 
+        :root {
+          {{ if .Styling.Colors.Primary }}
+          --mdc-theme-primary: {{ .Styling.Colors.Primary }};
+          --mdc-theme-secondary: {{ .Styling.Colors.Primary }};
+          {{ end }}
+
+          {{ if .Styling.Colors.Background }}
+          --mdc-theme-background: {{ .Styling.Colors.Background }};
+          {{ end }}
+          
+          {{ if .Styling.Colors.Header }}
+          --header: {{ .Styling.Colors.Header }};
+          {{ end }}
+        }
+
+        {{ if .Styling.FontURL }}
+          @font-face {
+            font-family: customBrandingFont;
+            src: url({{ .Styling.FontURL }});
+          }
+
+          *:not(i):not(.material-icons) {
+            font-family: customBrandingFont !important; 
+          }
+        {{ end }}
+
+        {{ if .Styling.LogoURL }}
+          .aut-banner-logo > img {
+            {{ with (eq .Styling.LogoSize "S") }} height: 24px; {{ end }}
+            {{ with (eq .Styling.LogoSize "") }} height: 36px; {{ end }}
+            {{ with (eq .Styling.LogoSize "L") }} height: 48px; {{ end }}
+         }
+        {{ end }}
+      </style>
+    {{ end }}
+
+  </head>
+  <body class="mdc-typography">
+  {{ template "content" . }}
+  </body>
+  </html>
+{{ end }}
