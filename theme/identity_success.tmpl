@@ -1,0 +1,44 @@
+{{ template "base" . }}
+
+{{ define "title" }} Success {{ end }}
+
+{{ define "content" }}
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+
+  <div class="mdc-card aut-container">
+    <div class="color-bar"></div>
+
+    <div id="set-password">
+      <div class="aut-header">
+        <div style="text-align: center">
+          <div class="aut-list-header">
+            <div class="header-avatar-name">
+              <h3>Set password</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sign-in-content">
+
+
+        <h2 class="header-sign-up">Success!</h2>
+        <div class="body2 sent-otp-info">You've successfully set up your password.</div>
+
+        {{ if .Data.sessionID }}
+        <a href="{{ .Data.loginPath }}">
+            <button class="mdc-button mdc-button--raised base-confirm-button">
+                Sign in
+            </button>
+        </a>
+        {{ end }}
+
+      </div>
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}
