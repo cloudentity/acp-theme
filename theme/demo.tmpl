@@ -1,0 +1,443 @@
+{{ template "base" . }}
+
+{{ define "title" }}Demo{{ end }}
+
+<script nonce="{{.Config.Nonce}}">
+  function changeTab(tab) {
+    return (e) => {
+        var indicators = document.querySelectorAll('.mdc-tab-indicator');
+        indicators.forEach(function (indicator) {
+            var id = indicator.getAttribute('data-tabid')
+            var selector = '#' + id
+            var cardDiv = document.querySelector(selector);
+            if (id && cardDiv) {
+                if (tab === id) {
+                    cardDiv.style = ""
+                    indicator.classList.add('mdc-tab-indicator--active');
+                } else {
+                    cardDiv.style = "display: none;"
+                    indicator.classList.remove('mdc-tab-indicator--active');
+                }
+            }
+        })
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', delegate('#claims-tab', changeTab('claims')));
+    document.addEventListener('click', delegate('#access-token-tab', changeTab('access-token')));
+    document.addEventListener('click', delegate('#id-token-tab', changeTab('id-token')));
+    document.addEventListener('click', delegate('#refresh-token-tab', changeTab('refresh-token')));
+    document.addEventListener('click', delegate('#advanced-button', toggleAdvanced));
+    document.addEventListener('click', delegate('.selectable', toggleMoreValues));
+  });
+</script>
+
+{{ define "content" }}
+    {{ if .Data.FlowCompleted }}
+        <div class="aut-banner-contained" style="position: relative;">
+            {{ template "header" .Styling }}
+            <a href="?" class="logout-container">
+                <button class="mdc-button mdc-button--raised logout-button" type="button">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">Sign out</span>
+                </button>
+            </a>
+        </div>
+
+        <div class="custom-header">
+            <div>
+                <h2>Demo Application</h2>
+
+                <div class="demo-container">
+                    <div class="demo-info">
+                        <i class="material-icons">error_outline</i>
+                        <div class="demo-info-text">
+                            <p><b>You have logged in to the Demo app</b></p>
+                            <p>The information below is used for demo and testing
+                                purposes. You can view aggregated claims or the tokens issued by ACP below.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="mdc-tab-bar" role="tablist" style="border: none;">
+                        <div class="mdc-tab-scroller">
+                            <div class="mdc-tab-scroller__scroll-area">
+                                <div class="mdc-tab-scroller__scroll-content" style="margin-left: 0;">
+                                    <button id="claims-tab" class="mdc-tab custom-tab" role="tab" aria-selected="true"
+                                            tabindex="0">
+                      <span class="mdc-tab__content">
+                        <span class="mdc-tab__text-label">Claims</span>
+                      </span>
+                                        <span class="mdc-tab-indicator mdc-tab-indicator--active" data-tabid="claims">
+                        <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                      </span>
+                                        <span class="mdc-tab__ripple"></span>
+                                    </button>
+
+                    <button id="access-token-tab" class="mdc-tab custom-tab" role="tab" tabindex="1">
+                      <span class="mdc-tab__content">
+                        <span class="mdc-tab__text-label">Access Token</span>
+                      </span>
+                                        <span class="mdc-tab-indicator" data-tabid="access-token">
+                        <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                      </span>
+                                        <span class="mdc-tab__ripple"></span>
+                                    </button>
+
+                                    {{ if .Data.IDTokenRaw }}
+
+                                        <button id="id-token-tab" class="mdc-tab custom-tab" role="tab" tabindex="2">
+                                            <span class="mdc-tab__content">
+                                                <span class="mdc-tab__text-label">ID Token</span>
+                                            </span>
+                                            <span class="mdc-tab-indicator" data-tabid="id-token">
+                                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                                            </span>
+                                            <span class="mdc-tab__ripple"></span>
+                                        </button>
+                                    {{ end }}
+
+                                    {{ if .Data.RefreshTokenRaw }}
+                                        <button id="refresh-token-tab" class="mdc-tab custom-tab" role="tab" tabindex="3">
+                        <span class="mdc-tab__content">
+                          <span class="mdc-tab__text-label">Refresh Token</span>
+                        </span>
+                                            <span class="mdc-tab-indicator" data-tabid="refresh-token">
+                          <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                        </span>
+                                            <span class="mdc-tab__ripple"></span>
+                                        </button>
+                                    {{ end }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mdc-card aut-container aut-demo-content">
+            <div id="claims">
+                {{ if and .Data.BasicClaims (gt (len .Data.BasicClaims) 0) }}
+                    <div class="mdc-data-table" style="border: none; box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.08), 0px 0px 1px rgba(0, 0, 0, 0.31);">
+                        <div class="mdc-data-table__table-container">
+                            <table class="mdc-data-table__table" aria-label="claims-table" style="width: 100%">
+                                <thead>
+                                    <tr class="mdc-data-table__header-row">
+                                        <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Claim
+                                            name
+                                        </th>
+                                        <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Source
+                                            path
+                                        </th>
+                                        <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Value
+                                        </th>
+                                        <th class="mdc-data-table__header-cell" role="columnheader" scope="col"/>
+                                    </tr>
+                                </thead>
+                                <tbody class="mdc-data-table__content" id="claims-table-tbody">
+                                    {{ range $i, $c := .Data.BasicClaims }}
+                                        <tr data-idx="{{$i}}" class="mdc-data-table__row {{ if gt (len $c.Value) 1 }}selectable{{end}}">
+                                            <td class="mdc-data-table__cell" scope="row">{{ $c.Name }}</td>
+                                            <td class="mdc-data-table__cell" scope="row">{{ $c.Source }}</td>
+                                            <td class="mdc-data-table__cell" scope="row">
+                                                {{ if gt (len $c.Value) 1 }}
+                                                    <span style="color: #626576">more values</span>
+                                                    <span style="padding: 2px 4px;background: #F7FAFF;border: 1px solid #C2C3C6;border-radius: 4px;margin-left: 6px;">
+                                                        {{len $c.Value}}
+                                                    </span>
+                                                {{ else }}
+                                                    {{ range $c.Value}}{{.}}{{end}}
+                                                {{ end }}
+                                            </td>
+                                            <td style="text-align: right;padding-right: 12px;">
+                                                {{ if gt (len $c.Value) 1 }}
+                                                    <i class="material-icons" data-more-values-icon-index="{{$i}}">expand_more</i>
+                                                {{end}}
+                                            </td>
+                                        </tr>
+
+                                        {{ if gt (len $c.Value) 1 }}
+                                            <tr class="more-values collapsed"
+                                                data-more-values-index="{{$i}}">
+                                                <td colspan="4"
+                                                    style="padding: 30px 60px;border-top: 1px solid rgba(0,0,0,.12); background: #FCFCFF;">
+                                                    <div style="color: #777777; font-weight: 600; margin-bottom: 12px;">
+                                                        Claims Values
+                                                    </div>
+                                                    <div>
+                                                        {{ range $i, $e := $c.Value}}
+                                                            {{if gt $i 0}}, {{end}}
+                                                            {{$e}}
+                                                        {{end}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+                                    {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{ else }}
+                    <div style="color: darkgray; text-align: center; padding: 80px;">No claims</div>
+                {{ end }}
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: none;" id="access-token" class="info-card">
+                    {{ if .Data.AccessTokenHeader }}
+                        <h3 class="heading5 sublabel">Header</h3>
+                        <pre>{{ .Data.AccessTokenHeader }}</pre>
+                    {{ end }}
+                    {{ if .Data.AccessTokenPayload }}
+                        <h3 class="heading5 sublabel">Payload</h3>
+                        <pre>{{ .Data.AccessTokenPayload }}</pre>
+                    {{ end }}
+                    <h3 class="heading5 sublabel">Raw</h3>
+                    <pre class="with-copy"><div class="pre-copy-button" data-copy-value="{{ .Data.AccessTokenRaw }}"><i
+                                    class="material-icons">content_copy</i><span>copy code</span></div><div id="access-token-raw">{{ .Data.AccessTokenRaw }}</div></pre>
+                </div>
+
+                <div style="display: none;" id="id-token" class="info-card">
+                    <h3 class="heading5 sublabel">Header</h3>
+                    <pre>{{ .Data.IDTokenHeader }}</pre>
+                    <h3 class="heading5 sublabel">Payload</h3>
+                    <pre>{{ .Data.IDTokenPayload }}</pre>
+                    <h3 class="heading5 sublabel">Raw</h3>
+                    <pre class="with-copy"><div class="pre-copy-button" data-copy-value="{{ .Data.IDTokenRaw }}"><i
+                                    class="material-icons">content_copy</i><span>copy code</span></div>{{ .Data.IDTokenRaw }}</pre>
+                </div>
+
+                <div style="display: none;" id="refresh-token" class="info-card">
+                    <h3 class="heading5 sublabel">Raw</h3>
+                    <pre class="with-copy"><div class="pre-copy-button" data-copy-value="{{ .Data.RefreshTokenRaw }}"><i
+                                    class="material-icons">content_copy</i><span>copy code</span></div>{{ .Data.RefreshTokenRaw }}</pre>
+                </div>
+
+            </div>
+        </div>
+    {{ else }}
+        <div class="aut-banner-contained">
+            {{ template "header" .Config }}
+        </div>
+
+        <div class="mdc-card aut-container">
+            <div class="aut-header" style="margin-bottom: 10px;">
+                <div style="text-align: center">
+                    <h1 class="aut-list-header">Demo {{ .flow }} application</h1>
+                </div>
+            </div>
+
+            {{ if eq .Data.Flow "device" }}
+            <div style="text-align: center; margin-bottom: 12px; margin-top: 30px;">
+                {{ if .Data.DevicePollError }}
+                The authorization hasn't been approved yet.
+                <pre style="text-align: left">{{ .Data.DevicePollError }}</pre>
+                {{ else }}
+                Open <a href="{{ .Data.Device.VerificationURI }}">{{ .Data.Device.VerificationURI }}</a><br/> and enter
+                the following code<br/> <strong>{{ .Data.Device.UserCode }}</strong>
+                {{ end }}
+
+                <form action="?action=device_poll" method="post" class="basic-form">
+                    <div style="text-align: center; margin-top: 26px">
+                        <button id="login-button" class="mdc-button mdc-button--raised"><span
+                                    class="mdc-button__ripple"></span>{{ if .Data.DevicePollError }} Retry {{ else }} Next {{ end }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {{ else }}
+
+            <form action="?action=login" method="post" class="basic-form">
+                <div style="text-align: center; margin-top: 26px">
+                    <button id="login-button" class="mdc-button mdc-button--raised"><span
+                                class="mdc-button__ripple"></span>Login to demo app
+                    </button>
+                </div>
+
+          <div style="text-align: center; margin-bottom: 12px; margin-top: 30px;">
+            <button id="advanced-button" class="mdc-button mdc-button--text" type="button">Configuration
+                    </button>
+                </div>
+                <div class="aut-hidden" id="advanced">
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%">
+                        <input class="mdc-text-field__input" id="text-field-hero-input" name="client_id"
+                               value="{{ .Data.ClientID }}">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-hero-input" class="mdc-floating-label">Client ID</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-hero-input" name="client_secret"
+                               value="{{ .Data.ClientSecret }}">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-hero-input" class="mdc-floating-label">Client Secret</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-redirect_uri-input" name="redirect_uri"
+                               value="{{ .Data.RedirectURL }}">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-hero-input" class="mdc-floating-label">Redirect URI</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-response_type-input" name="response_type"
+                               value="code">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-response_type-input" class="mdc-floating-label">Response
+                                    type</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-response_mode-input" name="response_mode"
+                               value="">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-response_mode-input" class="mdc-floating-label">Response
+                                    mode</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-prompt-input" name="prompt" value="">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-prompt-input" class="mdc-floating-label">Prompt</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-state-input" name="state"
+                               value="{{ .Data.State }}">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-state-input" class="mdc-floating-label">State</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-scope-input" name="scope"
+                               value="{{ .Data.Scope }}">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-scope-input" class="mdc-floating-label">Scope</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-scope-input" name="acr_values"
+                               value="{{ .Data.AcrValues }}">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-scope-input" class="mdc-floating-label">ACR values</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+                        <input class="mdc-text-field__input" id="text-field-nonce-input" name="nonce"
+                               value="{{ .Data.Nonce }}">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-nonce-input" class="mdc-floating-label">Nonce</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea" style="width: 100%; margin-top: 20px">
+                        <textarea rows="6" class="mdc-text-field__input" id="text-field-jwk-input" name="jwk"
+                         aria-controls="jwk-helper-text" aria-describedby="jwk-helper-text" style="resize: none;">{{ .Data.Jwk }}</textarea>
+
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch">
+                                <label for="text-field-jwk-input" class="mdc-floating-label">JSON Web Key for Encryption</label>
+                            </div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <div class="mdc-text-field-helper-line">
+                        <div class="mdc-text-field-helper-text" id="jwk-helper-text" aria-hidden="true">Provide a JSON with single JSON Web Key containing private key</div>
+                    </div>
+                </div>
+            </form>
+            {{ end }}
+        </div>
+    {{ end }}
+
+    <script nonce="{{.Config.Nonce}}">
+        var textFields = [].map.call(document.querySelectorAll('.mdc-text-field'), function (el) {
+            return new window.mdc.textField.MDCTextField(el)
+        });
+
+        function toggleAdvanced() {
+            var el = document.querySelector('#advanced');
+            el.classList.contains('aut-hidden')
+                ? el.classList.remove('aut-hidden')
+                : el.classList.add('aut-hidden');
+        }
+
+        function toggleMoreValues(event) {
+            var targetEl = event.targetSelector;
+            var index = targetEl.getAttribute("data-idx");
+            var el = document.querySelector("tr[data-more-values-index=\"" + index + "\"]");
+            var icon = document.querySelector("i[data-more-values-icon-index=\"" + index + "\"]");
+
+
+            if (el) {
+                if (el.classList.contains("collapsed")) {
+                    el.classList.remove("collapsed");
+                    el.classList.add("expanded");
+                    icon.innerHTML = "expand_less";
+                } else {
+                    el.classList.remove("expanded");
+                    el.classList.add("collapsed");
+                    icon.innerHTML = "expand_more";
+                }
+            }
+        }
+
+        document.querySelectorAll(".pre-copy-button").forEach(function (el) {
+            el.addEventListener("click", function (e) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(el.getAttribute("data-copy-value"))
+                    var textEl = el.querySelector("span");
+                    textEl.innerText = "copied!";
+                    setTimeout(function() {
+                        textEl.innerText = "copy code";
+                    }, 3000);
+                }
+            })
+        });
+    </script>
+{{ end }}

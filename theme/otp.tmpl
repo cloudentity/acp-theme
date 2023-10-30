@@ -1,0 +1,186 @@
+{{ template "base" . }}
+
+{{ define "title" }}Cloudentity - MFA verification{{ end }}
+
+{{ define "content" }}
+
+  <script nonce="{{.Config.Nonce}}">
+    function handleGoBackToMethods () {
+      var verificationMethodsContainer = document.querySelector("#other-verification-methods-container");
+      var defaultViewContainer = document.querySelector("#default-view-container");
+      if (!verificationMethodsContainer || !verificationMethodsContainer) return;
+      verificationMethodsContainer.setAttribute("style", "")
+      defaultViewContainer.setAttribute("style", "display: none;")
+    }
+
+      document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('click', delegate('#go-back-to-methods-button', handleGoBackToMethods));
+      });
+  </script>
+
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="mdc-card aut-container" style="background: #FCFCFF;">
+      <div class="aut-color-bar"></div>
+      <div class="aut-header">
+          <div style="text-align: center">
+            <div class="aut-list-header">
+
+            {{ if and .Data.Session .Data.Session.ClientInfo .Data.Session.ClientInfo.Name }}
+              <div class="header-avatar-name">
+                <span class="name-avatar">{{ substr 0 1 .Data.Session.ClientInfo.Name }}</span>
+                <h3>{{ .Data.Session.ClientInfo.Name  }}</h3>
+              </div>
+              {{ else }}
+              <div class="header-avatar-name">
+                <h3>Log in to your account</h3>
+              </div>
+              {{ end }}
+            </div>
+          </div>
+        </div>
+
+    <form action="?login_id={{ .Data.Session.ID }}" method="post">
+      {{ .Data.CsrfField }}
+      <div class="otp-content">
+        <div id="default-view-container">
+          {{ if .Data.SelectedMethod.ID }}
+            {{ if eq .Data.SelectedMethod.Mechanism "email"}}
+              <div>
+                <div class="sent-otp-header">
+                  <i class="material-icons mdc-icon-button__icon aut-otp-method-icon">mail_outline</i>
+                  <span class="heading5">Email verification</span>
+                </div>
+                <div class="body2 sent-otp-info">Enter the security code sent to {{ .Data.Address }}</div>
+
+                <label for="otp" class="form-field--label">
+                  <div class="base-label form-field--label">
+                    Verification code
+                  </div>
+                </label>
+                <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label input-field">
+                  <span class="mdc-notched-outline">
+                    <span class="mdc-notched-outline__leading" style="display: flex; align-items: center;">
+                      <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" style="font-size: 20px; padding: 0 0 4px 14px;">vpn_key</i>
+                    </span>
+                    <span class="mdc-notched-outline__trailing"></span>
+                  </span>
+                  <input class="mdc-text-field__input input-with-placeholder" type="text" inputmode="numeric" autocomplete="one-time-code" aria-label="Label" id="text-field-otp-input" name="otp" placeholder="Enter the verification code" style="padding-left: 48px;">
+                </label>
+              </div>
+            {{ else if eq .Data.SelectedMethod.Mechanism "sms" }}
+              <div>
+                <div class="sent-otp-header">
+                  <i class="material-icons mdc-icon-button__icon aut-otp-method-icon">chat_bubble_outline</i>
+                  <span class="heading5">SMS verification</span>
+                </div>
+                <div class="body2 sent-otp-info">Enter the security code sent to {{ .Data.Address }}</div>
+
+                <label for="otp" class="form-field--label">
+                  <div class="base-label form-field--label">
+                    Verification code
+                  </div>
+                </label>
+                <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label input-field">
+                  <span class="mdc-notched-outline">
+                    <span class="mdc-notched-outline__leading" style="display: flex; align-items: center;">
+                      <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" style="font-size: 20px; padding: 0 0 4px 14px;">vpn_key</i>
+                    </span>
+                    <span class="mdc-notched-outline__trailing"></span>
+                  </span>
+                  <input class="mdc-text-field__input input-with-placeholder" type="text" inputmode="numeric" autocomplete="one-time-code" aria-label="Label" id="text-field-otp-input" name="otp" placeholder="Enter the verification code" style="padding-left: 48px;">
+                </label>
+              </div>
+            {{ end }}
+            <button class="mdc-button mdc-button--raised base-confirm-button sent-otp-button" type="submit" name="action" value="allow">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">Verify</span>
+            </button>
+
+            {{ if .Data.Message }}
+              <div class="aut-otp-verify-error">
+                <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" style="font-size: 20px; color: #BD271E; padding-top: 2px; margin-right: 8px;">error_outline</i>
+                <span class="body2">{{ .Data.Message }}</span>
+              </div>
+            {{ end }}
+
+            <div class="sent-otp-options">
+              <button class="otp-resend--button" type="submit" name="method" value="{{ .Data.SelectedMethod.ID }}">Re-send the code</button>
+              <a role="button" tabindex="0" id="go-back-to-methods-button" style="cursor: pointer;">Other verification methods</a>
+            </div>
+          {{ else if not .Data.Methods }}
+            Cannot authenticate. You need to verify your email and/or phone number.
+          {{ else }}
+              <div class="base-label">{{ or .Data.Session.AuthenticationContext.name .Data.Session.Subject }}</div>
+              <div class="heading4">Additional verification required</div>
+              <div class="body2">To proceed, select how you would like to verify your identity</div>
+              <div class="aut-otp-methods">
+                {{ range .Data.Methods }}
+                  <div class="otp-method">
+                    <button class="otp-method--button" type="submit" name="method" value="{{ .ID }}">
+                    {{ if eq .Mechanism "sms" }}
+                      <div class="otp-method--button-left">
+                        <i class="material-icons mdc-icon-button__icon aut-otp-method-icon">chat_bubble_outline</i>
+                        <div class="aut-otp-method-info">
+                          <span class="heading5">SMS verification</span>
+                          <span class="base-caption">Enter a single-use code sent to {{ index $.Data.Addresses .ID }}</span>
+                        </div>
+                      </div>
+                      <i class="material-icons mdc-icon-button__icon chevron-icon">chevron_right</i>
+                    {{ else if eq .Mechanism "email" }}
+                      <div class="otp-method--button-left">
+                        <i class="material-icons mdc-icon-button__icon aut-otp-method-icon">mail_outline</i>
+                        <div class="aut-otp-method-info">
+                          <span class="heading5">Email verification</span>
+                          <span class="base-caption">Email a verification code sent to {{ index $.Data.Addresses .ID }}</span>
+                        </div>
+                      </div>
+                      <i class="material-icons mdc-icon-button__icon chevron-icon">chevron_right</i>
+                    {{ end }}
+                    </button>
+                  </div>
+                {{ end }}
+              </div>
+          {{ end }}
+        </div>
+
+        <div style="display: none;" id="other-verification-methods-container">
+          <div class="base-label">{{ or .Data.Session.AuthenticationContext.name .Data.Session.Subject }}</div>
+          <div class="heading4">Additional verification required</div>
+          <div class="body2">To proceed, select how you would like to verify your identity</div>
+          <div class="aut-otp-methods">
+            {{ range .Data.Methods }}
+              <div class="otp-method">
+                <button class="otp-method--button" type="submit" name="method" value="{{ .ID }}">
+                {{ if eq .Mechanism "sms" }}
+                  <div class="otp-method--button-left">
+                    <i class="material-icons mdc-icon-button__icon aut-otp-method-icon">chat_bubble_outline</i>
+                    <div class="aut-otp-method-info">
+                      <span class="heading5">SMS verification</span>
+                      <span class="base-caption">Enter a single-use code sent to {{ index $.Data.Addresses .ID }}</span>
+                    </div>
+                  </div>
+                  <i class="material-icons mdc-icon-button__icon chevron-icon">chevron_right</i>
+                {{ else if eq .Mechanism "email" }}
+                  <div class="otp-method--button-left">
+                    <i class="material-icons mdc-icon-button__icon aut-otp-method-icon">mail_outline</i>
+                    <div class="aut-otp-method-info">
+                      <span class="heading5">Email verification</span>
+                      <span class="base-caption">Email a verification code sent to {{ index $.Data.Addresses .ID }}</span>
+                    </div>
+                  </div>
+                  <i class="material-icons mdc-icon-button__icon chevron-icon">chevron_right</i>
+                {{ end }}
+                </button>
+              </div>
+            {{ end }}
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+  {{ template "footer" }}
+{{ end }}

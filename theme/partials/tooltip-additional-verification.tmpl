@@ -1,0 +1,25 @@
+
+{{ define "tooltip-additional-verification" }}
+
+<div class="aut-tooltip" style="margin-left: 0; width: 100%; height: 100%;">
+    <div class="aut-tooltip-content" style="margin-left: -20px; width: unset; bottom: 30px; padding: 10px;">
+       Additional verification required
+    </div>
+    <svg id="triangle" width="40" height="26" style="transform: translateX(-50%) scale(0.5);">
+        <defs>
+            <filter id="f" width="150%" height="130%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" />
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.6" />
+                </feComponentTransfer>
+                <feMerge>
+                    <feMergeNode />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+        </defs>
+        <path filter="url(#f)" d="M0,0 h40 l-20,20z" fill="#212533" />
+    </svg>
+</div>
+
+{{ end }}

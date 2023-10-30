@@ -1,0 +1,58 @@
+{{ template "base" . }}
+
+{{ define "title" }}Enter code{{ end }}
+
+{{ define "content" }}
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="mdc-card aut-container">
+    <div class="aut-color-bar"></div>
+
+    <div id="enter-code">
+      <div class="sign-in-content">
+        {{ if .Data.Connected  }}
+        <h2 class="header-enter-code" id="enter-code">Success! Device connected</h2>
+        <div class="base-label form-field--label">
+          Continue on your device
+        </div>
+        {{ else }}
+        <form action="?action=verify" method="post" id="enter-code-form">
+          {{ .Data.CsrfField }}
+
+          <h2 class="header-enter-code" id="enter-code">Connect a device</h2>
+
+          <div class="form-field">
+            <label for="username" class="form-field--label">
+              <div class="base-label form-field--label">
+                Enter the code that appears on your device
+              </div>
+            </label>
+            <div class="mdc-text-field mdc-text-field--outlined input-field">
+              <span class="mdc-notched-outline">
+                <span class="mdc-notched-outline__leading"></span>
+                <span class="mdc-notched-outline__trailing"></span>
+              </span>
+              <input class="mdc-text-field__input" id="text-field-user-code-input" name="user-code" value="{{ .Data.SuggestedUserCode }}">
+            </div>
+          </div>
+
+          {{ if .Data.Message }}
+            <div class="alert-danger">
+                {{ .Data.Message }}
+            </div>
+          {{ end }}
+
+          <button class="mdc-button mdc-button--raised base-confirm-button" type="submit" id="sign-in">
+            <span class="mdc-button__ripple"></span>
+            Next
+          </button>
+        </form>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}

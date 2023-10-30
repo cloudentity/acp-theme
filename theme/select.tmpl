@@ -1,0 +1,55 @@
+{{ template "base" . }}
+
+{{ define "title" }}Select authentication method{{ end }}
+
+{{ define "content" }}
+  <script nonce="{{.Config.Nonce}}">
+    window.addEventListener('DOMContentLoaded', function () {
+      var authenticationOptionNames = document.querySelectorAll('.aut-list-link');
+      var authenticationOptionAvatars = document.querySelectorAll('.aut-avatar-text');
+
+      if (authenticationOptionNames.length) {
+        authenticationOptionNames.forEach((option, i) => {
+          authenticationOptionAvatars[i].innerText = option.innerText.charAt(0).toUpperCase();
+        });
+      }
+    });
+  </script>
+
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="mdc-card aut-container">
+    <div class="aut-header" style="margin-bottom: 10px;">
+      <div style="text-align: center">
+        <h1 class="aut-list-header">Log in</h6>
+      </div>
+    </div>
+    <div style="padding: 10px 90px 40px 90px;">
+      {{ if .Data.Error }}
+        <div class="alert-danger">
+          {{ .Data.Error }}
+        </div>
+      {{end}}
+
+      <form action="?{{ .Data.Query }}" method="post">
+
+        {{ .Data.CsrfField }}
+
+        <ul class="mdc-list mdc-list--avatar-list">
+          {{ range $method := .Data.Methods }}
+          <button class="aut-select-button" name="authentication_id" type="submit" value="{{ .ID }}" title="{{ .Name }}">
+            <li class="mdc-list-item aut-list">
+              <span class="mdc-list-item__graphic aut-avatar-text" aria-hidden="true"></span>
+              <span class="mdc-list-item__text aut-list-link">{{ .Name }}</span>
+              <span class="mdc-list-item__meta material-icons" aria-hidden="true">navigate_next</span>
+            </li>
+            <li role="separator" class="mdc-list-divider"></li>
+          </button>
+          {{ end }}
+        </ul>
+      </form>
+    </div>
+  </div>
+{{ end }}

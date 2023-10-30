@@ -1,0 +1,243 @@
+{{ template "base" . }}
+
+{{ define "title" }} Register {{ end }}
+
+{{ define "content" }}
+  <script nonce="{{.Config.Nonce}}">
+
+    function bufferEncode(value) {
+      return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+    }
+
+    function bufferDecode(value) {
+      return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+    }
+
+    function registerUser() {
+      var webauthnError = document.querySelector("#hidden-text-field-webauthn-error").parentNode;
+      var server_id = (new URL(document.location)).searchParams.get("server_id");
+      var username = document.querySelector("#text-field-identifier-input");
+
+      webauthnError.value = '';
+
+      fetch(window.location.pathname + "/webauthn/begin?" + new URLSearchParams({ server_id: server_id }))
+        .then((response) => response.body)
+        .then((rb) => {
+          const reader = rb.getReader();
+
+          return new ReadableStream({
+            start(controller) {
+              function push() {
+                reader.read().then(({ done, value }) => {
+                  if (done) {
+                    controller.close();
+                    return;
+                  }
+                  controller.enqueue(value);
+                  push();
+                });
+              }
+              push();
+            },
+          });
+        })
+        .then((stream) => new Response(stream, { headers: { "Content-Type": "application/json" } }).text())
+        .then((text) => JSON.parse(text))
+        .then((credentialCreationOptions) => {
+          credentialCreationOptions.publicKey.challenge = bufferDecode(credentialCreationOptions.publicKey.challenge);
+          credentialCreationOptions.publicKey.user.id = bufferDecode(credentialCreationOptions.publicKey.user.id);
+          return navigator.credentials.create({
+            publicKey: credentialCreationOptions.publicKey,
+          });
+        })
+        .then((credential) => {
+          var attestationObject = credential.response.attestationObject;
+          var clientDataJSON = credential.response.clientDataJSON;
+          var rawId = credential.rawId;
+
+          fetch(window.location.pathname + "/webauthn/finish?" + new URLSearchParams({ server_id: server_id }), {
+            method: "POST",
+            body: JSON.stringify({
+              id: credential.id,
+              rawId: bufferEncode(rawId),
+              type: credential.type,
+              response: {
+                attestationObject: bufferEncode(attestationObject),
+                clientDataJSON: bufferEncode(clientDataJSON),
+              },
+            }),
+          })
+          .catch((error) => {
+            webauthnError.value = error;
+          });
+        })
+        .catch((error) => {
+          webauthnError.value = error;
+        })
+        .finally(() => {
+          document.querySelector("#sign-up-form").submit();
+        });
+    }
+
+    function initWebAuthn () {
+      var form = document.querySelector("#sign-up-form");
+      var container = document.querySelector("#radio-button-registration-type");
+      var passwordInput = document.querySelector('[for="text-field-password-input"]').parentNode;
+      var repeatPasswordInput = document.querySelector('[for="text-field-repeat-password-input"]').parentNode;
+
+      if (form && container && passwordInput && repeatPasswordInput) {
+        var passwordButton = container.querySelector('[data-value="password"]');
+        var webAuthnButton = container.querySelector('[data-value="webauthn"]');
+        var hiddenCheckboxInput = container.querySelector("input");
+
+        if (passwordButton && webAuthnButton) {
+          passwordButton.addEventListener("click", function (el) {
+            passwordButton.classList.add("active");
+            webAuthnButton.classList.remove("active");
+
+            passwordInput.style.display = "block";
+            repeatPasswordInput.style.display = "block";
+
+            hiddenCheckboxInput.removeAttribute("checked");
+          });
+
+          webAuthnButton.addEventListener("click", function (el) {
+            passwordButton.classList.remove("active");
+            webAuthnButton.classList.add("active");
+
+            passwordInput.style.display = "none";
+            repeatPasswordInput.style.display = "none";
+
+            hiddenCheckboxInput.setAttribute("checked", "on");
+          });
+        }
+
+        form.addEventListener("submit", function (e) {
+          if (hiddenCheckboxInput.checked) {
+            e.preventDefault();
+            registerUser();
+          }
+        });
+      }
+    }
+
+    function togglePasswordVisibility (inputId, iconId) {
+      var isPasswordVisible = false;
+      return function () {
+        var passwordInput = document.getElementById(inputId);
+        var visibilityIcon = document.getElementById(iconId);
+
+        passwordInput.type = isPasswordVisible ? 'password' : 'text';
+        visibilityIcon.innerText = isPasswordVisible ? 'visibility_off' : 'visibility';
+        isPasswordVisible = !isPasswordVisible;
+        return false;
+      }
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelector("#hidden-text-field-webauthn-error").parentNode.style.display = 'none';
+      document.addEventListener('click', delegate('#toggle-password-visibility-button', togglePasswordVisibility('text-field-password-input', 'toggle-password-visibility-icon')));
+      document.addEventListener('click', delegate('#toggle-repeatPassword-visibility-button', togglePasswordVisibility('text-field-repeat-password-input', 'toggle-repeatPassword-visibility-icon')));
+    
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            checkbox.checked = !checkbox.checked;
+            e.preventDefault();
+          }
+        })
+      });
+      initWebAuthn();
+    });
+
+    function enableSubmit(){
+      document.getElementById('submit-next').removeAttribute('disabled');
+    }
+
+    function disableSubmit(){
+      document.getElementById('submit-next').setAttribute('disabled', '');
+    }
+
+    function removeInputArrayField(button) {
+      button.parentElement.remove()
+    }
+
+    
+    document.addEventListener("DOMContentLoaded", function() {
+      Array.from(document.getElementsByClassName("aut-add-item")).forEach(function (myElement) {
+        myElement.addEventListener("click",function(){
+            var parent = this.parentNode;
+            name = this.getAttribute('data-name')
+            var div = document.createElement('div');
+            div.className = "mdc-text-field mdc-text-field--outlined input-field";
+            div.innerHTML = " <span class=\"mdc-notched-outline array-input\">" +
+          "<span class=\"mdc-notched-outline__leading\"></span>" +
+          "<span class=\"mdc-notched-outline__trailing\"></span>" +
+        "</span>" +
+        "<input type=\"text\" class=\"mdc-text-field__input\" name=\""+ name +"\" >"
+        +
+        "<button class=\"aut-delete-input-array MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1j7qk7u\" tabindex=\"-1\" type=\"button\" style=\"flex: 1 1 0%; padding-left: 6px; padding-right: 6px; font-weight: bold; min-width: 0px;\"><svg class=\"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-1k33q06\" focusable=\"false\" aria-hidden=\"true\" viewBox=\"0 0 24 24\" data-testid=\"RemoveIcon\"><path d=\"M19 13H5v-2h14v2z\"></path></svg><span class=\"MuiTouchRipple-root css-w0pj6f\"></span></button>"
+        ;
+            parent.insertBefore(div, parent.lastElementChild)
+            var elements=div.getElementsByClassName("aut-delete-input-array");
+            for (var i = 0; i < elements.length; ++i) {
+              elements[i].addEventListener("click",function(){
+                removeInputArrayField(this)
+              })
+            }
+        });
+        });
+
+      
+      var elements=document.getElementsByClassName("aut-delete-input-array");
+      for (var i = 0; i < elements.length; ++i) {
+        elements[i].addEventListener("click",function(){
+          removeInputArrayField(this)
+        })
+      }
+
+      });
+
+
+  </script>
+
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="mdc-card aut-container">
+    <div class="aut-color-bar"></div>
+
+    <div id="sign-up">
+      <div class="aut-header">
+        <div style="text-align: center">
+          <div class="aut-list-header">
+            <div class="header-avatar-name">
+              <h3>Register</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sign-in-content">
+
+          {{ template "form" .}}
+
+        {{ range .Data.FormError.Errors }}
+          {{ template "error_message" . }}
+        {{ end }}
+
+
+        <div class="base-label subheader">
+          Already have an account? <a href="{{ .Data.LoginPath }}">Sign In</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}

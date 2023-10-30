@@ -1,0 +1,52 @@
+{{ define "form_text" }}
+
+<div class="form-field">
+    <div class="form-field">
+      <label {{ if .ID}}for="{{.ID}}"{{else}}for="text-field-{{.Name}}-input"{{end}} class="form-field--label">
+        <div class="base-label form-field--label">
+            {{.Label}}
+
+            {{if .TooltipText}}
+          <div class="aut-tooltip">
+              <img src="/static/images/info-icon.svg" alt="info" style="width: 16px; height: 16px; position: relative; top: 3px;"/>
+
+              <div class="aut-tooltip-content">
+                  {{.TooltipText}}
+              </div>
+              <svg id="triangle" width="40" height="26">
+                  <defs>
+                      <filter id="f" width="150%" height="130%">
+                          <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" />
+                          <feComponentTransfer>
+                              <feFuncA type="linear" slope="0.6" />
+                          </feComponentTransfer>
+                          <feMerge>
+                              <feMergeNode />
+                              <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                      </filter>
+                  </defs>
+                  <path filter="url(#f)" d="M0,0 h40 l-20,20z" fill="#212533" />
+              </svg>
+          </div>
+          {{end}}
+        </div>
+      </label>
+      <div class="mdc-text-field mdc-text-field--outlined input-field">
+        <span class="mdc-notched-outline">
+          <span class="mdc-notched-outline__leading"></span>
+          <span class="mdc-notched-outline__trailing"></span>
+        </span>
+        <input type="text" class="mdc-text-field__input {{ if .Classes }}{{range .Classes}} {{.}}{{end}}{{end}}" style="{{range $k, $v := .CSS}}{{$k}}:{{$v}};{{end}}" {{ if .ID}}id="{{.ID}}"{{else}}id="text-field-{{.Name}}-input"{{end}} name="{{.Name}}" {{ if .Value}} value="{{.Value}}"{{end}} {{range $k, $v := .Params}} {{$k}}="{{$v}}"{{end}}>
+        </div>
+{{if .Errors}}
+  {{ range .Errors}}
+    <div class="alert-danger">
+      {{.}}
+    </div>
+  {{end}}
+{{end}}
+    </div>
+  </div>
+
+{{end}}

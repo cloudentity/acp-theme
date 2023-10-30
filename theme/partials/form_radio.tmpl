@@ -1,0 +1,19 @@
+{{ define "form_radio" }}
+
+<div class="form-field" id="{{.ID}}">
+  <div class="aut-radio-buttons">
+    {{ $labels := .Labels }}
+    {{ range $k, $v := .Values }}
+      <button type="button" data-value="{{$v}}" {{if eq $k 0}}class="active"{{end}}>{{index $labels $k}}</button>
+    {{ end }}
+  </div>
+  <input name="{{.Name}}" type="checkbox" class="hidden">
+
+  {{ if .Errors }}
+    {{ range .Errors }}
+      <div class="alert-danger">{{.}}</div>
+    {{ end }}
+  {{ end }}
+</div>
+
+{{ end }}
