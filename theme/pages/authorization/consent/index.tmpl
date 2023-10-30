@@ -25,6 +25,10 @@
 
         {{ template "consent_scopes_with_service" . }}
 
+        {{ if .Data.Claims }}
+          {{ template "consent_claims" . }}
+        {{ end }}
+
         {{ template "consent_footer" . }}
       </div>
     </form>

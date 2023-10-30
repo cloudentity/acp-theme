@@ -9,9 +9,35 @@
     <div class="header-container">
       {{ template "header" .Styling }}
 
-      <a href="?" class="logout-container">
-        <button class="submit-button" type="button" id="sign-in">Sign out</button>
-      </a>
+      <div class="logout-container">
+        <div class="button-group-container">
+          <a href="?">
+            <button class="button-group-button button-group-main-button" type="button"><i class="material-icons">exit_to_app</i> Logout</button>
+          </a>
+          <button id="logout-dropdown-button" class="button-group-button button-group-dropdown-button" type="button"><i class="material-icons">arrow_drop_down</i></button>
+        </div>
+        <div id="button-group-popout" class="button-group-popout non-visible">
+          <ul class="button-group-list">
+            <li class="button-group-list-item button-group-list-item-top">
+              <a href="?">
+                <div class="button-group-list-item-title">Logout</div>
+                <div class="button-group-list-item-description">Logout from Demo Application only and retain OIDC provider session.</div>
+              </a>
+            </li>
+            <li class="button-group-list-item button-group-list-item-bottom">
+              {{ if .Data.IDTokenRaw }}
+              <a href="{{ .Data.OIDCLogoutURL }}?id_token_hint={{ .Data.IDTokenRaw }}">
+              {{ else }}
+              <a href="{{ .Data.OIDCLogoutURL }}">
+              {{ end }}
+                <div class="button-group-list-item-title">Logout Everywhere</div>
+                <div class="button-group-list-item-description">Logout from the Demo application and the OIDC provider.</div>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
     </div>
 
     <div class="custom-header">
