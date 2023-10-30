@@ -1,0 +1,60 @@
+{{ define "base" }}
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ template "title" . }}</title>
+
+    <link rel="stylesheet" href="{{ .Config.Root }}/static/material-components-web.min.css">
+    <script src="{{ .Config.Root }}/static/material-components-web.min.js"></script>
+    <link href="{{ .Config.Root }}/static/fonts.css" rel="stylesheet">
+    <link href="{{ .Config.Root }}/static/material-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ .Config.Root }}/static/style.css">
+    <link rel="icon" href="{{ .Config.Root }}/favicon.png">
+    
+    {{if .Config.Styling }}
+      <style> 
+        :root {
+          {{ if .Config.Styling.Colors.Primary }}
+          --mdc-theme-primary: {{ .Config.Styling.Colors.Primary }};
+          --mdc-theme-secondary: {{ .Config.Styling.Colors.Primary }};
+          {{ end }}
+
+          {{ if .Config.Styling.Colors.Background }}
+          --mdc-theme-background: {{ .Config.Styling.Colors.Background }};
+          {{ end }}
+          
+          {{ if .Config.Styling.Colors.Header }}
+          --header: {{ .Config.Styling.Colors.Header }};
+          {{ end }}
+        }
+
+        {{ if .Config.Styling.FontURL }}
+          @font-face {
+            font-family: customBrandingFont;
+            src: url({{ .Config.Styling.FontURL }});
+          }
+
+          *:not(i):not(.material-icons) {
+            font-family: customBrandingFont !important; 
+          }
+        {{ end }}
+
+        {{ if .Config.Styling.LogoURL }}
+          .aut-banner-logo > img {
+            {{ with (eq .Config.Styling.LogoSize "S") }} height: 24px; {{ end }}
+            {{ with (eq .Config.Styling.LogoSize "") }} height: 36px; {{ end }}
+            {{ with (eq .Config.Styling.LogoSize "L") }} height: 48px; {{ end }}
+         }
+        {{ end }}
+      </style>
+    {{ end }}
+
+  </head>
+  <body class="mdc-typography">
+  {{ template "content" . }}
+  </body>
+  </html>
+{{ end }}

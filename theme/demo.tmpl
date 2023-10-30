@@ -1,0 +1,191 @@
+{{ template "base" . }}
+
+{{ define "title" }}Demo{{ end }}
+
+{{ define "content" }}
+    {{ if .Data.code }}
+      <div class="aut-banner">
+        <div class="aut-banner-logo">
+           <img src="{{ .Config.Root }}/static/images/cloudentity-logo-short.png" alt="Cloudentity ACP">
+           <span>Demo {{ .flow }} Application</span>
+         </div>
+         <div class="aut-banner-contact">
+           <a href="?">
+             <button class="mdc-button mdc-button--raised" type="button">
+               <div class="mdc-button__ripple"></div>
+               <span class="mdc-button__label">Logout</span>
+             </button>
+           </a>
+         </div>
+      </div>
+
+      <div class="aut-container" style="padding: 5px; width: 1024px;">
+        <div class="aut-demo-info">
+          <div class="material-icons aut-demo-info-icon">error_outline</div>
+          <div class="aut-demo-info-text">
+            <p style="color: rgba(0, 0, 0, 0.87); font-weight: 500">You have logged in to the Demo app</p>
+            <p style="color: rgba(0, 0, 0, 0.6);">The information below is used for demo and testing purposes. You can view the tokens issued by ACP below.</p>
+          </div>
+        </div>
+      </div>
+      <div class="mdc-card aut-container" style="padding: 30px; width: 1024px;">
+        <div style="display: flex; flex-direction: column; padding: 0 40px;">
+          <div style="margin: 12px">
+            <h2 class="aut-demo-category-label">Access token</h2>
+            {{ if .Data.access_token_header  }}
+            <h3 class="aut-demo-subcategory-label">Header</h3>
+            <pre>{{ .Data.access_token_header }}</pre>
+            {{ end }}
+            {{ if .Data.access_token_payload }}
+            <h3 class="aut-demo-subcategory-label">Payload</h3>
+            <pre>{{ .Data.access_token_payload }}</pre>
+            {{ end }}
+            <h3 class="aut-demo-subcategory-label">Raw</h3>
+            <pre>{{ .Data.access_token_raw }}</pre>
+          </div>
+          <div style="margin: 12px">
+            <h2 class="aut-demo-category-label">ID token</h2>
+            <h3 class="aut-demo-subcategory-label">Header</h3>
+            <pre>{{ .Data.id_token_header }}</pre>
+            <h3 class="aut-demo-subcategory-label">Payload</h3>
+            <pre>{{ .Data.id_token_payload }}</pre>
+            <h3 class="aut-demo-subcategory-label">Raw</h3>
+            <pre>{{ .Data.id_token_raw }}</pre>
+          </div>
+          {{ if .Data.refresh_token_raw }}
+          <div style="margin: 12px">
+            <h2 class="aut-demo-category-label">Refresh token</h2>
+            <h3 class="aut-demo-subcategory-label">Raw</h3>
+            <pre>{{ .Data.refresh_token_raw }}</pre>
+          </div>
+          {{ end }}
+        </div>
+      </div>
+    {{ else }}
+      <div class="aut-banner-contained">
+        {{ template "header" .Config }}
+      </div>
+
+      <div class="mdc-card aut-container">
+        <div class="aut-header" style="margin-bottom: 10px;">
+          <div style="text-align: center">
+            <h1 class="aut-list-header">Demo {{ .flow }} application</h6>
+          </div>
+        </div>
+        <form action="?action=login" method="post" style="padding: 10px 90px 40px 90px;">
+          <div style="text-align: center; margin-top: 26px">
+            <button id="login-button" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span>Login to demo app</button>
+          </div>
+
+          <div style="text-align: center; margin-bottom: 12px; margin-top: 30px;">
+            <button id="advanced-button" class="mdc-button mdc-button--text" type="button" onclick="toggleAdvanced()">Configuration</button>
+          </div>
+          <div class="aut-hidden" id="advanced">
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%">
+              <input class="mdc-text-field__input" id="text-field-hero-input" name="client_id" value="{{ .Data.client_id }}">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-hero-input" class="mdc-floating-label">Client ID</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+              <input class="mdc-text-field__input" id="text-field-hero-input" name="client_secret" value="{{ .Data.client_secret }}">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-hero-input" class="mdc-floating-label">Client Secret</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+              <input class="mdc-text-field__input" id="text-field-redirect_uri-input" name="redirect_uri" value="{{ .Data.redirectURL }}">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-hero-input" class="mdc-floating-label">Redirect URI</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+              <input class="mdc-text-field__input" id="text-field-response_type-input" name="response_type" value="code">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-response_type-input" class="mdc-floating-label">Response type</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+              <input class="mdc-text-field__input" id="text-field-prompt-input" name="prompt" value="">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-prompt-input" class="mdc-floating-label">Prompt</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+              <input class="mdc-text-field__input" id="text-field-state-input" name="state" value="{{ .Data.state }}">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-state-input" class="mdc-floating-label">State</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+              <input class="mdc-text-field__input" id="text-field-scope-input" name="scope" value="{{ .Data.scope }}">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-scope-input" class="mdc-floating-label">Scope</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+              <input class="mdc-text-field__input" id="text-field-scope-input" name="acr_values" value="{{ .Data.acr_values }}">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-scope-input" class="mdc-floating-label">ACR values</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%; margin-top: 20px">
+              <input class="mdc-text-field__input" id="text-field-nonce-input" name="nonce" value="{{ .Data.nonce }}">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="text-field-nonce-input" class="mdc-floating-label">Nonce</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    {{ end }}
+
+    <script>
+      var textFields = [].map.call(document.querySelectorAll('.mdc-text-field'), function (el) {
+        return new window.mdc.textField.MDCTextField(el)
+      });
+
+      function toggleAdvanced () {
+        var el = document.querySelector('#advanced');
+        el.classList.contains('aut-hidden')
+          ? el.classList.remove('aut-hidden')
+          : el.classList.add('aut-hidden');
+      }
+    </script>
+{{ end }}

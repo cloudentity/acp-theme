@@ -1,0 +1,127 @@
+{{ template "base" . }}
+
+{{ define "title" }}CIBA Authentication Device Simulator{{ end }}
+
+{{ define "content" }}
+        <div class="aut-banner-contained">
+            {{ template "header" .Config }}
+        </div>
+
+        <div class="mdc-card aut-container">
+            <div class="aut-header" style="margin-bottom: 10px;">
+                <div style="text-align: center">
+                    <h6 class="aut-list-header">CIBA Authentication Device Simulator</h6>
+                </div>
+
+        {{ if .Data.loginHint }}
+            </div>
+                {{ if (eq (len .Data.requests) 0) }}
+                <div style="text-align: center; margin-bottom: 10px;">
+                  No authentication requests found for <b>{{ .Data.loginHint }}</b>. Your client must submit ciba backchannel authentication request.
+                </div>
+                {{ else }}
+                {{ range .Data.requests }}
+                <form action="?action=process" method="post" style="padding: 24px;">
+                  <div id="request-{{ .LoginID }}">
+                    <div>
+
+                    <!-- todo refresh button? -->
+
+                    <!--
+                    todo table
+                    LoginID: {{ .LoginID }}
+                    Client: {{ .ClientInfo.Name }}
+                    details button
+                    -->
+
+                    <!--
+                    table on details click:
+
+                    LoginID: {{ .LoginID }}
+                    LoginState: {{ .LoginState }}
+                    Requested scopes: {{ .RequestedScopes }}
+                    BindingMessage: {{ .BindingMessage  }}
+                    ClientID: {{ .ClientID  }}
+                    ClientName: {{ .ClientInfo.Name }}
+
+                    // display Openabnking* attributes only if intentID is not empty
+	                OpenbankingIntentID: {{ .OpenbankingIntentID  }}
+	                OpenbankingSpec: {{ .OpenbankingSpec }}
+	                OpenbankingConsentType: {{ .OpenbankingConsentType }}
+                    -->
+
+                    <h6>Welcome <strong>{{ .UserIdentifier }}</strong>,</h6>
+
+                    <div class="body1" style="height: auto; margin-top: 16px;"><strong>{{ .ClientInfo.Name }}</strong> would like access to the following
+                        permissions:
+                    </div>
+
+                    <ul style="margin-top: 12px;">
+                        {{range .RequestedScopes}}
+                            <li style="margin-bottom: 8px;">{{ . }}</li>
+                        {{end}}
+                    </ul>
+
+                    {{ if .BindingMessage }}
+                        <div class="body1" style="height: auto; margin-top: 48px;">{{ .BindingMessage }}</div>
+                    {{ end }}
+                    </div>
+
+                    <input type="hidden" name="login_id" id="login_id" value="{{ .LoginID }}">
+                    <input type="hidden" name="login_state" id="login_state" value="{{ .LoginState }}">
+
+                <div style="text-align: right; margin-top: 32px">
+                    <button type="submit" name="decision" value="deny" id="deny-button" class="mdc-button"><span
+                                class="mdc-button__ripple"></span>Deny
+                    </button>
+                    <button type="submit" name="decision" value="allow" id="allow-button" class="mdc-button mdc-button--raised"><span
+                                class="mdc-button__ripple"></span>Allow
+                    </button>
+                </div>
+
+                  </div>
+                </form>
+                {{ end }}
+                {{ end }}
+
+        {{ else }}
+            </div>
+            <form action="?action=list" method="post" style="padding: 24px;">
+                {{ if .Data.processed}}
+                <!-- todo improve this error message -->
+                <div style="margin-bottom: 10px; color: red">
+                  Authentication request processed
+                </div>
+                {{ end }}
+                <div style="margin-bottom: 10px;">
+                    Type username that you would like to receive authentication requests for
+                </div>
+                <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%">
+                    <input class="mdc-text-field__input" id="text-field-hero-input" name="login_hint"
+                           value="{{ .Data.loginHint }}"
+                           required
+                    >
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="text-field-hero-input" class="mdc-floating-label">Login hint</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 26px">
+                    <button id="login-button" class="mdc-button mdc-button--raised"><span
+                                class="mdc-button__ripple"></span>Continue
+                    </button>
+                </div>
+            </form>
+        {{ end }}
+
+    </div>
+
+    <script>
+        var textFields = [].map.call(document.querySelectorAll('.mdc-text-field'), function (el) {
+            return new window.mdc.textField.MDCTextField(el)
+        });
+    </script>
+{{ end }}

@@ -1,0 +1,596 @@
+{{ template "base" . }}
+
+{{ define "title" }}Login{{ end }}
+
+{{ define "content" }}
+  <script>
+    var isPasswordVisible = false;
+    var enableIdpDiscovery = {{ .Data.server.EnableIDPDiscovery }};
+
+    function togglePasswordVisibility () {
+      var passwordInput = document.getElementById('text-field-password-input');
+      var visibilityIcon = document.getElementById('toggle-password-visibility-icon');
+
+      passwordInput.type = isPasswordVisible ? 'password' : 'text';
+      visibilityIcon.innerText = isPasswordVisible ? 'visibility_off' : 'visibility';
+      isPasswordVisible = !isPasswordVisible;
+      return false;
+    }
+
+    window.addEventListener('load', function () {
+      var textFields = [].map.call(document.querySelectorAll('.mdc-text-field'), function (el) {
+        var textFieldElement = new window.mdc.textField.MDCTextField(el);
+        if (textFieldElement.value) {
+          textFieldElement.foundation_.activateFocus();
+        }
+        return textFieldElement;
+      });
+
+      var switchElements = [].map.call(document.querySelectorAll('.mdc-switch'), function (el) {
+        var switchControl = new window.mdc.switchControl.MDCSwitch(el);
+        var input = el.querySelector('input')
+        if (input && input.name === 'remember_my_sign_in_method') {
+          var isChecked = {{ if .Data.rememberedSignInMethod }} true {{ else }} false {{ end }};
+          switchControl.checked = isChecked;
+        }
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      if (enableIdpDiscovery) {
+        initIdpsDiscovery();
+      } else {
+        renderIdps(idps);
+      }
+    });
+
+    function changeTab(tab) {
+      var signInDiv = document.querySelector('#sign-in');
+      var quickAccessDiv = document.querySelector('#quick-access');
+      var cancelButton = document.querySelector('#cancel');
+      var indicators = document.querySelectorAll('.mdc-tab-indicator');
+
+      if (tab === "sign-in") {
+        signInDiv.style = ""
+        cancelButton.style = ""
+        quickAccessDiv.style = "display: none;"
+        indicators[0].classList.add('mdc-tab-indicator--active');
+        indicators[1].classList.remove('mdc-tab-indicator--active');
+      }
+
+      if (tab === "quick-access") {
+        signInDiv.style = "display: none;"
+        quickAccessDiv.style = ""
+        indicators[0].classList.remove('mdc-tab-indicator--active');
+        indicators[1].classList.add('mdc-tab-indicator--active');
+        cancelButton.style = "display: none;"
+      }
+    }
+
+    function goBackToIdps () {
+      var idpsFallbackDiv = document.querySelector("#idps-fallback");
+      var welcomeBackDiv = document.querySelector("#welcome-back");
+      if (idpsFallbackDiv) {
+        idpsFallbackDiv.style = "";
+      }
+      if (welcomeBackDiv) {
+        welcomeBackDiv.remove();
+      }
+      return false;
+    }
+
+    var hasStaticWithoutDomains = {{ .Data.hasStaticWithoutDomains }};
+
+    function showPassword(domain) {
+      return (
+        hasStaticWithoutDomains || (domain && domainsToIdpsMap[domain] && domainsToIdpsMap[domain].method === 'static')
+      )
+    }
+
+    function onInputChange(value) {
+      var passwordContainer = document.querySelector('#password-container');
+      var domain = value.split('@')[1];
+
+      if (passwordContainer && showPassword(domain)) {
+        passwordContainer.removeAttribute('style');
+      } else {
+        passwordContainer.setAttribute('style', 'display: none;');
+      }
+
+      var idp = domain && domainsToIdpsMap[domain];
+
+      if (!idp) {
+        renderIdps(idps);
+      } else if (idp.method !== 'static') {
+        if (idp.instant_redirect) {
+          var authenticationIdInput = document.querySelector('#idp-discovery-authentication-id');
+          var loginForm = document.querySelector('#sign-in-form');
+          if (!authenticationIdInput || !loginForm) return;
+
+          authenticationIdInput.value = idp.id;
+          loginForm.submit();
+        } else {
+          var filteredIdps = idps.filter(function (v) {
+            return v.id === idp.id || idpsIdsWithDomains.indexOf(v.id) === -1;
+          });
+          renderIdps(filteredIdps);
+        }
+      } else {
+        var filteredIdps = idps.filter(function (v) {
+          return idpsIdsWithDomains.indexOf(v.id) === -1;
+        });
+        renderIdps(filteredIdps);
+      }
+    }
+
+    var domainsToIdpsMap = {};
+    var idpsIdsWithDomains = [];
+
+    function initIdpsDiscovery() {
+      var textFieldUsernameInput = document.querySelector('#text-field-username-input');
+
+      {{ range $domain, $value := .Data.domainsToIDPs }}
+      domainsToIdpsMap["{{ $domain }}"] = {
+        id: "{{ .ID }}",
+        method: "{{ .Method }}",
+        instant_redirect: {{ .DiscoverySettings.InstantRedirect }},
+      };
+      idpsIdsWithDomains.push("{{ .ID }}");
+      {{ end }}
+
+      textFieldUsernameInput.addEventListener('change', function (e) {
+        onInputChange(e.target.value);
+      });
+
+      onInputChange(textFieldUsernameInput.value);
+    }
+
+    var idpIcons = {
+      "github": "/static/images/idps/github.svg",
+      "okta": "/static/images/idps/okta.svg",
+      "saml": "/static/images/idps/saml-icon.svg",
+      "azureb2c": "/static/images/idps/azure-b2c-icon.svg",
+      "azure": "/static/images/idps/azure-icon.svg",
+      "cognito": "/static/images/idps/cognito-icon.svg",
+      "intelli_trust": "/static/images/idps/entrust-icon.svg",
+      "oidc": "/static/images/idps/openid-icon.svg",
+      "custom": "/static/images/idps/custom-circle.svg",
+      "google": "/static/images/idps/google-icon.svg",
+      "github_embedded": "/static/images/idps/github.svg",
+      "google_embedded": "/static/images/idps/google-icon.svg",
+    }
+
+    var idps = [
+      {{ range $method := .Data.methods }}
+      {
+        id: "{{ .ID }}",
+        name: "{{ .Name }}",
+        method: "{{ .Method }}",
+        query: "?{{ $.Data.query }}"
+      },
+      {{ end }}
+    ];
+
+    function renderIdps(idps) {
+      var container = document.querySelector('#idps-list');
+      var orContinueWith = document.querySelector('#or-continue-with');
+      container.innerHTML = '';
+      idps.forEach(function (idp) {
+        var button = document.createElement('button');
+        button.setAttribute('class', 'idp-card');
+        button.setAttribute('name', 'authentication_id');
+        button.setAttribute('type', 'submit');
+        button.setAttribute('value', idp.id);
+        button.setAttribute('title', idp.name);
+        button.setAttribute('form', 'sign-in-form');
+        button.setAttribute('formaction', idp.query);
+        
+        var content = document.createElement('div');
+
+        var image = document.createElement('img');
+        image.setAttribute('src', idpIcons[idp.method]);
+        image.setAttribute('alt', idp.method);
+
+        var text = document.createElement('span');
+        text.textContent = idp.name;
+
+        var icon = document.createElement('i');
+        icon.setAttribute('class', 'material-icons mdc-icon-button__icon');
+        icon.textContent = 'navigate_next';
+
+        content.appendChild(image);
+        content.appendChild(text);
+
+        button.appendChild(content);
+        button.appendChild(icon);
+
+        container.appendChild(button);
+      });
+
+      if (orContinueWith) {
+        if (!idps.length) {
+          orContinueWith.setAttribute('style', 'display: none');
+        } else {
+          orContinueWith.removeAttribute('style');
+        }
+      }
+    }
+
+  </script>
+
+  <div class="aut-banner-contained">
+    {{ template "header" .Config }}
+  </div>
+
+  {{ if and (eq (len .Data.methods) 0) (not .Data.hasStatic) }} <!-- no idp to login -->
+
+    <div id="error-container">
+      <img src="{{ .Config.Root }}/static/images/no-idp.svg" alt="icon" />
+      <div id="error-title">No Identity Providers Configured</div>
+      <div id="error-description">This server does not have any identity providers configured.</div>
+      <div id="error-hint"></div>
+    </div>
+
+  {{ else }}
+    <div class="mdc-card aut-container" style="width: 480px;">
+      <div class="color-bar"></div>
+
+      {{ if and (eq .Data.server.ID "admin") (or .Data.serversWithQuickAccessByType.developer .Data.serversWithQuickAccessByType.regular) }}
+        <div>
+          <div class="mdc-tab-bar" role="tablist">
+            <div class="mdc-tab-scroller">
+              <div class="mdc-tab-scroller__scroll-area">
+                <div class="mdc-tab-scroller__scroll-content">
+                  <button id="sign-in-tab" class="mdc-tab" role="tab" aria-selected="true" tabindex="0" onclick="changeTab('sign-in');">
+                    <span class="mdc-tab__content">
+                      <span class="mdc-tab__icon material-icons" aria-hidden="true">person_outline</span>
+                      <span class="mdc-tab__text-label">Admin sign in</span>
+                    </span>
+                    <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                      <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                    </span>
+                    <span class="mdc-tab__ripple"></span>
+                  </button>
+
+                  <button id="quick-access-tab" class="mdc-tab" role="tab" tabindex="1" onclick="changeTab('quick-access');">
+                    <span class="mdc-tab__content">
+                      <span class="mdc-tab__icon material-icons" aria-hidden="true">turned_in_not</span>
+                      <span class="mdc-tab__text-label">Quick access</span>
+                    </span>
+                    <span class="mdc-tab-indicator">
+                      <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                    </span>
+                    <span class="mdc-tab__ripple"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{ end }}
+
+      <div id="sign-in">
+        <div class="aut-header">
+          <div style="text-align: center">
+            <div class="aut-list-header">
+
+            {{ if and .Data.server .Data.server.Name }}
+              <div class="header-avatar-name">
+                <span class="name-avatar">{{ slice .Data.server.Name 0 1 }}</span>
+                <h3>{{ .Data.server.Name }}</h3>
+              </div>
+              {{ else }}
+              <div class="header-avatar-name">
+                <h3>Log in to your account</h3>
+              </div>
+              {{ end }}
+            </div>
+          </div>
+        </div>
+
+        <div class="sign-in-content">
+          <form action="?login_id={{ .Data.sessionID }}&prompt={{ .Data.prompt }}&max_age={{ .Data.max_age }}" method="post" id="sign-in-form">
+          
+
+            {{ if .Data.rememberedSignInMethod }}
+              <div id="welcome-back" style="margin-bottom: 16px;">
+                <div class="base-label">Welcome back</div>
+                <div class="is-back-container">
+                  <div class="is-back-content">
+                    <div>
+                      <img src="{{ .Config.Root }}/static/images/person-icon.svg" alt="icon" style="margin-right: 12px;" />
+                    </div>
+                    <div>
+                      <div class="is-back-content--name">{{ or .Data.rememberedSignInMethod.AuthenticationContext.name .Data.rememberedSignInMethod.Subject }}</div>
+                      {{ if not (eq .Data.rememberedSignInMethod.AuthenticationContext.name .Data.rememberedSignInMethod.Subject) }}
+                        <div class="is-back-content--email">{{ .Data.rememberedSignInMethod.Subject }}</div>
+                      {{ end }}
+                    </div>
+                  </div>
+                </div>
+
+                {{ if eq .Data.rememberedIDP.Method "static" }}
+                  <div class="form-field">
+                    <label for="username" class="form-field--label">
+                      <div class="base-label form-field--label">
+                        Username
+                        {{ template "tooltip-username" .Config }}
+                      </div>
+                    </label>
+                    <div class="mdc-text-field mdc-text-field--outlined input-field">
+                      <span class="mdc-notched-outline">
+                        <span class="mdc-notched-outline__leading"></span>
+                        <span class="mdc-notched-outline__trailing"></span>
+                      </span>
+                      <input class="mdc-text-field__input" id="text-field-username-input" name="username" value="{{ .Data.rememberedSignInMethod.Subject }}">
+                    </div>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="password" class="form-field--label">
+                      <div class="base-label form-field--label">
+                        Password
+                      </div>
+                    </label>
+                    <div class="mdc-text-field mdc-text-field--outlined input-field">
+                      <span class="mdc-notched-outline">
+                        <span class="mdc-notched-outline__leading"></span>
+                        <span class="mdc-notched-outline__trailing"></span>
+                      </span>
+                      <input class="mdc-text-field__input" id="text-field-password-input" name="password" type="password">
+                      <button id="toggle-password-visibility-button"
+                              type="button"
+                              class="mdc-icon-button"
+                              style="opacity: 0.38;"
+                              aria-label="Toggle password visibility"
+                              aria-hidden="true"
+                              aria-pressed="false"
+                              onclick="return togglePasswordVisibility();">
+                        <i id="toggle-password-visibility-icon" class="material-icons mdc-icon-button__icon">visibility_off</i>
+                      </button>
+                    </div>
+                  </div>
+
+                  {{ if .Data.error }}
+                    <div class="alert-danger">
+                      {{ .Data.error }}
+                    </div>
+                  {{ end }}
+
+                  <button class="mdc-button mdc-button--raised base-confirm-button" type="submit">
+                    <span class="mdc-button__ripple"></span>
+                    Sign in
+                  </button>
+
+                {{ else }}
+                  <div class="spacer-container">
+                    <div></div>
+                    <div>Continue with</div>
+                    <div></div>
+                  </div>
+
+                  <div>
+                      <button class="idp-card" name="authentication_id" type="submit" value="{{ .Data.rememberedIDP.ID }}" title="{{ .Data.rememberedIDP.Name }}" form="sign-in-form" formaction="?{{ $.Data.query }}">
+                      <div>
+                        {{ if eq .Data.rememberedIDP.Method "github" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/github.svg" alt="github" />
+                        {{ else if eq .Data.rememberedIDP.Method "okta" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/okta.svg" alt="okta" />
+                        {{ else if eq .Data.rememberedIDP.Method "saml" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/saml-icon.svg" alt="saml" />
+                        {{ else if eq .Data.rememberedIDP.Method "azureb2c" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/azure-b2c-icon.svg" alt="azureb2c" />
+                        {{ else if eq .Data.rememberedIDP.Method "azure" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/azure-icon.svg" alt="azure" />
+                        {{ else if eq .Data.rememberedIDP.Method "cognito" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/cognito-icon.svg" alt="cognito" />
+                        {{ else if eq .Data.rememberedIDP.Method "intelli_trust" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/entrust-icon.svg" alt="intelli_trust" />
+                        {{ else if eq .Data.rememberedIDP.Method "oidc" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/openid-icon.svg" alt="oidc" />
+                        {{ else if eq .Data.rememberedIDP.Method "custom" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/custom-circle.svg" alt="custom" />
+                        {{ else if eq .Data.rememberedIDP.Method "github_embedded" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/github.svg" alt="github_embedded" />
+                        {{ else if eq .Data.rememberedIDP.Method "google_embedded" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/google-icon.svg" alt="google_embedded" />
+                        {{ else if eq .Data.rememberedIDP.Method "google" }}
+                          <img src="{{ .Config.Root }}/static/images/idps/google-icon.svg" alt="google" />
+                        {{ end }}
+                        <span>{{ .Data.rememberedIDP.Name }}</span>
+                      </div>
+                      <i class="material-icons mdc-icon-button__icon">navigate_next</i>
+                    </button>
+                  </div>
+                {{ end }}
+
+                {{ if (gt (len .Data.methods) 0) }} <!-- statics are filtered out from methods -->
+                  <button onclick="return goBackToIdps();" class="select-different-account">Select a different account</button>
+                {{ end }}
+                <br />
+              </div>
+            {{ end }}
+
+            <div id="idps-fallback" style="{{ if .Data.rememberedSignInMethod }} display: none; {{ end }}">
+              {{ .Data.csrfField }}
+
+              {{ if and .Data.idp.Settings.Hint (gt (len .Data.idp.Credentials.Users) 0) }}
+              <p class="mdc-typography--body1" id="hint-description">
+                This is a mock IDP login page.
+              </p>
+              <p class="mdc-typography--body1" id="hint-login-data">
+                Username: <b>{{ (index .Data.idp.Credentials.Users 0).Username }}</b><br/>
+                Password: <b>{{ (index .Data.idp.Credentials.Users 0).Password }}</b>
+              </p>
+              {{ end }}
+
+              <h2 class="header-sign-in">Sign in</h2>
+
+              {{ if or .Data.hasStatic .Data.server.EnableIDPDiscovery }}
+
+                <div class="form-field">
+                  <label for="username" class="form-field--label">
+                    <div class="base-label form-field--label">
+                      Username
+                      {{ template "tooltip-username" .Config }}
+                    </div>
+                  </label>
+                  <div class="mdc-text-field mdc-text-field--outlined input-field">
+                    <span class="mdc-notched-outline">
+                      <span class="mdc-notched-outline__leading"></span>
+                      <span class="mdc-notched-outline__trailing"></span>
+                    </span>
+                    <input class="mdc-text-field__input" id="text-field-username-input" name="username" value="{{ .Data.username }}">
+                  </div>
+                </div>
+
+                <div 
+                  class="form-field"
+                  id="password-container" 
+                  {{ if and (.Data.server.EnableIDPDiscovery) (not .Data.hasStaticWithoutDomains) }} 
+                    style="display: none;"
+                  {{ end }}
+                >
+                  <label for="password" class="form-field--label">
+                    <div class="base-label form-field--label">
+                      Password
+                    </div>
+                  </label>
+                  <div class="mdc-text-field mdc-text-field--outlined input-field">
+                    <span class="mdc-notched-outline">
+                      <span class="mdc-notched-outline__leading"></span>
+                      <span class="mdc-notched-outline__trailing"></span>
+                    </span>
+                    <input class="mdc-text-field__input" id="text-field-password-input" name="password" type="password">
+                    <button id="toggle-password-visibility-button"
+                            type="button"
+                            class="mdc-icon-button"
+                            style="opacity: 0.38;"
+                            aria-label="Toggle password visibility"
+                            aria-hidden="true"
+                            aria-pressed="false"
+                            onclick="return togglePasswordVisibility();">
+                      <i id="toggle-password-visibility-icon" class="material-icons mdc-icon-button__icon">visibility_off</i>
+                    </button>
+                  </div>
+                </div>
+
+                {{ if .Data.error }}
+                  <div class="alert-danger">
+                      {{ .Data.error }}
+                  </div>
+                {{ end }}
+
+                <div style="display: flex; align-items: center;">
+                  <div class="mdc-switch">
+                    <div class="mdc-switch__track"></div>
+                    <div class="mdc-switch__thumb-underlay">
+                      <div class="mdc-switch__thumb"></div>
+                      <input type="checkbox" name="remember_me"
+                          id="remember_me" class="mdc-switch__native-control" role="switch">
+                    </div>
+                  </div>
+                  <label for="remember_me" class="label-caption">
+                    Keep me signed in
+                  </label>
+                </div>
+
+                <button class="mdc-button mdc-button--raised base-confirm-button" type="submit">
+                  <span class="mdc-button__ripple"></span>
+                  Sign in
+                </button>
+
+                {{ if (ne (len .Data.methods) 0) }}
+                  <div id="or-continue-with" class="spacer-container">
+                    <div></div>
+                    <div>Or continue with</div>
+                    <div></div>
+                  </div>
+                {{ end }}
+
+              {{ end }}
+
+              <div id="idps-list">
+              </div>
+              
+            </div>
+            {{ if (ne (len .Data.methods) 0) }}
+              <div class="mdc-form-field" style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center;">
+                  <div class="mdc-switch">
+                    <div class="mdc-switch__track"></div>
+                    <div class="mdc-switch__thumb-underlay">
+                      <div class="mdc-switch__thumb"></div>
+                      <input type="checkbox" name="remember_my_sign_in_method"
+                          id="remember_my_sign_in_method" class="mdc-switch__native-control" role="switch">
+                    </div>
+                  </div>
+                  <label for="remember_my_sign_in_method" class="label-caption">
+                    Remember my Identity Provider
+                  </label>
+                </div>
+                {{ template "tooltip-remember-idp" .Config }}
+              </div>
+            {{ end }}
+
+            {{ if and (.Data.server.EnableIDPDiscovery) (gt (len .Data.domainsToIDPs) 0)}}    
+                <input type="hidden" id="idp-discovery-authentication-id" name="authentication_id" value="">
+            {{ end }}
+          </form>
+        </div>
+      </div>
+
+      <div id="quick-access" style="display: none;">
+        <div class="quick-acess--content">
+
+          {{ if .Data.serversWithQuickAccessByType.developer }}
+            <div id="developer-portals" class="spacer-container--left">
+              <div style="text-align: left;">Developer Portals</div>
+              <div></div>
+            </div>
+
+            {{ range .Data.serversWithQuickAccessByType.developer }}
+              <a class="idp-card portal-card" target="_blank" href="{{ $.Config.Root }}/app/{{ .TenantID }}/developer/{{ .ID }}">
+                <div>
+                  <span class="portal-card--avatar" style="background-color: {{ .Color }};">{{ slice .Name 0 1 }}</span>
+                  <span class="portal-card--name">{{ .Name }}</span>
+                </div>
+                <i class="material-icons mdc-icon-button__icon">open_in_new</i>
+              </a>
+            {{ end }}
+            <div style="height: 32px;"></div>
+          {{ end }}
+          
+          {{ if .Data.serversWithQuickAccessByType.regular }}
+            <div id="user-consent-portals" class="spacer-container--left">
+              <div style="text-align: left;">User Consent Portals</div>
+              <div></div>
+            </div>
+
+            {{ range .Data.serversWithQuickAccessByType.regular }}
+              <a class="idp-card portal-card" target="_blank" href="{{ $.Config.Root }}/app/{{ .TenantID }}/{{ .ID }}">
+                <div>
+                  <span class="portal-card--avatar" style="background-color: {{ .Color }};">{{ slice .Name 0 1 }}</span>
+                  <span class="portal-card--name">{{ .Name }}</span>
+                </div>
+                <i class="material-icons mdc-icon-button__icon">open_in_new</i>
+              </a>
+            {{ end }}
+          {{ end }}
+
+        </div>
+        <div class="portal-card--info">
+          Quick access links can be added and removed from the workspace directory within the Admin application.
+          <a href="https://docs.authorization.cloudentity.com/features/portals/log-in-page/" target="_blank" rel="noopener noreferrer">Learn more</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="cancel-container">
+      <a href="?login_id={{ .Data.sessionID }}&action=cancel" id="cancel" name="cancel">Cancel</a>
+    </div>
+  {{ end }} <!-- end if no idp to login -->
+
+  {{ template "footer" }}
+{{ end }}
