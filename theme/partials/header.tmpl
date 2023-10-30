@@ -1,0 +1,20 @@
+{{ define "header" }}
+ <div class="aut-banner-logo">
+    {{ if .LogoURI }}
+    <img src="{{ .LogoURI }}" alt="Logo">
+    {{ else }}
+    <img src="/static/images/cloudentity-logo-short.png" alt="Cloudentity ACP">
+    {{ end }}
+    {{ if .Name }}
+    <span>{{ .Name }}</span>
+    {{ else }}
+    <span>Cloudentity</span>
+    {{ end }}
+  </div>
+  <div class="aut-banner-contact">
+    <!--<button class="mdc-button mdc-button--raised" type="button" name="action" value="">
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Contact support</span>
+    </button>-->
+  </div>
+{{ end }}
