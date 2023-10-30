@@ -11,9 +11,9 @@
   <div class="card">
     <div class="content">
       <h2>Success!</h2>
-      <div class="header-info">You've successfully activated your account</div>
+      <div>You've successfully activated your account</div>
 
-      {{ if .Data.LoginPath }}
+      {{ if .Data.SessionID }}
         <a href="{{ .Data.LoginPath }}">
           <button class="submit-button" id="sign-in">Sign in</button>
         </a>

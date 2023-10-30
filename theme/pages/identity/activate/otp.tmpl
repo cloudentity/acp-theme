@@ -1,30 +1,26 @@
 {{ define "setup_with_otp" }}
 
-{{ template "identity_activate_disable_submit_empty_otp_script" . }}
+    <h2 class="header">Activate</h2>
 
-<div class="steps-container">STEP <b>3</b> OF <b>3</b></div>
-<h2>Activate Your Account</h2>
+    <div class="header-info">Enter the security code sent to your identifier.</div>
 
-<div class="form-field">
-    <label for="text-field-username-input">
-        Email | Phone
-    </label>
-    <input id="text-field-username-input" name="username" autocomplete="off" data-lpignore="true" value="{{.Data.Identifier}}" disabled>
-</div>
+    <div class="form-field">
+        <label for="text-field-identifier-input" class="label-with-link" value="{{ .Data.Identifier }}">
+            Verification code
+            <a href="{{ .Data.ResendPath }}">Resend code</a>
+        </label>
 
-<div class="form-field extra-top-margin" id="otp-container">
-    <div id="otp-input-container" class="form-field otp-input-container">
-        <input type="hidden" name="otp" value="" id="otp-input">
+        <div class="input-with-button input-with-prefix-button">
+            <button type="button" tabindex="-1">
+            <i class="material-icons">vpn_key</i>
+            </button>
+            <input type="text" inputmode="numeric" autocomplete="one-time-code" aria-label="Verificaton code" name="otp" id="text-field-otp-input">
+        </div>
     </div>
-    <div class="footer-with-link">
-        Still didn't receive?
-        <a href="{{ .Data.ResendPath }}">Resend code</a>
-    </div>
-</div>
 
-<button class="submit-button no-bottom-margin extra-top-margin" type="submit" id="sign-in-button">
-    <span>Continue</span>
-    <div class="non-visible">{{ template "loader" }}</div>
-</button>
+    <button class="submit-button" type="submit" id="sign-up-button">
+        <i class="material-icons">lock</i>
+        Activate
+    </button>
 
 {{ end }}

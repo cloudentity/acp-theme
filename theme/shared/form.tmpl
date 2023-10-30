@@ -3,7 +3,7 @@
 <form {{if .Data.Form.Name}}name="{{.Data.Form.Name}}"{{end}} {{if .Data.Form.ID}}id="{{.Data.Form.ID}}"{{end}}  method="{{ .Data.Form.Method }}" action="?login_id={{ .Data.Form.LoginID }}&login_state={{ .Data.Form.LoginState }}&server_id={{ .Data.ServerID }}"  {{if .Data.Form.CSS}}style="{{range $k, $v := .Data.Form.CSS}}{{$k}}: {{$v}}; {{end}}"{{end}} class="{{ if .Data.Form.Classes }}{{range .Data.Form.Classes}} {{.}}{{end}}{{end}}">
   {{ .Data.CsrfField }}
 
-	<div class="row{{if .Data.Form.Hidden}} non-visible{{end}}" name="row_main" id="row_main">
+	<div class="row" name="row_main" id="row_main">
     {{ range .Data.Form.FormElements }}
       {{ if eq (.FieldType) "text" }}
         {{ template "form_text" . }}
@@ -26,14 +26,12 @@
 	</div>
 
   {{ if .Data.CaptchaSiteKey }}
-    <div class="recaptcha-container">
-      <div class="g-recaptcha"
-        data-sitekey="{{ .Data.CaptchaSiteKey }}"
-        data-callback="enableSubmit"
-        data-expired-callback="disableSubmit"
-        data-error-callback="disableSubmit"
-      ></div>
-    </div>
+    <div class="g-recaptcha"
+      data-sitekey="{{ .Data.CaptchaSiteKey }}"
+      data-callback="enableSubmit"
+      data-expired-callback="disableSubmit"
+      data-error-callback="disableSubmit"
+    ></div>
   {{ end }}
 </form>
 

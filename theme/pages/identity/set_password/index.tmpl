@@ -5,7 +5,6 @@
 {{ define "content" }}
 
   {{ template "password_visibility_script" . }}
-  {{ template "identity_set_password_scripts" . }}
 
   <div class="header-container">
     {{ template "header" .Config }}
@@ -59,15 +58,23 @@
         </div>
 
         {{ if not .Data.Code }}
-          <div class="form-field extra-top-margin" id="otp-container">
-            <div id="otp-input-container" class="form-field otp-input-container">
-              <input type="hidden" name="otp" value="" id="otp-input">
-            </div>
-            <div class="footer-with-link">
-              Still didn't receive?
+          <div class="form-field">
+            <label for="text-field-identifier-input" class="label-with-link">
+              Verification code
               <a href="{{ .Data.ResendPath }}">Resend code</a>
+            </label>
+
+            <div class="input-with-button input-with-prefix-button">
+              <button type="button" tabindex="-1">
+                <i class="material-icons">vpn_key</i>
+              </button>
+              <input type="text" inputmode="numeric" autocomplete="one-time-code" aria-label="Verificaton code" name="otp" id="text-field-otp-input">
             </div>
           </div>
+
+          {{ range .Data.FormError.Fields.otp }}
+            {{ template "error_message" . }}
+          {{ end }}
         {{ end }}
 
         {{ range .Data.FormError.Errors }}

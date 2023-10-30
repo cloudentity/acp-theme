@@ -8,18 +8,11 @@
   document.addEventListener("DOMContentLoaded", onPageLoad);
 
   function onPageLoad() {
-    var url = new URL(window.location.href);
-    var preview = url.searchParams.get("preview");
-
     setUsernameInputEnableOnSubmit();
     initOtpInput('otp-input-container', otpLength);
-
-    if (preview !== 'true') {
-      applyFocus();
-      disableButtonsOnEmptyInputs();
-      setButtonEnablementOnInput();
-    }
-
+    applyFocus();
+    disableButtonsOnEmptyInputs();
+    setButtonEnablementOnInput();
     initWebAuthn();
   }
 
@@ -72,24 +65,19 @@
   function initWebAuthn() {
     var form = document.querySelector('form');
     var view = {{ .Data.AuthnView }};
-    var signInButton = document.getElementById('sign-in-button');
 
-    if (view === "web_authn_view") {
-        form.addEventListener("submit", function (e) {
-        if (e.submitter.id !== "web-authn-sign-in-button") {
-          return;
-        }
-
-        e.preventDefault();
-        webAuthnLogin();
-      });
-    } else {
-       form.addEventListener("submit", function (e) {
-        if (signInButton) {
-          signInButton.disabled = true;
-        }
-      });
+    if (view !== "web_authn_view") {
+      return;
     }
+
+    form.addEventListener("submit", function (e) {
+      if (e.submitter.id !== "web-authn-sign-in-button") {
+        return;
+      }
+      
+      e.preventDefault();
+      webAuthnLogin();
+    });
   }
 
   function webAuthnLogin() {
@@ -145,11 +133,7 @@
       webAuthnError.value = error;
     })
     .finally(() => {
-      if(!webAuthnError.value.startsWith("NotAllowedError:")) {
-          document.querySelector('form').submit();
-      } else {
-          webAuthnError.value = '';
-      }
+      document.querySelector('form').submit();
     });
   }
 

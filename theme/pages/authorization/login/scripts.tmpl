@@ -3,10 +3,6 @@
 <script nonce="{{.Config.Nonce}}">
 
   document.addEventListener("DOMContentLoaded", function() {
-    var url = new URL(window.location.href);
-    var preview = url.searchParams.get("preview");
-    if (preview === 'true') return;
-
     initSwitchers();
     initIdpDiscovery();
     initStaticIdpPage();
@@ -105,14 +101,6 @@
 
     if (!form || !idpsListHeader || !idpsList || !notYouButton || !usernameInput || !nextButton || !idpsEmptyError || !idpsDiscoveryError) return;
 
-    var url = new URL(window.location.href);
-    var loginHint = url.searchParams.get("login_hint");
-
-    if (loginHint) {
-      usernameInput.value = loginHint;
-      searchIdps(loginHint);
-    }
-
     var buttons = idpsList.querySelectorAll('button');
 
     function rerenderIdpsEmptyError() {
@@ -168,19 +156,13 @@
       var loginForm = document.querySelector('#sign-in-form');
       var authenticationIdInput = document.querySelector('#idp-discovery-authentication-id');
       if (!loginForm || !authenticationIdInput) return;
-      if (idps.length > 1) return false;
 
-      var idpToRedirectTo = idps.find(function (idp) {
-        return idp.instant_redirect;
+      idps.forEach(function (idp) {
+        if (idp.instant_redirect) {
+          authenticationIdInput.value = idp.id;
+          loginForm.submit();
+        }
       });
-
-      if (idpToRedirectTo) {
-        authenticationIdInput.value = idpToRedirectTo.id;
-        loginForm.submit();
-        return true;
-      }
-
-      return false;
     }
 
     function searchIdps(username) {
@@ -204,35 +186,25 @@
           return idp.id;
         })
         idpsDiscoveryError.style.display = 'none';
-
-        var redirectTriggered = handleInstantRedirect(idps);
-        if (!redirectTriggered) {
-          rerenderButtons(idpsIds);
-          handleNextButtonState(username, false);
-        }
+        rerenderButtons(idpsIds);
+        handleInstantRedirect(idps);
       })
       .catch(function (error) {
         console.error(error);
         idpsDiscoveryError.style.display = 'flex';
         resetButtons();
+      })
+      .finally(function () {
         handleNextButtonState(username, false);
       });
     }
 
-    var result = debounce(searchIdps, 3000);
+    var result = debounce(searchIdps, 2000);
     var debouncedSearchIdps = result.debouncedFunction;
     var clearDebounce = result.clear;
 
     form.addEventListener('submit', function () {
       usernameInput.disabled = false;
-    });
-
-    usernameInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        clearDebounce();
-        searchIdps(usernameInput.value);
-      }
     });
 
     usernameInput.addEventListener('input', function (e) {
@@ -247,7 +219,6 @@
 
     notYouButton.addEventListener('click', function () {
       notYouButton.style.display = 'none';
-      resetButtons();
       usernameInput.disabled = false;
       usernameInput.focus();
       nextButton.style.display = 'block';

@@ -18,8 +18,6 @@
       {{ template "authn_otp_verify" . }}
     {{ else if eq .Data.AuthnView "otp_use_alternative_view" }}
       {{ template "authn_use_otp_alternative" . }}
-    {{ else if eq .Data.AuthnView "set_new_password_after_authn_view" }}
-      {{ template "authn_set_new_password" . }}
     {{ else if eq .Data.AuthnView "web_authn_view" }}
       {{ template "authn_web_authn" . }}
     {{ end }}

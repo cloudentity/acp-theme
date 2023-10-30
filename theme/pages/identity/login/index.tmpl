@@ -22,11 +22,9 @@
     </div>
   </div>
 
-  {{ if not (eq .Data.IdentityPoolID "built-in-admin-pool") }}
-    <div class="cancel-container">
-      <a href="?login_id={{ .Data.SessionID }}&action=cancel" id="cancel" name="cancel">Cancel</a>
-    </div>
-  {{ end }}
+  <div class="cancel-container">
+    <a href="?login_id={{ .Data.SessionID }}&action=cancel" id="cancel" name="cancel">Cancel</a>
+  </div>
 
   {{ template "footer" }}
 {{ end }}

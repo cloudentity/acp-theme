@@ -4,6 +4,9 @@
 
 {{ define "content" }}
 
+  {{ template "identity_register_scripts" . }}
+  {{ template "password_visibility_script" . }}
+  {{ template "submit_button_disabling_script" . }}
 
   <div class="header-container">
     {{ template "header" .Config }}
@@ -11,15 +14,17 @@
 
   <div class="card">
     <div class="content">
-      {{ if not .Data.PublicRegistrationAllowed }}
-      {{ template "registration_not_allowed" . }}
-      {{ else if eq .Data.TargetView "user" }}
-      {{ template "register_init" . }}
-      {{ else if eq .Data.TargetView "password" }}
-      {{ template "register_with_password" . }}
-      {{ else if eq .Data.TargetView "passkey" }}
-      {{ template "register_with_passkey" . }}
-      {{ end }}
+      <h2>Register</h2>
+
+      {{ template "form" . }}
+
+        {{ range .Data.FormError.Errors }}
+          {{ template "error_message" . }}
+        {{ end }}
+
+      <div class="buttons-container">
+        <a href="{{ .Data.LoginPath }}">Sign In</a>
+      </div>
     </div>
   </div>
 
