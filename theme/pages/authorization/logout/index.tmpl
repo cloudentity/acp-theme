@@ -1,0 +1,49 @@
+{{ template "base" . }}
+
+{{ define "title" }}Logout Consent{{ end }}
+
+{{ define "content" }}
+
+  <div class="header-container">
+    {{ template "header" .Config }}
+  </div>
+
+  <div class="card">
+    <div class="content">
+
+      <h2 class="margin-bottom-16">Would you like to log out?</h2>
+
+      <div class="login-welcome-back-card">
+        <img src="{{ .Config.Assets }}/static/images/person-icon.svg" alt="icon"/>
+        <div>
+          <div class="login-welcome-back-card-name">
+            Current session
+          </div>
+          <div class="login-welcome-back-card-email">
+            {{ or .Data.SSOSession.AuthenticationContext.name .Data.SSOSession.Subject }}
+          </div>
+          <div class="login-welcome-back-card-email">
+            {{ or .Data.SSOSession.AuthenticationContext.email .Data.SSOSession.Subject }}
+          </div>
+        </div>
+      </div>
+
+      <form action="{{ .Data.LogoutAPIURL }}" method="post">
+
+        <div class="buttons-container-full-width extra-top-margin">
+          <button type="submit" class="text-button" name="action" value="deny">
+            No
+          </button>
+
+          <button type="submit" class="contained-button" name="action" value="explicit">
+            Yes
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  {{ template "footer" }}
+{{ end }}

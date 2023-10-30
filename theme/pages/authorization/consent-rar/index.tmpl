@@ -1,0 +1,50 @@
+{{ template "base" . }}
+
+{{ define "title" }}Consent{{ end }}
+
+{{ define "content" }}
+
+  {{ template "consent_scripts" . }}
+
+  <div class="header-container">
+    {{ template "header" .Config }}
+  </div>
+
+  <form action="?login_id={{ .Data.Session.ID }}" method="post">
+  {{ .Data.CsrfField }}
+
+  {{ if or (gt (len .Data.ServicesWithScopes) 0) (gt (len .Data.ScopesWithoutService) 0)}}
+    <div class="card" id="scopes">
+      <div class="color-bar"></div>
+
+        {{ template "consent_header" . }}
+
+        <div class="content">
+          {{ if .Data.ScopesWithoutService }}
+            {{ template "consent_scopes_without_service" . }}
+          {{ end }}
+
+          {{ template "consent_scopes_with_service" . }}
+
+          {{ template "consent_footer" . }}
+        </div>
+    </div>
+  {{end}}
+
+  {{ if gt (len .Data.ServicesWithAuthorizationDetails) 0 }}
+    <div class="card" id="rars" style="display: {{ if or (gt (len .Data.ServicesWithScopes) 0) (gt (len .Data.ScopesWithoutService) 0)}}none{{else}}block{{end}}">
+      <div class="color-bar"></div>
+        {{ template "consent_header_rar" . }}
+
+        <div class="content">
+          {{ template "consent_rars" . }}
+
+          {{ template "consent_footer_rar" . }}
+        </div>
+    </div>
+  {{ end }}
+
+  </form>
+
+
+{{ end }}

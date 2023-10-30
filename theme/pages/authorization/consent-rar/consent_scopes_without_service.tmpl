@@ -1,0 +1,39 @@
+{{ define "consent_scopes_without_service" }}
+ 
+<div class="consent-scopes-container">
+  {{ range .Data.ScopesWithoutService }}
+    <div class="consent-scopes-container-row-container">
+      <div class="form-field consent-scope-row">
+        <label for="{{ .RequestedScopeName }}">
+          <div class="form-field-checkbox">
+            <input type="checkbox" name="scopes" value="{{ .RequestedScopeName }}" id="{{ .RequestedScopeName }}" {{ if not .GrantAllowed }} disabled {{ else }} checked {{ end }} >          
+            
+            {{ if .IsDynamic }}
+              {{ if .DisplayName }} {{ .DisplayName }}: {{ .RequestedScopeName }} {{ end }}
+            {{ else }}
+              {{ or .DisplayName .Name }}
+            {{ end }}
+
+            {{ if not .GrantAllowed }}
+              {{ template "tooltip" "Additional verification required" }}
+            {{ end }}
+          </div>
+        </label>
+
+        {{ if (or .Description (not .GrantAllowed)) }}
+          <button type="button" aria-label="Show scope description" data-scope-name="{{ .RequestedScopeName }}" class="scope-desc-toggle">
+            <i class="material-icons" data-icon-id="{{ .RequestedScopeName }}">keyboard_arrow_down</i>
+          </button>
+        {{ end }}
+      </div>
+
+      {{ if .Description }}
+        <div data-desc-id="{{ .RequestedScopeName }}" class="consent-scope-description non-visible">
+          {{ .Description }}
+        </div>
+      {{ end }}
+    </div>
+  {{ end }}
+</div>
+
+{{ end }}
