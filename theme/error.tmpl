@@ -1,0 +1,25 @@
+{{ template "base" . }}
+
+{{ define "title" }}Error{{ end }}
+
+{{ define "content" }}
+  <div class="aut-banner-contained">
+    {{ template "header" .Styling }}
+  </div>
+    <div id="error-container">
+      <input type="hidden" id="error" value="{{ .Data.Error }}">
+      <input type="hidden" id="cause" value="{{ .Data.Cause }}">
+      <img src="/static/images/no-idp.svg" alt="icon" />
+      <div id="error-title">{{ .Data.Name }}</div>
+      <div id="error-description">{{ .Data.Description }}.</div>
+      <div id="error-hint">{{ .Data.Hint }}</div>
+      {{ if .Data.RetryURL  }}
+        <br/><a href="{{ .Data.RetryURL }}">Retry</a>
+      {{ end }}
+    </div>
+  </div>
+
+{{ template "footer" }}
+
+{{ end }}
+
