@@ -1,0 +1,47 @@
+{{ define "form_checkbox" }}
+
+<div class="form-field">
+    <div class="form-field">
+      <label for="{{ if .ID}}{{.ID}}{{else}}field-{{.Name}}{{end}}" class="form-field--label">
+        <div class="base-label form-field--label">
+        `        <input type="checkbox" class="mdc-checkbox-field__input {{ if .Classes }}{{range .Classes}} {{.}}{{end}}{{end}}" style="{{range $k, $v := .CSS}}{{$k}}:{{$v}};{{end}}" {{ if .ID}}id="{{.ID}}"{{else}}id="field-{{.Name}}"{{end}} name="{{.Name}}" {{ if .Value}} value="{{.Value}}"{{end}} {{range $k, $v := .Params}} {{$k}}="{{$v}}"{{end}} {{ if .Checked}}checked{{end}}>
+            {{.Label}}
+
+            {{if .TooltipText}}
+          <div class="tooltip">
+              <img src="/static/images/info-icon.svg" alt="info" style="width: 16px; height: 16px; position: relative; top: 3px;"/>
+
+              <div class="tooltip-content">
+                  {{.TooltipText}}
+              </div>
+              <svg id="triangle" width="40" height="26">
+                  <defs>
+                      <filter id="f" width="150%" height="130%">
+                          <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" />
+                          <feComponentTransfer>
+                              <feFuncA type="linear" slope="0.6" />
+                          </feComponentTransfer>
+                          <feMerge>
+                              <feMergeNode />
+                              <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                      </filter>
+                  </defs>
+                  <path filter="url(#f)" d="M0,0 h40 l-20,20z" fill="#212533" />
+              </svg>
+          </div>
+          {{end}}
+        </div>
+      </label>
+
+{{if .Errors}}
+  {{ range .Errors}}
+    <div class="alert-danger">
+      {{.}}
+    </div>
+  {{end}}
+{{end}}
+    </div>
+  </div>
+
+{{ end }}
