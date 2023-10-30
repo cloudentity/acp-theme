@@ -3,10 +3,6 @@
 <script nonce="{{.Config.Nonce}}">
 
   document.addEventListener("DOMContentLoaded", function() {
-    var url = new URL(window.location.href);
-    var preview = url.searchParams.get("preview");
-    if (preview === 'true') return;
-
     initSwitchers();
     initIdpDiscovery();
     initStaticIdpPage();
