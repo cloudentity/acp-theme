@@ -29,10 +29,6 @@
           {{ template "consent_claims" . }}
         {{ end }}
 
-        {{ if .Data.VerifiedClaims.Claims }}
-          {{ template "consent_verified_claims" . }}
-        {{ end }}
-
         {{ template "consent_footer" . }}
       </div>
     </form>
