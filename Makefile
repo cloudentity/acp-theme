@@ -32,8 +32,9 @@ TOKEN          := $(shell curl -sSLk -X POST ${ISSUER_URL}/oauth2/token \
                         | jq -r .access_token)
 
 # Set some default values
-CURL		= curl -sSLk
-TEMPLATE_PATH  	= pages/authorization/login/scripts.tmpl
+CURL                 = curl -sSLk
+TEMPLATE_PATH        = pages/authorization/login/scripts.tmpl
+UPSERT_ALL_TEMPLATES = false
 
 all:	create-theme upsert-templates bind-theme  ## Run make create-theme, upsert-templates, bind-theme
 
@@ -65,9 +66,15 @@ delete-theme: ## Delete a theme
 	${CURL} -D - -X DELETE '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}' \
 	--header 'Authorization: Bearer ${TOKEN}'
 
-upsert-templates: ## Insert or Update all templates
-	for f in $$(cd theme; find * -name '*.tmpl'); \
-        do  make upsert-template THEME_ID=${THEME_ID} TEMPLATE_PATH="$$f" TOKEN=${TOKEN} ; \
+upsert-templates: ## Insert or Update all/modified-only templates
+	for file in $$(find theme/* -name '*.tmpl'); \
+    do \
+		if [[ "${UPSERT_ALL_TEMPLATES}" == "true" ]] || git status --porcelain "$$file" | grep '^ M' > /dev/null; \
+		then \
+			make upsert-template THEME_ID=${THEME_ID} TEMPLATE_PATH="$$file" TOKEN=${TOKEN}; \
+		else \
+			echo "Skipping $$file: file not modified"; \
+		fi \
 	done
 
 upsert-template: ## Insert or Update one template (make upsert-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl)
