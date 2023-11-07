@@ -1,6 +1,12 @@
 {{ template "base" . }}
 
-{{ define "title" }}Logout Consent{{ end }}
+{{ define "title" }}
+  {{ if .Data.LoggedOutPage }}
+    Logged Out
+  {{ else }}
+    Logout Consent
+  {{ end }}
+{{ end }}
 
 {{ define "content" }}
 
@@ -11,6 +17,9 @@
   <div class="card">
     <div class="content">
 
+    {{ if .Data.LoggedOutPage }}
+      <h2 class="header logged-out">You have logged out.</h2>
+    {{ else }}
       <h2 class="margin-bottom-16">Would you like to log out?</h2>
 
       <div class="login-welcome-back-card">
@@ -41,6 +50,9 @@
         </div>
 
       </form>
+    {{ end }}
+
+
 
     </div>
   </div>
