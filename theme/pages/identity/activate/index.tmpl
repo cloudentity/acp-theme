@@ -6,7 +6,7 @@
 
   {{ template "identity_activate_scripts" . }}
 
-  <form action="?login_id={{ .Data.SessionID }}&user_id={{ .Data.UserID}}&login_state={{ .Data.SessionState }}&code={{ .Data.Code }}&promptForPassword={{ .Data.PromptForPassword }}&promptForWebAuthn={{ .Data.PromptForWebAuthn }}&identifier={{ .Data.Identifier }}&server_id={{ .Data.ServerID }}&go_to={{ .Data.GoTo }}" method="post" id="sign-up-form">
+  <form action="?login_id={{ .Data.SessionID }}&user_id={{ .Data.UserID}}&login_state={{ .Data.SessionState }}&code={{ .Data.Code }}&promptForPassword={{ .Data.PromptForPassword }}&promptForWebAuthn={{ .Data.PromptForWebAuthn }}&identifier={{ .Data.Identifier }}&server_id={{ .Data.ServerID }}&go_to={{ .Data.GoTo }}&post_activation_url={{ .Data.PostAuthenticationURL }}" method="post" id="sign-up-form">
     <div class="header-container">
       {{ template "header" .Config }}
     </div>
@@ -33,6 +33,6 @@
       </div>
     </div>
   </form>
-    
+
   {{ template "footer" }}
 {{ end }}
