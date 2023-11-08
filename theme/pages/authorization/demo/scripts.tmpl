@@ -1,7 +1,7 @@
 {{ define "demo_scripts" }}
 
 <script nonce="{{.Config.Nonce}}">
-
+  
   function changeTab(selectedContentId) {
     return (e) => {
       var tabButtons = document.querySelectorAll('button[role="tab"]');
@@ -46,35 +46,13 @@
     }
   }
 
-  function toggleLogoutDropdown() {
-    let buttonGroupPopout = document.querySelector("#button-group-popout");
-    if (!buttonGroupPopout) return;
-
-    if (buttonGroupPopout.classList.contains('non-visible')) {
-        buttonGroupPopout.classList.remove('non-visible')
-    } else {
-        buttonGroupPopout.classList.add('non-visible');
-    }
-  }
-
-  function hideLogoutDropdown(event) {
-    let logoutDropdown = document.querySelector("#logout-dropdown-button");
-    let targetIsLogoutDropdown = logoutDropdown?.contains(event.target) ?? false;
-    if (!targetIsLogoutDropdown) {
-        let buttonGroupPopout = document.querySelector("#button-group-popout");
-        if (buttonGroupPopout && !buttonGroupPopout.classList.contains('non-visible')) buttonGroupPopout.classList.add('non-visible');
-    }
-  }
-
   document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', delegate('#claims-tab', changeTab('claims')));
     document.addEventListener('click', delegate('#access-token-tab', changeTab('access-token')));
     document.addEventListener('click', delegate('#id-token-tab', changeTab('id-token')));
     document.addEventListener('click', delegate('#refresh-token-tab', changeTab('refresh-token')));
     document.addEventListener('click', delegate('#advanced-button', toggleAdvanced));
-    document.addEventListener('click', delegate('#logout-dropdown-button', toggleLogoutDropdown));
     document.addEventListener('click', delegate('.selectable', toggleMoreValues));
-    window.addEventListener('click', hideLogoutDropdown)
 
     document.querySelectorAll(".pre-copy-button").forEach(function (el) {
       el.addEventListener("click", function (e) {

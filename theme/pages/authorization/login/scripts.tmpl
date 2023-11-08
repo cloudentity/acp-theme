@@ -3,10 +3,6 @@
 <script nonce="{{.Config.Nonce}}">
 
   document.addEventListener("DOMContentLoaded", function() {
-    var url = new URL(window.location.href);
-    var preview = url.searchParams.get("preview");
-    if (preview === 'true') return;
-
     initSwitchers();
     initIdpDiscovery();
     initStaticIdpPage();
@@ -104,14 +100,6 @@
     var idpsDiscoveryError = document.querySelector('#idps-discovery-error');
 
     if (!form || !idpsListHeader || !idpsList || !notYouButton || !usernameInput || !nextButton || !idpsEmptyError || !idpsDiscoveryError) return;
-
-    var url = new URL(window.location.href);
-    var loginHint = url.searchParams.get("login_hint");
-
-    if (loginHint) {
-      usernameInput.value = loginHint;
-      searchIdps(loginHint);
-    }
 
     var buttons = idpsList.querySelectorAll('button');
 

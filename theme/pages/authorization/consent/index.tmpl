@@ -25,14 +25,6 @@
 
         {{ template "consent_scopes_with_service" . }}
 
-        {{ if .Data.Claims }}
-          {{ template "consent_claims" . }}
-        {{ end }}
-
-        {{ if .Data.VerifiedClaims.Claims }}
-          {{ template "consent_verified_claims" . }}
-        {{ end }}
-
         {{ template "consent_footer" . }}
       </div>
     </form>

@@ -8,18 +8,11 @@
   document.addEventListener("DOMContentLoaded", onPageLoad);
 
   function onPageLoad() {
-    var url = new URL(window.location.href);
-    var preview = url.searchParams.get("preview");
-
     setUsernameInputEnableOnSubmit();
     initOtpInput('otp-input-container', otpLength);
-
-    if (preview !== 'true') {
-      applyFocus();
-      disableButtonsOnEmptyInputs();
-      setButtonEnablementOnInput();
-    }
-
+    applyFocus();
+    disableButtonsOnEmptyInputs();
+    setButtonEnablementOnInput();
     initWebAuthn();
   }
 
