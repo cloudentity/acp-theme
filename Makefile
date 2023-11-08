@@ -32,8 +32,9 @@ TOKEN          := $(shell curl -sSLk -X POST ${ISSUER_URL}/oauth2/token \
                         | jq -r .access_token)
 
 # Set some default values
-CURL		= curl -sSLk
-TEMPLATE_PATH  	= pages/authorization/login/scripts.tmpl
+CURL                 = curl --silent --show-error --location --insecure
+TEMPLATE_PATH        = pages/authorization/login/scripts.tmpl
+UPSERT_ALL_TEMPLATES = false
 
 all:	create-theme upsert-templates bind-theme  ## Run make create-theme, upsert-templates, bind-theme
 
@@ -65,16 +66,22 @@ delete-theme: ## Delete a theme
 	${CURL} -D - -X DELETE '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}' \
 	--header 'Authorization: Bearer ${TOKEN}'
 
-upsert-templates: ## Insert or Update all templates
-	for f in $$(cd theme; find * -name '*.tmpl'); \
-        do  make upsert-template THEME_ID=${THEME_ID} TEMPLATE_PATH="$$f" TOKEN=${TOKEN} ; \
+upsert-templates: ## Insert or Update all/modified-only templates
+	for file in $$(find theme/* -name '*.tmpl'); \
+    do \
+		if [[ "${UPSERT_ALL_TEMPLATES}" == "true" ]] || scripts/diff_from_original.sh "$$file" ; \
+		then \
+			make upsert-template THEME_ID=${THEME_ID} TEMPLATE_PATH="$$file" TOKEN=${TOKEN}; \
+		else \
+			echo "Skipping $$file: file not modified"; \
+		fi \
 	done
 
 upsert-template: ## Insert or Update one template (make upsert-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl)
 	${CURL} -D - -X PUT '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/template/${TEMPLATE_PATH}' \
 	--header 'Authorization: Bearer ${TOKEN}' \
 	--header 'Content-Type: application/json' \
-	--data-binary @<(jq -M --raw-input --slurp < 'theme/${TEMPLATE_PATH}' '{"content":.}')
+	--data-binary @<(jq --monochrome-output --raw-input --slurp < 'theme/${TEMPLATE_PATH}' '{"content":.}')
 
 delete-template: ## Delete a template (make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl)
 	${CURL} -D - -X DELETE '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/template/${TEMPLATE_PATH}' \
@@ -84,17 +91,17 @@ delete-template: ## Delete a template (make delete-template TEMPLATE_PATH=pages/
 describe-theme: ## Describe a theme
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}' \
 	--header 'Authorization: Bearer ${TOKEN}' \
-	| jq -M
+	| jq --monochrome-output
 
 list-templates: ## List the theme templates
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/templates' \
 	--header 'Authorization: Bearer ${TOKEN}' \
-	| jq -M
+	| jq --monochrome-output
 
 list-base-templates: ## List the base templates
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/themes/templates' \
 	--header 'Authorization: Bearer ${TOKEN}' \
-	| jq -M
+	| jq --monochrome-output
 
 export-templates: ## Download the theme templates to a zip file
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/theme/${THEME_ID}/templates/zip' \
@@ -110,13 +117,13 @@ import-templates: ## Upload the theme templates from a zip file
 list-workspaces: ## List workspaces
 	${CURL} -X GET '${BASEURL}/api/admin/${TENANT_ID}/servers' \
 	--header 'Authorization: Bearer ${TOKEN}' \
-	| jq -M '.servers[] | [ .id, .theme_id ]'
+	| jq --monochrome-output '.servers[] | [ .id, .theme_id ]'
 
 phony:
-	egrep -o '^[a-z0-9-]+:' Makefile | egrep -o '^[^:]+' | sort | xargs echo '.PHONY:' >> Makefile
+	egrep --only-matching '^[a-z0-9-]+:' Makefile | egrep --only-matching '^[^:]+' | sort | xargs echo '.PHONY:' >> Makefile
 
 .PHONY: all bind-theme create-theme delete-theme export-templates get-servers get-templates get-theme import-templates list-base-templates phony unbind-theme upsert-template upsert-templates
 
 .DEFAULT_GOAL := help
 help: ## This help message
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed -E 's/.*Makefile://' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-22s %s\n", $$1, $$2}'
+	@grep --extended-regexp '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed --regexp-extended 's/.*Makefile://' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-22s %s\n", $$1, $$2}'
