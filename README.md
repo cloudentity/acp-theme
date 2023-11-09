@@ -89,7 +89,7 @@ For example:
 - `make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will delete the specified template.
 
 Also, the `upsert-templates` target uploads only templates that have been modified from the original repository (this one).
-If you want to override this behaviour and force upload of all templates run:
+If you want to override this behavior and force the upload of all templates, run:
 ```
 make upsert-templates UPSERT_ALL_TEMPLATES=true
 ```
