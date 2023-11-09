@@ -87,3 +87,9 @@ For example:
 - `make create-theme THEME_ID=example-theme` will create a new theme named "example-theme".
 - `make upsert-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will upsert the specified template.
 - `make delete-template TEMPLATE_PATH=pages/authorization/login/scripts.tmpl` will delete the specified template.
+
+Also, the `upsert-templates` target uploads only templates that have been modified from the original repository (this one).
+If you want to override this behaviour and force upload of all templates run:
+```
+make upsert-templates UPSERT_ALL_TEMPLATES=true
+```

@@ -35,6 +35,7 @@ TOKEN          := $(shell curl -sSLk -X POST ${ISSUER_URL}/oauth2/token \
 CURL                 = curl --silent --show-error --location --insecure
 TEMPLATE_PATH        = pages/authorization/login/scripts.tmpl
 UPSERT_ALL_TEMPLATES = false
+GIT_ORIGIN_REV       = dev
 
 all:	create-theme upsert-templates bind-theme  ## Run make create-theme, upsert-templates, bind-theme
 
@@ -69,11 +70,11 @@ delete-theme: ## Delete a theme
 upsert-templates: ## Insert or Update all/modified-only templates
 	for file in $$(find theme/* -name '*.tmpl'); \
     do \
-		if [[ "${UPSERT_ALL_TEMPLATES}" == "true" ]] || scripts/diff_from_original.sh "$$file" ; \
+		if [[ "${UPSERT_ALL_TEMPLATES}" == "true" ]] || scripts/diff_from_original.sh "${GIT_ORIGIN_REV}" "$$file" ; \
 		then \
 			make upsert-template THEME_ID=${THEME_ID} TEMPLATE_PATH="$$file" TOKEN=${TOKEN}; \
 		else \
-			echo "Skipping $$file: file not modified"; \
+			echo "Skipping $$file: file not modified or cannot compare to origin"; \
 		fi \
 	done
 
