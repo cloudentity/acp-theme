@@ -88,6 +88,16 @@
         }
       })
     });
+
+    var queryParams = new URLSearchParams(window.location.search);
+
+    if (queryParams.get("auto_login") === "true") {
+      var loginBtn = document.getElementById("sign-in");
+
+      if(loginBtn) {
+        loginBtn.click();
+      }
+    }
   });
 </script>
 

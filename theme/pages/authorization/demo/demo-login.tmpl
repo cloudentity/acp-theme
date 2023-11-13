@@ -57,6 +57,11 @@
       </div>
 
       <div class="form-field">
+        <label for="login_hint-input">Login hint</label>
+        <input id="login_hint-input" name="login_hint" value="{{ .Data.LoginHint }}">
+      </div>
+
+      <div class="form-field">
         <label for="acr_values-input">ACR values</label>
         <input id="acr_values-input" name="acr_values" value="{{ .Data.AcrValues }}">
       </div>
