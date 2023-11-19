@@ -1,22 +1,22 @@
 {{ define "authn_otp_send" }}
 
-  <h2 id="log-in-header">Send Code</h2>
+  <h2 id="log-in-header">Log in with Code</h2>
 
   <div class="form-field">
     <label for="text-field-username-input" class="label-with-link">
-      <span id="username-label">Email | Phone</span>
+      <span id="username-label">Email | Mobile | Username</span>
     </label>
     <input id="text-field-username-input" name="identifier" value="{{ .Data.Identifier }}">
   </div>
 
   <button class="submit-button" type="submit" name="action" value="send_otp" id="send-code-button">
-    Send Code
+    Continue
   </button>
 
   {{ if .Data.AuthnModeSwitch }}
 
     <div id="authn-mode-switch-container">
-      
+
       <div class="spacer-container">
         <div>or log in with</div>
       </div>

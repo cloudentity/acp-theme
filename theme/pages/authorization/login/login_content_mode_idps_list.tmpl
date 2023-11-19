@@ -23,14 +23,14 @@
 
       <div class="form-field">
         <label for="text-field-username-input" class="label-with-link">
-          Username | Email | Phone
-          <button id="not-you-button" class="non-visible" type="button">Not You?</button>
+          Email | Mobile | Username
+          <button id="not-you-button" class="non-visible" type="button">Change</button>
         </label>
         <input id="text-field-username-input" name="username" autocomplete="off" data-lpignore="true" value="{{ .Data.Identifier }}">
       </div>
 
       <button class="submit-button" type="button" id="sign-in-button" disabled>
-        <span>Next</span>
+        <span>Continue</span>
         <div class="non-visible">{{ template "loader" }}</div>
       </button>
     </div>
