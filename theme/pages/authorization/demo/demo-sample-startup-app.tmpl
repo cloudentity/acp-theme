@@ -1,0 +1,144 @@
+{{ define "demo-sample-startup-app" }}
+
+    <style>
+        .background {
+            background: url({{ .Config.Assets }}/static/images/demo_app_background.svg) no-repeat fixed center 140px;
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top:0;
+            left: 0;filter: blur(14px);
+            z-index: -1;
+        }
+
+        .header-container {
+            justify-content: space-between;
+            padding-left: 22px; padding-right: 22px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title {
+            margin-top: 68px;
+        }
+
+        .subtitle {
+            color: #212533;
+            font-size: 24px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 30px;
+            margin-top: 28px;
+        }
+
+        .cards_container {
+            display: flex;
+            align-items: center;
+            gap: 64px;
+            margin-top: 96px;
+        }
+
+        .card {
+            width: 400px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 4px;
+            background: #FFF;
+            box-shadow: 0px 3.44881px 15.766px -0.98537px rgba(24, 39, 75, 0.12), 0px 1.97075px 5.41956px -1.47806px rgba(24, 39, 75, 0.12);
+        }
+        .card img, .card > div:first-child {
+            height: 65px;
+            width: 200px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.31), 0px 1px 1px 0px rgba(0, 0, 0, 0.08);
+        }
+
+        .card > div:first-child {
+            color: #626576;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+        }
+
+        .card button {
+            border-radius: 4px;
+            border: 1px solid #007EFF;
+            padding: 9px 24px;
+            background: #fff;
+            color: #007EFF;
+        }
+
+        .card_title {
+            margin-top: 48px;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+            color: #212533;
+        }
+
+        .card_desc {
+            margin-top: 6px;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 18px;
+            color: #626576;
+            margin-bottom: 16px;
+        }
+    </style>
+
+    <div class="header-container">
+        {{ template "header" .Config }}
+        {{ template "header_profile" . }}
+    </div>
+
+    <div class="background"></div>
+
+    <div class="container">
+        <h2 class="title">Welcome to Sample Ai Startup App</h2>
+        <div class="subtitle">
+            Use this B2B application to see how to offload user management in your own app
+        </div>
+
+        <div class="cards_container">
+            {{ if .Data.AdminPanelURL }}
+                <div class="card">
+                    <img src="{{.Config.Assets}}/static/images/financroo-logo.svg" alt="Financroo logo">
+                    <div class="card_title">
+                        Your company profile
+                    </div>
+                    <div class="card_desc">
+                        Manage users in the organization admin panel
+                    </div>
+                    <button id="open-admin-panel-button">
+                        Open Account Admin Panel
+                    </button>
+                </div>
+            {{ end }}
+            <div class="card">
+                <div>
+                    [{{.Data.Email}}]
+                </div>
+                <div class="card_title">
+                    Your profile
+                </div>
+                <div class="card_desc">
+                    Edit your details in the user self-service panel
+                </div>
+                <button id="open-user-portal-button">
+                    Open User Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+{{ end }}

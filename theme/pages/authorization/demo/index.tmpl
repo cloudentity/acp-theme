@@ -6,88 +6,11 @@
   {{ template "demo_scripts" . }}
 
   {{ if .Data.FlowCompleted }}
-    <div class="header-container">
-      {{ template "header" .Styling }}
-
-      <div class="logout-container">
-        <div class="button-group-container">
-          <a href="?">
-            <button class="button-group-button button-group-main-button" type="button"><i class="material-icons">exit_to_app</i> Logout</button>
-          </a>
-          <button id="logout-dropdown-button" class="button-group-button button-group-dropdown-button" type="button"><i class="material-icons">arrow_drop_down</i></button>
-        </div>
-        <div id="button-group-popout" class="button-group-popout non-visible">
-          <ul class="button-group-list">
-            <li class="button-group-list-item button-group-list-item-top">
-              <a href="?">
-                <div class="button-group-list-item-title">Logout</div>
-                <div class="button-group-list-item-description">Logout from Demo Application only and retain OIDC provider session.</div>
-              </a>
-            </li>
-            <li class="button-group-list-item button-group-list-item-bottom">
-              {{ if .Data.IDTokenRaw }}
-              <a href="{{ .Data.OIDCLogoutURL }}?id_token_hint={{ .Data.IDTokenRaw }}">
-              {{ else }}
-              <a href="{{ .Data.OIDCLogoutURL }}">
-              {{ end }}
-                <div class="button-group-list-item-title">Logout Everywhere</div>
-                <div class="button-group-list-item-description">Logout from the Demo application and the OIDC provider.</div>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="custom-header">
-      <div>
-        <h2>Demo Application</h2>
-
-        <div class="demo-container">
-          <div class="demo-info">
-            <i class="material-icons">error_outline</i>
-            <div class="demo-info-text">
-              <p><b>You have logged in to the Demo app</b></p>
-              <p>
-                The information below is used for demo and testing purposes.
-                You can view aggregated claims or the tokens issued by ACP below.
-              </p>
-            </div>
-          </div>
-        </div>
-
-       <div class="tabs-container">
-        <button id="claims-tab" role="tab" data-tabid="claims" class="tab-button tab-button-active">
-          Claims
-        </button>
-
-        <button id="access-token-tab" role="tab" data-tabid="access-token" class="tab-button">
-          Access Token
-        </button>
-
-        {{ if .Data.IDTokenRaw }}
-          <button id="id-token-tab" role="tab" data-tabid="id-token" class="tab-button">
-            ID Token
-          </button>
-        {{ end }}
-
-        {{ if .Data.RefreshTokenRaw }}
-          <button id="refresh-token-tab" role="tab" data-tabid="refresh-token" class="tab-button">
-            Refresh Token
-          </button>
-        {{ end }}
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-content">
-      {{ template "demo-claims-tab" . }}
-      {{ template "demo-access-token-tab" . }}
-      {{ template "demo-id-token-tab" . }}
-      {{ template "demo-refresh-token-tab" . }}
-    </div>
-
+      {{ if .Data.OrganizationID }}
+        {{ template "demo-sample-startup-app" . }}
+      {{ else }}
+        {{ template "demo-claims-and-tokens" . }}
+      {{ end }}
   {{ else }}
     <div class="header-container">
       {{ template "header" .Config }}

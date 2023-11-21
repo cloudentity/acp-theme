@@ -1,0 +1,56 @@
+{{ define "demo-claims-and-tokens" }}
+
+    <div class="header-container" style="justify-content: space-between; padding-left: 22px; padding-right: 22px;">
+        {{ template "header" .Config }}
+        {{ template "header_profile" . }}
+    </div>
+
+    <div class="custom-header">
+        <div>
+            <h2>Demo Application</h2>
+
+            <div class="demo-container">
+                <div class="demo-info">
+                    <i class="material-icons">error_outline</i>
+                    <div class="demo-info-text">
+                        <p><b>You have logged in to the Demo app</b></p>
+                        <p>
+                            The information below is used for demo and testing purposes.
+                            You can view aggregated claims or the tokens issued by ACP below.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs-container">
+                <button id="claims-tab" role="tab" data-tabid="claims" class="tab-button tab-button-active">
+                    Claims
+                </button>
+
+                <button id="access-token-tab" role="tab" data-tabid="access-token" class="tab-button">
+                    Access Token
+                </button>
+
+                {{ if .Data.IDTokenRaw }}
+                    <button id="id-token-tab" role="tab" data-tabid="id-token" class="tab-button">
+                        ID Token
+                    </button>
+                {{ end }}
+
+                {{ if .Data.RefreshTokenRaw }}
+                    <button id="refresh-token-tab" role="tab" data-tabid="refresh-token" class="tab-button">
+                        Refresh Token
+                    </button>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-content">
+        {{ template "demo-claims-tab" . }}
+        {{ template "demo-access-token-tab" . }}
+        {{ template "demo-id-token-tab" . }}
+        {{ template "demo-refresh-token-tab" . }}
+    </div>
+
+{{ end }}
