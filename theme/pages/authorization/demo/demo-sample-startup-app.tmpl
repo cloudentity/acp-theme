@@ -121,7 +121,9 @@
         <div class="cards_container">
             {{ if .Data.AdminPanelURL }}
                 <div class="card">
-                    <img src="{{.Config.Assets}}/static/images/financroo-logo.svg" alt="Financroo logo">
+                    <div>
+                        [<span title="{{.Data.OrganizationName}}">{{.Data.OrganizationName}}</span>]
+                    </div>
                     <div class="card_title">
                         Your company profile
                     </div>
