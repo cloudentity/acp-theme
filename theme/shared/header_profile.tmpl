@@ -145,11 +145,16 @@
         <div class="divider"></div>
         {{ if .Data.OrganizationID }}
             <div class="item_container">
-                <a href="?">
-                    <div>
-                        <i class="material-icons">exit_to_app</i><div>Logout</div>
-                    </div>
-                </a>
+                {{ if .Data.IDTokenRaw }}
+                <a href="{{ .Data.OIDCLogoutURL }}?id_token_hint={{ .Data.IDTokenRaw }}">
+                    {{ else }}
+                    <a href="{{ .Data.OIDCLogoutURL }}">
+                        {{ end }}
+                        <div>
+                            <i class="material-icons">exit_to_app</i>
+                            <div id="logout-everywhere-button">Logout</div>
+                        </div>
+                    </a>
             </div>
         {{ else }}
             <div class="item_container">

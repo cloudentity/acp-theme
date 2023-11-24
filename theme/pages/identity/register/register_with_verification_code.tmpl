@@ -1,12 +1,13 @@
-{{ define "register_with_passkey" }}
+{{ define "register_with_verification_code" }}
 
-{{ template "identity_register_ux_improved_webauthn_scripts" . }}
+{{ template "identity_register_ux_improved_scripts" . }}
 {{ template "submit_button_disabling_script" . }}
 
 <div class="steps-container">STEP <b>2</b> OF <b>3</b></div>
-<h2>Use passkey for sign-in</h2>
 
-<input id="from-view-input" name="from-view" type="text" value="passkey" form="sign-up-form" hidden>
+<h2>Use {{ .Data.EnteredIdentifierType }} for sign-in</h2>
+
+<input id="from-view-input" name="from-view" type="text" value="otp" form="sign-up-form" hidden>
 
 <div class="form-field">
   <label for="entered-identifier">
@@ -14,8 +15,6 @@
   </label>
   <input id="entered-identifier" name="notused" autocomplete="off" data-lpignore="true" value="{{ .Data.EnteredIdentifier }}" disabled>
 </div>
-
-<div id="webauthn-error" class="alert-danger" hidden></div>
 
 {{ template "form" . }}
 
@@ -30,7 +29,7 @@
   </button>
 </div>
 
-{{ if (or .Data.PasswordAuthEnabled .Data.CodeAuthEnabled) }}
+{{ if (or .Data.PasswordAuthEnabled .Data.PasskeyAuthEnabled) }}
 <div class="spacer-container extra-top-margin-small">
   <div>or register with</div>
 </div>
@@ -47,13 +46,13 @@
 </button>
 {{ end }}
 
-{{ if .Data.CodeAuthEnabled }}
-<button class="href-card" type="submit" name="action" value="change_to_verification_code_entry" form="sign-up-form">
+{{ if .Data.PasskeyAuthEnabled }}
+<button class="href-card" type="submit" name="action" value="change_to_passkey_entry" form="sign-up-form">
   <div>
       <span class="href-card-avatar href-card-avatar-with-img small-icon">
-        <img src="{{ .Config.Assets }}/static/images/smartphone-icon.svg" alt="icon" />
+        <img src="{{ .Config.Assets }}/static/images/fingerprint.svg" alt="icon" />
       </span>
-    <span>Verification Code</span>
+    <span>Passkey</span>
   </div>
 </button>
 {{ end }}

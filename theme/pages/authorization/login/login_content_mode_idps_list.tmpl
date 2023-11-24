@@ -17,7 +17,7 @@
     {{ template "login_content_remembered_idp" . }}
   {{ else }}
     {{ if .Data.IDPDiscoveryEnabled }}
-      <h2 id="log-in-header">Login to Continue</h2>
+      <h2 id="log-in-header">Log in to continue</h2>
       <div id="username-password-form">
       {{ .Data.CsrfField }}
 
@@ -36,7 +36,7 @@
     </div>
 
     {{ else }}
-      <h2 id="log-in-header" class="header-small-margin">Login With</h2>
+      <h2 id="log-in-header" class="header-small-margin">Log in with</h2>
       <input type="hidden" name="username" value="{{ .Data.Identifier }}">
       <input type="hidden" name="password" value="">
     {{ end }}
@@ -52,7 +52,7 @@
     {{ end }}
   >
     {{ if or .Data.RememberedSignInMethod .Data.IDPDiscoveryEnabled }}
-      <div>Log in with</div>
+      <div>or log in with</div>
     {{ end }}
   </div>
 
