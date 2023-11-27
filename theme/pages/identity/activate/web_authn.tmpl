@@ -1,10 +1,10 @@
 {{ define "setup_with_web_authn" }}
 
-  <h2>Use passkey for sign-in</h2>
+  <h2>Enroll Passkey Device</h2>
 
   <div class="form-field">
     <label for="text-field-username-input">
-      Email | Mobile
+      Email | Phone
     </label>
     <input id="text-field-username-input" name="username" autocomplete="off" data-lpignore="true" value="{{ .Data.Identifier }}" disabled>
   </div>

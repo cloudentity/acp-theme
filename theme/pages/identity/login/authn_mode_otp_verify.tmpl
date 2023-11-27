@@ -13,8 +13,8 @@
 
   <div class="form-field">
     <label for="text-field-username-input" class="label-with-link">
-      <span id="username-label">User Identifier</span>
-      <button id="not-you-button" type="submit" name="action" value="change_to_otp">Change</button>
+      <span id="username-label">Email | Phone</span>
+      <button id="not-you-button" type="submit" name="action" value="change_to_otp">Not You?</button>
     </label>
     <input id="text-field-username-input" name="identifier" value="{{ .Data.Identifier }}" disabled>
   </div>
@@ -32,7 +32,7 @@
   <button class="submit-button" type="submit" id="verify-button">
     Continue
   </button>
-
+  
   <input type="hidden" name="authn_mode" value="otp_send_view" id="authnView-input">
 
 {{ end }}

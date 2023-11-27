@@ -3,7 +3,7 @@
 {{ template "identity_register_ux_improved_scripts" . }}
 
 <div class="steps-container">STEP <b>1</b> OF <b>3</b></div>
-<h2 class="no-bottom-margin">Register user account</h2>
+<h2 class="no-bottom-margin">Provide Your Information</h2>
 
 {{ if not .Data.RegistrationWithoutAuthentication }}
   <div class="header-bottom-info">Already have an account? <a href="{{ .Data.LoginPath }}">Sign In</a></div>
@@ -12,6 +12,7 @@
 {{ template "form" . }}
 
 <button id="submit-next" class="submit-button" type="submit" name="action" value="change_to_credential_entry" form="sign-up-form">
+  <i class="material-icons">lock</i>
   Continue
 </button>
 

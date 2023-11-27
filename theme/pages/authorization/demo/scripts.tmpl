@@ -1,7 +1,7 @@
 {{ define "demo_scripts" }}
 
 <script nonce="{{.Config.Nonce}}">
-
+  
   function changeTab(selectedContentId) {
     return (e) => {
       var tabButtons = document.querySelectorAll('button[role="tab"]');
@@ -46,45 +46,13 @@
     }
   }
 
-  function toggleMenuDropdown() {
-    let dropdownMenu = document.querySelector(".dropdown-menu");
-    if (!dropdownMenu) return;
-
-    if (dropdownMenu.classList.contains('non-visible')) {
-        dropdownMenu.classList.remove('non-visible')
-    } else {
-        dropdownMenu.classList.add('non-visible');
-    }
-  }
-
-  function hideMenuDropdown(event) {
-    let dropdownMenu = document.querySelector("#dropdown-menu-button");
-    let targetIsDropdownMenu = dropdownMenu?.contains(event.target) ?? false;
-    if (!targetIsDropdownMenu) {
-        let dropdownMenuPopout = document.querySelector(".dropdown-menu");
-        if (dropdownMenuPopout && !dropdownMenuPopout.classList.contains('non-visible')) dropdownMenuPopout.classList.add('non-visible');
-    }
-  }
-
   document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', delegate('#claims-tab', changeTab('claims')));
     document.addEventListener('click', delegate('#access-token-tab', changeTab('access-token')));
     document.addEventListener('click', delegate('#id-token-tab', changeTab('id-token')));
     document.addEventListener('click', delegate('#refresh-token-tab', changeTab('refresh-token')));
     document.addEventListener('click', delegate('#advanced-button', toggleAdvanced));
-    document.addEventListener('click', delegate('#dropdown-menu-button', toggleMenuDropdown));
     document.addEventListener('click', delegate('.selectable', toggleMoreValues));
-    document.addEventListener('click', delegate('#open-admin-panel-button', openAccountAdminPanel));
-    document.addEventListener('click', delegate('#open-user-portal-button', openUserPortal));
-
-    function openAccountAdminPanel () {
-      window.open("{{.Data.AdminPanelURL}}", '_blank')
-    }
-
-    function openUserPortal () {
-      window.open("{{.Data.UserProfileURL}}", '_blank')
-    }
-    window.addEventListener('click', hideMenuDropdown)
 
     document.querySelectorAll(".pre-copy-button").forEach(function (el) {
       el.addEventListener("click", function (e) {

@@ -1,12 +1,12 @@
 {{ define "authn_web_authn" }}
 
-  <h2 id="header">Log in with Passkey</h2>
+  <h2 id="header">Login with Passkey</h2>
 
   <div class="form-field">
     <label for="text-field-username-input" class="label-with-link">
-      <span id="username-label">Email | Mobile | Username</span>
+      <span id="username-label">Username | Email | Phone</span>
       <a href="{{ .Data.ResetWebAuthnPath }}" id="forgot-passkey" class="input-above-link">Lost passkey?</a>
-      <button id="not-you-button" type="button" class="non-visible">Change</button>
+      <button id="not-you-button" type="button" class="non-visible">Not You?</button>
     </label>
     <input id="text-field-username-input" name="identifier" value="{{ .Data.Identifier }}">
   </div>
@@ -18,7 +18,7 @@
   {{ if .Data.AuthnModeSwitch }}
 
     <div id="authn-mode-switch-container">
-
+    
       <div class="spacer-container">
         <div>or log in with</div>
       </div>
@@ -36,7 +36,7 @@
             <i class="material-icons">navigate_next</i>
           </button>
         {{ end }}
-
+          
         {{ if .Data.AuthenticationMechanismsAvailability.otp }}
           <button class="href-card" type="submit" name="action" value="change_to_otp" id="login-option-code" style="display: flex">
             <div>

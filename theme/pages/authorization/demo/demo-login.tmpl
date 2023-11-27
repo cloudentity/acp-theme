@@ -3,7 +3,7 @@
 <div class="content">
   <form action="?action=login" method="post">
     <button id="sign-in" class="submit-button">
-      Log in to demo app
+      Login to demo app
     </button>
 
     <button id="advanced-button" class="text-button full-width" type="button">
@@ -49,16 +49,6 @@
       <div class="form-field">
         <label for="scope-input">Scope</label>
         <input id="scope-input" name="scope" value="{{ .Data.Scope }}">
-      </div>
-
-     <div class="form-field">
-        <label for="purpose-input">Purpose</label>
-        <input id="purpose-input" name="purpose" value="{{ .Data.Purpose }}">
-      </div>
-
-      <div class="form-field">
-        <label for="login_hint-input">Login hint</label>
-        <input id="login_hint-input" name="login_hint" value="{{ .Data.LoginHint }}">
       </div>
 
       <div class="form-field">

@@ -17,26 +17,26 @@
     {{ template "login_content_remembered_idp" . }}
   {{ else }}
     {{ if .Data.IDPDiscoveryEnabled }}
-      <h2 id="log-in-header">Log in to continue</h2>
+      <h2 id="log-in-header">Login to Continue</h2>
       <div id="username-password-form">
       {{ .Data.CsrfField }}
 
       <div class="form-field">
         <label for="text-field-username-input" class="label-with-link">
-          Email | Mobile | Username
-          <button id="not-you-button" class="non-visible" type="button">Change</button>
+          Username | Email | Phone
+          <button id="not-you-button" class="non-visible" type="button">Not You?</button>
         </label>
         <input id="text-field-username-input" name="username" autocomplete="off" data-lpignore="true" value="{{ .Data.Identifier }}">
       </div>
 
       <button class="submit-button" type="button" id="sign-in-button" disabled>
-        <span>Continue</span>
+        <span>Next</span>
         <div class="non-visible">{{ template "loader" }}</div>
       </button>
     </div>
 
     {{ else }}
-      <h2 id="log-in-header" class="header-small-margin">Log in with</h2>
+      <h2 id="log-in-header" class="header-small-margin">Login With</h2>
       <input type="hidden" name="username" value="{{ .Data.Identifier }}">
       <input type="hidden" name="password" value="">
     {{ end }}
@@ -52,7 +52,7 @@
     {{ end }}
   >
     {{ if or .Data.RememberedSignInMethod .Data.IDPDiscoveryEnabled }}
-      <div>or log in with</div>
+      <div>Log in with</div>
     {{ end }}
   </div>
 

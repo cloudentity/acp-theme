@@ -13,13 +13,11 @@
     <div class="content">
       {{ if not .Data.PublicRegistrationAllowed }}
       {{ template "registration_not_allowed" . }}
-      {{ else if eq .Data.TargetViewV2 "otp" }}
-      {{ template "register_with_verification_code" . }}
-      {{ else if eq .Data.TargetViewV2 "user" }}
+      {{ else if eq .Data.TargetView "user" }}
       {{ template "register_init" . }}
-      {{ else if eq .Data.TargetViewV2 "password" }}
+      {{ else if eq .Data.TargetView "password" }}
       {{ template "register_with_password" . }}
-      {{ else if eq .Data.TargetViewV2 "passkey" }}
+      {{ else if eq .Data.TargetView "passkey" }}
       {{ template "register_with_passkey" . }}
       {{ end }}
     </div>

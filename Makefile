@@ -35,7 +35,7 @@ TOKEN          := $(shell curl -sSLk -X POST ${ISSUER_URL}/oauth2/token \
 CURL                 = curl --silent --show-error --location --insecure
 TEMPLATE_PATH        = pages/authorization/login/scripts.tmpl
 UPSERT_ALL_TEMPLATES = false
-GIT_ORIGIN_REV       = dev
+GIT_ORIGIN_REV       = v2.16.4
 
 all:	create-theme upsert-templates bind-theme  ## Run make create-theme, upsert-templates, bind-theme
 

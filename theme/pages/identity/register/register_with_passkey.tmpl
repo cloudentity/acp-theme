@@ -4,13 +4,13 @@
 {{ template "submit_button_disabling_script" . }}
 
 <div class="steps-container">STEP <b>2</b> OF <b>3</b></div>
-<h2>Use passkey for sign-in</h2>
+<h2>Enroll Passkey Device</h2>
 
 <input id="from-view-input" name="from-view" type="text" value="passkey" form="sign-up-form" hidden>
 
 <div class="form-field">
   <label for="entered-identifier">
-    Email | Mobile
+    Email | Phone
   </label>
   <input id="entered-identifier" name="notused" autocomplete="off" data-lpignore="true" value="{{ .Data.EnteredIdentifier }}" disabled>
 </div>
@@ -30,7 +30,7 @@
   </button>
 </div>
 
-{{ if (or .Data.PasswordAuthEnabled .Data.CodeAuthEnabled) }}
+{{ if (or .Data.PasswordAuthEnabled .Data.VerificationCodeAuthEnabled) }}
 <div class="spacer-container extra-top-margin-small">
   <div>or register with</div>
 </div>
@@ -47,7 +47,7 @@
 </button>
 {{ end }}
 
-{{ if .Data.CodeAuthEnabled }}
+{{ if .Data.VerificationCodeAuthEnabled }}
 <button class="href-card" type="submit" name="action" value="change_to_verification_code_entry" form="sign-up-form">
   <div>
       <span class="href-card-avatar href-card-avatar-with-img small-icon">
