@@ -8,7 +8,7 @@
         <label for="{{ .Name }}">
           <div class="form-field-checkbox">
             <input type="checkbox" name="verified_claims" value="{{ .Name }}" id="{{ .Name }}" checked >
-              {{ .Name }}
+              {{ or .Description .Name }}
           </div>
         </label>
       </div>
