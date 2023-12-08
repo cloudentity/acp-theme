@@ -23,7 +23,9 @@
           {{ template "consent_scopes_without_service" . }}
         {{ end }}
 
-        {{ template "consent_scopes_with_service" . }}
+        {{ if .Data.ServicesWithScopes }}
+          {{ template "consent_scopes_with_service" . }}
+        {{ end }}
 
         {{ if .Data.Claims }}
           {{ template "consent_claims" . }}
