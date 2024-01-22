@@ -31,6 +31,10 @@
     {{ if .Data.TraceID }}
       <div class="error-details">ID: {{ .Data.TraceID }}</div>
     {{ end }}
+
+    {{ if .Data.AuthorizationCorrelationID }}
+      <div class="error-details">Correlation-ID: {{ .Data.AuthorizationCorrelationID }}</div>
+    {{ end }}
   </div>
 
 {{ template "footer" }}
