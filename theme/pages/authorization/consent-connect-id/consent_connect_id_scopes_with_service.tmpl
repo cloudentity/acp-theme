@@ -1,0 +1,9 @@
+{{ define "consent_connect_id_scopes_with_service" }}
+
+  {{ range .Data.ServicesWithScopes }}
+      {{ range .Scopes }}
+              <input type="hidden" name="scopes" value="{{ .RequestedScopeName }}" id="{{ .RequestedScopeName }}" {{ if not .GrantAllowed }} disabled {{ else }} checked {{ end }} >
+      {{ end }}
+  {{ end }}
+
+{{ end }}

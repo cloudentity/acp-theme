@@ -1,0 +1,31 @@
+{{ define "consent_claims" }}
+
+{{ range $key, $value := . }}
+    {{ $length := len $value }}
+    <div class="" style="margin-bottom: 8px; background: #f7faff; border-radius: 4px; padding: 8px 12px;">
+        <div class="consent-scope-row" style="margin-bottom: 0">
+            <label for="{{ $key }}">
+                <div style="font-weight: 600;">
+                    {{ $key }}
+                </div>
+            </label>
+            <button type="button" aria-label="Show scope description" data-scope-name="{{ $key }}" class="scope-desc-toggle">
+                <i class="material-icons" data-icon-id="{{ $key }}">keyboard_arrow_down</i>
+            </button>
+        </div>
+        <div data-desc-id="{{ $key }}" class="non-visible" style="font-size: 12px; margin-top: 8px; margin-bottom: 4px;">
+            {{ range $value }}
+                <div style="margin-top: 4px;">
+                    <input type="hidden" name="claims" value="{{ .Name }}" id="{{ .Name }}" >
+                    {{ if gt $length 1}}
+                        {{ or .Description .Name }} {{ if .Value }} ({{ .Value }}) {{ end }}
+                    {{ else }}
+                        {{ if .Value }} {{ .Value }} {{ else}} {{ or .Description .Name }} {{ end }}
+                    {{ end }}
+                </div>
+            {{ end}}
+        </div>
+    </div>
+{{ end }}
+
+{{ end }}

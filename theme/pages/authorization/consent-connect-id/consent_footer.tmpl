@@ -1,0 +1,23 @@
+{{ define "consent_footer" }}
+
+<div class="consent-footer">
+
+  {{ if and .Data.Session.ClientInfo.PolicyURI .Data.Session.ClientInfo.TosURI }}
+    By accepting these permissions, you allow this application to use your data
+    as defined in their <a href="{{ .Data.Session.ClientInfo.PolicyURI }}" target="_blank">Privacy Policy</a>
+    and <a href="{{ .Data.Session.ClientInfo.TosURI }}" target="_blank">Terms and Conditions</a>.
+  {{ else if and .Data.Session.ClientInfo.PolicyURI (not .Data.Session.ClientInfo.TosURI) }}
+    By accepting these permissions, you allow this app to use your data
+    as defined in their <a href="{{.Data.Session.ClientInfo.PolicyURI }}" target="_blank">Privacy Policy</a>.
+  {{ else if and (not .Data.Session.ClientInfo.PolicyURI) .Data.Session.ClientInfo.TosURI }}
+    By accepting these permissions, you allow this app to use your data
+    as defined in their <a href="{{ .Data.Session.ClientInfo.TosURI }}" target="_blank">Terms and Conditions</a>.
+  {{ end }}
+</div>
+
+<div class="buttons-container">
+  <button class="text-button" type="submit" name="action" value="deny">Cancel</button>
+  <button class="contained-button" type="submit" name="action" value="allow">Share details</button>
+</div>
+
+{{ end }}

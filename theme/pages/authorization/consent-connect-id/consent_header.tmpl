@@ -1,0 +1,82 @@
+{{ define "consent_header" }}
+
+<style>
+    .dots {
+        position: relative;
+        margin-right: 12px;
+    }
+    .dot1, .dot2, .dot3 {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--mdc-theme-primary);
+        position: absolute;
+    }
+    .dot1 {
+        left: -16px;
+        animation: animation-keyframes 1s infinite alternate;
+        animation-delay: 0s;
+    }
+    .dot2 {
+        animation: animation-keyframes 1s infinite linear alternate;
+        animation-delay: 0.5s;
+    }
+    .dot3 {
+        left: 16px;
+        animation: animation-keyframes 1s infinite alternate;
+        animation-delay: 1s;
+    }
+    @keyframes animation-keyframes {
+        0% {
+            background-color: var(--mdc-theme-primary);
+        }
+        50% {
+            background-color: var(--mdc-theme-background);
+        }
+        100% {
+            background-color: var(--mdc-theme-background);
+        }
+    }
+</style>
+
+<div style="display: flex; align-items: center; justify-content: center">
+    {{ if .Config.Styling.LogoURL }}
+        <img src="{{.Config.Styling.LogoURL}}" width="48px" height="48px" style="margin-right: 16px;"/>
+    {{ else }}
+        <div style="width: 48px; height: 48px; border-radius: 4px; border: 1px solid #cccccc; margin-right: 16px; display: flex;align-items: center; justify-content: center">
+            <svg width="49" height="49" viewBox="0 0 49 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="0.343994" width="49" height="48" rx="4" fill="#252525"/>
+                <g clip-path="url(#clip0_7170_12566)">
+                    <path d="M31.477 26.8451C31.477 28.4822 30.9073 30.0685 29.8656 31.3342C28.8223 32.6007 27.3727 33.4669 25.7631 33.7855C24.1526 34.1048 22.4813 33.8574 21.0324 33.0854C19.585 32.315 18.4498 31.0664 17.8201 29.5526C17.1918 28.0402 17.1091 26.3564 17.5861 24.7897C18.0636 23.2218 19.0703 21.8681 20.4346 20.9597C21.801 20.05 23.4399 19.6407 25.0736 19.8012C26.7072 19.9617 28.2351 20.6823 29.3983 21.8406L37.4173 13.8449C36.7586 13.1894 36.236 12.4101 35.8797 11.5518C35.5233 10.6936 35.3402 9.7733 35.3409 8.84399L29.4041 8.84399C29.4006 11.3859 30.1479 13.8723 31.5525 15.991C29.1255 14.401 26.2385 13.6638 23.3463 13.8956C20.4542 14.1274 17.7214 15.315 15.5787 17.2713C13.4398 19.2248 12.0153 21.8372 11.5318 24.6932C11.0495 27.5476 11.5365 30.4814 12.9151 33.0269C14.296 35.5756 16.4877 37.5907 19.1431 38.7532C21.8018 39.9179 24.7724 40.1648 27.5868 39.455C30.3991 38.7466 32.895 37.1211 34.68 34.8355C36.4619 32.5532 37.4292 29.7405 37.4279 26.8451H31.477Z" fill="white"/>
+                </g>
+                <defs>
+                    <clipPath id="clip0_7170_12566">
+                        <rect width="26.3208" height="31" fill="white" transform="translate(11.3398 8.84399)"/>
+                    </clipPath>
+                </defs>
+            </svg>
+        </div>
+    {{ end }}
+    <div style="padding: 16px;">
+        <div class="dots">
+            <div class="dot1"></div>
+            <div class="dot2"></div>
+            <div class="dot3"></div>
+        </div>
+    </div>
+    {{ if .Data.Session.ClientInfo.LogoURI }}
+        <img src="{{.Data.Session.ClientInfo.LogoURI}}" width="48px" height="48px" style="margin-left: 16px;"/>
+    {{ else }}
+        <div style="width: 48px; height: 48px; border-radius: 4px; border: 1px solid #cccccc; margin-left: 16px; display: flex;align-items: center; justify-content: center">
+            <i class="material-icons">apps</i>
+        </div>
+    {{ end }}
+</div>
+
+<div style="font-size: 18px; font-weight: 600; margin-top: 32px; text-align: center">Do you want to share the following data with {{ .Data.Session.ClientInfo.Name }}?</div>
+
+<div style="margin-top: 24px; margin-bottom: 24px; font-size: 12px; text-align: center;">
+    Your details will be shared only once{{ if .Data.Session.Purpose }}, for the purpose of {{ .Data.Session.Purpose }}{{end}} with {{ .Data.Session.ClientInfo.Name }}
+</div>
+
+{{ end }}

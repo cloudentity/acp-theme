@@ -3,39 +3,36 @@
 {{ define "title" }}Consent{{ end }}
 
 {{ define "content" }}
-
   {{ template "consent_scripts" . }}
 
   <div class="header-container">
     {{ template "header" .Config }}
   </div>
 
-  <div class="card">
+  <div class="card" style="position: relative">
     <div class="color-bar"></div>
 
     <form action="?login_id={{ .Data.Session.ID }}" method="post">
       {{ .Data.CsrfField }}
 
-      {{ template "consent_header" . }}
-
       <div class="content">
+        {{ template "consent_header" . }}
+
         {{ if .Data.ScopesWithoutService }}
-          {{ template "consent_scopes_without_service" . }}
+          {{ template "consent_connect_id_scopes_without_service" . }}
         {{ end }}
 
         {{ if .Data.ServicesWithScopes }}
-          {{ template "consent_scopes_with_service" . }}
+          {{ template "consent_connect_id_scopes_with_service" . }}
         {{ end }}
 
-        {{ if .Data.Claims }}
-          {{ template "consent_claims" . }}
-        {{ end }}
+        {{ template "consent_claims" .Data.ClaimsGrouped.Claims }}
 
-        {{ if .Data.VerifiedClaims.Claims }}
-          {{ template "consent_verified_claims" . }}
-        {{ end }}
+        {{ template "consent_verified_claims" .Data.ClaimsGrouped.VerifiedClaims }}
 
         {{ template "consent_footer" . }}
+
+        {{ template "consent_connect_id_footer" . }}
       </div>
     </form>
   </div>
