@@ -1,38 +1,43 @@
 {{ define "authn_otp_verify" }}
 
-  <div class="notification-container" id="code-sent-notification">
-    <i class="material-icons">send</i>
-    <span>We sent a code to {{ .Data.ResolvedDestinationAddress }}</span>
+    <div class="notification-container" id="code-sent-notification">
+        <i class="material-icons">send</i>
+        <span>We sent a code to {{ .Data.ResolvedDestinationAddress }}</span>
     <button id="use-alternative-address-button" type="submit" name="action" value="change_to_otp_use_alternative">Use Alternative</button>
-  </div>
+    </div>
 
   <input id="original-identifier-input" type="hidden" name="destination_address" value="{{ .Data.ResolvedDestinationAddress }}">
-  <input type="checkbox" name="otpMode" id="otpMode" checked class="non-visible">
+    <input type="checkbox" name="otpMode" id="otpMode" checked class="non-visible">
 
-  <h2 id="log-in-header">Verify Code</h2>
-
-  <div class="form-field">
-    <label for="text-field-username-input" class="label-with-link">
-      <span id="username-label">User Identifier</span>
-      <button id="not-you-button" type="submit" name="action" value="change_to_otp">Change</button>
-    </label>
-    <input id="text-field-username-input" name="identifier" value="{{ .Data.Identifier }}" disabled>
-  </div>
-
-  <div class="form-field" id="otp-container">
-    <div id="otp-input-container" class="form-field otp-input-container">
-      <input type="hidden" name="otp" value="" id="otp-input">
+    <div class="log-in-header-container">
+        <h2 id="log-in-header">Verify code</h2>
+        {{ if .Data.Is2FAStep }}
+            <img src="{{ .Config.Assets }}/static/images/2fa-icon.svg" alt="icon" class="icon-2fa"/>
+        {{ end }}
     </div>
-    <div class="footer-with-link">
-      Still didn't receive?
-      <button id="resend-otp" type="submit" name="action" value="send_otp">Resend Code</button>
+
+    <div class="form-field">
+        <label for="text-field-username-input" class="label-with-link">
+            <span id="username-label">User Identifier</span>
+            <button id="not-you-button" type="submit" name="action" value="change_to_otp">Change</button>
+        </label>
+        <input id="text-field-username-input" name="identifier" value="{{ .Data.Identifier }}" disabled>
     </div>
-  </div>
 
-  <button class="submit-button" type="submit" id="verify-button">
-    Continue
-  </button>
+    <div class="form-field" id="otp-container">
+        <div id="otp-input-container" class="form-field otp-input-container">
+            <input type="hidden" name="otp" value="" id="otp-input">
+        </div>
+        <div class="footer-with-link">
+            Still didn't receive?
+            <button id="resend-otp" type="submit" name="action" value="send_otp">Resend Code</button>
+        </div>
+    </div>
 
-  <input type="hidden" name="authn_mode" value="otp_send_view" id="authnView-input">
+    <button class="submit-button" type="submit" id="verify-button">
+        Continue
+    </button>
+
+    <input type="hidden" name="authn_mode" value="otp_send_view" id="authnView-input">
 
 {{ end }}

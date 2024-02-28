@@ -10,10 +10,6 @@
       </div>
     {{ end }}
 
-    {{ if .Data.Is2FAStep }}
-        2FA
-    {{ end }}
-
     {{ if eq .Data.AuthnView "password_view" }}
       {{ template "authn_password" . }}
     {{ else if eq .Data.AuthnView "otp_send_view" }}
