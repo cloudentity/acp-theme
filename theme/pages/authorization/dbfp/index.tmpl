@@ -12,8 +12,13 @@
   <script nonce="{{ .Nonce }}">
     const baseURL = `${window.location.protocol}//${window.location.host}`;
     const startTime = performance.now();
+    let redirected = false;
 
     function redirect(status, duration) {
+      if (redirected) {
+        return;
+      }
+      redirected = true;
       const redirectURL = new URL(decodeURI("{{ .Data.URL }}"), baseURL);
       redirectURL.searchParams.set('dbfp', status);
       redirectURL.searchParams.set('duration', Math.round(duration));
