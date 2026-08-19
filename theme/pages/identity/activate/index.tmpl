@@ -17,7 +17,7 @@
   {{ template "identity_activate_scripts" . }}
   {{ template "identifier_validate_script_in_activate" $partialData }}
 
-  <form action="?login_id={{ .Data.SessionID }}&user_id={{ .Data.UserID}}&login_state={{ .Data.SessionState }}&code={{ .Data.Code }}&promptForEmailAddress={{ .Data.PromptForEmail }}&promptForMobileAddress={{ .Data.PromptForMobile }}&promptForTotp={{ .Data.PromptForTotp }}&promptForPassword={{ .Data.PromptForPassword }}&promptForWebAuthn={{ .Data.PromptForWebAuthn }}&promptForUsernamelessWebAuthn={{ .Data.PromptForUsernamelessWebAuthn }}&promptForDevicePairing={{ .Data.PromptForDevicePairing }}&identifier={{ .Data.Identifier }}&server_id={{ .Data.ServerID }}&go_to={{ .Data.GoTo }}&post_activation_url={{ .Data.PostAuthenticationURL }}" method="post" id="sign-up-form" onsubmit="return handleSubmit(event)">
+  <form action="?login_id={{ .Data.SessionID }}&user_id={{ .Data.UserID}}&login_state={{ .Data.SessionState }}&code={{ .Data.Code }}&promptForEmailAddress={{ .Data.PromptForEmail }}&promptForMobileAddress={{ .Data.PromptForMobile }}&promptForTotp={{ .Data.PromptForTotp }}&promptForPassword={{ .Data.PromptForPassword }}&promptForWebAuthn={{ .Data.PromptForWebAuthn }}&promptForDevicePairing={{ .Data.PromptForDevicePairing }}&identifier={{ .Data.Identifier }}&server_id={{ .Data.ServerID }}&go_to={{ .Data.GoTo }}&post_activation_url={{ .Data.PostAuthenticationURL }}" method="post" id="sign-up-form" onsubmit="return handleSubmit(event)">
     <div class="header-container">
       {{ template "header" .Config }}
     </div>
@@ -37,8 +37,6 @@
           {{ template "setup_with_otp" . }}
         {{ else if eq $mode "web_authn" }}
           {{ template "setup_with_web_authn" . }}
-        {{ else if eq $mode "usernameless_web_authn" }}
-          {{ template "setup_with_usernameless_web_authn" . }}
         {{ else if eq $mode "password" }}
           {{ template "setup_with_password" . }}
         {{ else if eq $mode "totp" }}

@@ -21,8 +21,6 @@
         {{ template "register_with_password" . }}
       {{ else if eq .Data.TargetViewV2 "passkey" }}
         {{ template "register_with_passkey" . }}
-      {{ else if eq .Data.TargetViewV2 "usernameless_passkey" }}
-        {{ template "register_with_usernameless_passkey" . }}
       {{ else if eq .Data.TargetViewV2 "totp" }}
         {{ template "register_with_totp" . }}
       {{ else if eq .Data.TargetViewV2 "pair_device" }}

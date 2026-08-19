@@ -17,7 +17,7 @@
           {{ $first = false }}
         {{end}}
       {{ end }}
-      {{ if or (eq .Data.OtpMode "sms") (eq .Data.OtpMode "voice") (eq .Data.OtpMode "") }}
+      {{ if or (eq .Data.OtpMode "sms") (eq .Data.OtpMode "") }}
         {{range $id, $value := .Data.UserMobiles}}
           <div class="href-card radio-card">
             <div class="radio-card-left">
@@ -33,7 +33,7 @@
       <label for="text-field-username-input" class="label-with-link">
         {{ if eq .Data.OtpMode "email" }}
           <span id="username-label">{{ T "identity.login.authn_mode_otp_alternative.email" }}</span>
-        {{ else if or (eq .Data.OtpMode "sms") (eq .Data.OtpMode "voice") }}
+        {{ else if eq .Data.OtpMode "sms" }}
           <span id="username-label">{{ T "identity.login.authn_mode_otp_alternative.mobile" }}</span>
         {{ else }}
           <span id="username-label">{{ T "identity.login.authn_mode_otp_alternative.email_or_mobile" }}</span>

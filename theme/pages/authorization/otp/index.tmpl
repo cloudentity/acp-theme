@@ -35,17 +35,10 @@
               {{ else if eq .Data.SelectedMethod.Mechanism "sms" }}
                 <i class="material-icons otp-method-icon">chat_bubble_outline</i>
                 <span>{{ T "authorization.otp.index.sms_verification" }}</span>
-              {{ else if eq .Data.SelectedMethod.Mechanism "voice" }}
-                <i class="material-icons otp-method-icon">phone</i>
-                <span>{{ T "authorization.otp.index.voice_verification" }}</span>
               {{ end }}
             </div>
 
-            {{ if eq .Data.SelectedMethod.Mechanism "voice" }}
-              <p>{{ T "authorization.otp.index.enter_the_code_voice" }} {{ .Data.Address }}</p>
-            {{ else }}
-              <p>{{ T "authorization.otp.index.enter_the_code" }} {{ .Data.Address }}</p>
-            {{ end }}
+            <p>{{ T "authorization.otp.index.enter_the_code" }} {{ .Data.Address }}</p>
 
             <div class="form-field" id="otp-container">
               <div id="otp-input-container" class="form-field otp-input-container">

@@ -4,7 +4,6 @@
   <div>{{ T "identity.activate.activation_methods.or_register_with" }}</div>
 </div>
 
-<div class="methods-grid" id="activation-methods-grid" style="display: flex; flex-wrap: wrap; gap: 8px;">
 {{ if and .Data.PasswordAuthEnabled (ne .Data.Mode "password") }}
   <button class="href-card" type="submit" name="action" value="change_to_password">
     <div>
@@ -27,17 +26,6 @@
   </button>
 {{ end }}
 
-{{ if and .Data.UsernamelessPasskeyAuthEnabled (ne .Data.Mode "usernameless_web_authn") }}
-  <button class="href-card" type="submit" name="action" value="change_to_usernameless_web_authn">
-    <div>
-      <span class="href-card-avatar href-card-avatar-with-img small-icon">
-        <img src="{{ .Config.Assets }}/static/images/usernameless-webauthn-icon.svg" alt="smart passkey method image" />
-      </span>
-      <span>{{ T "identity.activate.activation_methods.usernameless_passkey" }}</span>
-    </div>
-  </button>
-{{ end }}
-
 {{ if and .Data.TOTPAuthEnabled (ne .Data.Mode "totp") }}
   <button class="href-card" type="submit" name="action" value="change_to_totp">
     <div>
@@ -52,10 +40,24 @@
 
 {{ if and (or .Data.PushAuthEnabled .Data.SymbolAuthEnabled .Data.QRCodeAuthEnabled) (ne .Data.Mode "pair_device") }}
   <button class="href-card" type="submit" name="action" value="change_to_pair_device">
-    <span class="href-card-avatar href-card-avatar-with-img small-icon">
-        <img src="{{ .Config.Assets }}/static/images/sa-favicon.svg" alt="sa mobile app method image" />
-      </span>
+    <div>
+      {{ if  .Data.PushAuthEnabled }}
+        <span class="href-card-avatar href-card-avatar-with-img small-icon">
+          <img src="{{ .Config.Assets }}/static/images/push-icon.svg" alt="push method image" />
+        </span>
+      {{ end }}
+      {{ if  .Data.SymbolAuthEnabled }}
+        <span class="href-card-avatar href-card-avatar-with-img small-icon">
+          <img src="{{ .Config.Assets }}/static/images/symbol-icon.svg" alt="symbol method image" />
+        </span>
+      {{ end }}
+      {{ if  .Data.QRCodeAuthEnabled }}
+        <span class="href-card-avatar href-card-avatar-with-img small-icon">
+          <img src="{{ .Config.Assets }}/static/images/qr-code-icon.svg" alt="qr code method image" />
+        </span>
+      {{ end }}
       <span>{{ T "identity.activate.activation_methods.pair_device" }}</span>
+    </div>
   </button>
 {{ end }}
 
@@ -91,19 +93,5 @@
     </div>
   </button>
 {{ end }}
-
-{{ if and .Data.VoiceOTPAuthEnabled (ne .Data.Mode "mobile") }}
-  <button class="href-card" type="submit" name="action" value="change_to_voice_otp">
-    <div>
-      <span class="href-card-avatar href-card-avatar-with-img small-icon">
-        <img src="{{ .Config.Assets }}/static/images/voice-otp.svg" alt="voice otp method image" />
-      </span>
-      <span>{{ T "identity.activate.activation_methods.voice_otp" }}</span>
-    </div>
-  </button>
-{{ end }}
-</div>
-
-{{ template "methods_grid_script" dict "Nonce" .Nonce "GridId" "activation-methods-grid" }}
 
 {{ end }}

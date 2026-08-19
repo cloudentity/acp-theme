@@ -18,7 +18,7 @@
       var inputNodes = document.querySelectorAll("input");
 
       inputNodes.forEach(inputNode => {
-          addInputListeners(inputNode, disableButtonsOnEmptyInputs);
+          inputNode.addEventListener('input', disableButtonsOnEmptyInputs);
       });
   }
 

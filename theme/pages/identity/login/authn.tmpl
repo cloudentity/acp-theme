@@ -28,8 +28,6 @@
       {{ template "authn_set_new_password" . }}
     {{ else if eq .Data.AuthnView "web_authn_view" }}
       {{ template "authn_web_authn" . }}
-    {{ else if eq .Data.AuthnView "usernameless_web_authn_view" }}
-      {{ template "authn_usernameless_web_authn" . }}
     {{ else if eq .Data.AuthnView "totp_view" }}
       {{ template "authn_totp" . }}
     {{ else if eq .Data.AuthnView "push_send_view" }}
@@ -42,6 +40,8 @@
         {{ template "authn_symbol_wait" . }}
     {{ else if eq .Data.AuthnView "qr_code_scan_view" }}
         {{ template "authn_qr_code_scan" . }}
+    {{ else if eq .Data.AuthnView "qr_code_push_wait_view" }}
+        {{ template "authn_qr_code_push_wait" . }}
     {{ end }}
 
     {{ if and (not .Data.IsForceAuthMode) (or .Data.AuthnModeSwitch .Data.PublicRegistration) }}

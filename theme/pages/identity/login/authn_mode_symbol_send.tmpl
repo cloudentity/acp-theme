@@ -8,7 +8,7 @@
       {{ end }}
   </div>
 
-  {{ if or (.Data.IsForceAuthMode) ( and (.Data.Is2FAStep) (eq .Data.Identifier ""))}}
+  {{ if .Data.IsForceAuthMode}}
       <div class="login-welcome-back-card">
         <img src="{{ .Config.Assets }}/static/images/person-icon.svg" alt="person icon"/>
         <div>
@@ -21,9 +21,6 @@
   <div class="form-field">
     <label for="text-field-username-input" class="label-with-link">
       <span id="username-label">{{ T "identity.login.authn_mode_symbol.username_label" }}</span>
-        {{ if .Data.IsSelfResetCredentialsAllowed }}
-            <a href="{{ .Data.PairNewDevicePath }}" id="no-access-to-device" class="input-above-link" tabindex="0">{{ T "identity.login.authn_mode_symbol.lost_authenticate_app" }}</a>
-        {{ end }}
     </label>
       {{ if .Data.Is2FAStep }}
         <input id="text-field-username-input" name="identifier" autocomplete="off" data-lpignore="true" type="hidden" value="{{ .Data.Identifier }}" disabled>

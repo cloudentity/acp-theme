@@ -11,8 +11,6 @@
     if (!codeNotExists) {
         if (view === "web_authn") {
             initWebAuthn();
-        } else if (view === "usernameless_web_authn") {
-            initUsernamelessWebAuthn();
         } else if (view === "password") {
             initPassword();
         }
@@ -32,8 +30,8 @@
       submitButton.disabled = !passwordInput.value || !repeatPasswordInput.value;
     }
 
-    addInputListeners(passwordInput, disableSubmitButtonOnEmptyInput);
-    addInputListeners(repeatPasswordInput, disableSubmitButtonOnEmptyInput);
+    passwordInput.addEventListener('input', disableSubmitButtonOnEmptyInput);
+    repeatPasswordInput.addEventListener('input', disableSubmitButtonOnEmptyInput);
   }
 
   function initWebAuthn() {
@@ -79,11 +77,6 @@
 
       fetch(window.location.pathname + "/webauthn/begin?" + new URLSearchParams(params))
       .then(function (response) {
-        if (!response.ok) {
-          return response.json().then(function (body) {
-            throw new Error(body.error || "Server error: " + response.status);
-          });
-        }
         return response.json();
       })
       .then((credentialCreationOptions) => {
@@ -112,83 +105,7 @@
         });
       })
       .catch((error) => {
-        webAuthnError.value = String(error)
-      })
-      .finally(() => {
-          if (webAuthnError.value.startsWith("NotAllowedError:") || webAuthnError.value.startsWith("AbortError:")) {
-              webAuthnError.value = '';
-          } else {
-              document.querySelector('#sign-up-form').submit();
-          }
-      });
-    }
-
-    function initUsernamelessWebAuthn() {
-      var form = document.querySelector("#sign-up-form");
-
-      form.addEventListener("submit", e => {
-        if (e.submitter.id !== "sign-up-button") {
-          return;
-        }
-
-        e.preventDefault();
-        registerUsernamelessUser();
-      });
-      registerUsernamelessUser();
-    }
-
-    function registerUsernamelessUser() {
-      var webAuthnError = document.querySelector("#hidden-text-field-webauthn-error");
-      var code = (new URL(document.location)).searchParams.get("code");
-      var login_id = (new URL(document.location)).searchParams.get("login_id");
-      var login_state = (new URL(document.location)).searchParams.get("login_state");
-      var identifier = "new"
-      var params = { code: code };
-      if (login_id !== null) {
-          params.login_id = login_id;
-      }
-      if (login_state !== null) {
-          params.login_state = login_state;
-      }
-
-      webAuthnError.value = '';
-
-      fetch(window.location.pathname + "/usernameless-webauthn/begin?" + new URLSearchParams(params))
-      .then(function (response) {
-        if (!response.ok) {
-          return response.json().then(function (body) {
-            throw new Error(body.error || "Server error: " + response.status);
-          });
-        }
-        return response.json();
-      })
-      .then((credentialCreationOptions) => {
-        credentialCreationOptions.publicKey.challenge = bufferDecode(credentialCreationOptions.publicKey.challenge);
-        credentialCreationOptions.publicKey.user.id = bufferDecode(credentialCreationOptions.publicKey.user.id);
-        return navigator.credentials.create({
-          publicKey: credentialCreationOptions.publicKey,
-        });
-      })
-      .then((credential) => {
-        var attestationObject = credential.response.attestationObject;
-        var clientDataJSON = credential.response.clientDataJSON;
-        var rawId = credential.rawId;
-
-        return fetch(window.location.pathname + "/usernameless-webauthn/finish?" + new URLSearchParams(params), {
-          method: "POST",
-          body: JSON.stringify({
-            id: credential.id,
-            rawId: bufferEncode(rawId),
-            type: credential.type,
-            response: {
-              attestationObject: bufferEncode(attestationObject),
-              clientDataJSON: bufferEncode(clientDataJSON),
-            },
-          }),
-        });
-      })
-      .catch((error) => {
-        webAuthnError.value = String(error)
+        webAuthnError.value = error
       })
       .finally(() => {
           if (webAuthnError.value.startsWith("NotAllowedError:") || webAuthnError.value.startsWith("AbortError:")) {

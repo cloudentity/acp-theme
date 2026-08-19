@@ -12,7 +12,8 @@
     }
 
     function setButtonEnablementOnInput() {
-      addInputListeners(document.getElementById("totp-input"), disableButtonsOnEmptyInputs);
+      var totpInput = document.getElementById("totp-input")
+      if (!!totpInput) totpInput.addEventListener('input', disableButtonsOnEmptyInputs);
     }
 
     function disableButtonsOnEmptyInputs() {

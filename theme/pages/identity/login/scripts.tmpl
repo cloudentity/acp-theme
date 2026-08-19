@@ -7,26 +7,6 @@
   var identifier = "{{ .Data.Identifier }}";
   var isForceAuthMode = "{{.Data.IsForceAuthMode }}" === "true";
 
-  function showWebAuthnError(message) {
-    var form = document.querySelector('#sign-in-form');
-    if (!form) return;
-
-    var errorDiv = form.querySelector('.webauthn-error');
-    if (errorDiv) {
-      errorDiv.textContent = '';
-    } else {
-      errorDiv = document.createElement('div');
-      errorDiv.className = 'error-container webauthn-error';
-      form.insertBefore(errorDiv, form.firstChild);
-    }
-
-    var icon = document.createElement('i');
-    icon.className = 'material-icons';
-    icon.textContent = 'error_outline';
-    errorDiv.appendChild(icon);
-    errorDiv.appendChild(document.createTextNode(' ' + message));
-  }
-
   document.addEventListener("DOMContentLoaded", onPageLoad);
 
   function onPageLoad() {
@@ -84,7 +64,7 @@
     inputNodes.map(elementId => document.getElementById(elementId))
       .filter(inputNode => !!inputNode)
       .forEach(existingInputNode => {
-        addInputListeners(existingInputNode, disableButtonsOnEmptyInputs);
+        existingInputNode.addEventListener('input', disableButtonsOnEmptyInputs);
       });
   }
 
@@ -125,23 +105,9 @@
 
       var identifier = usernameInput ? usernameInput.value : "";
       var user_id = userIdField ? userIdField.value : "";
-      var hasError = document.querySelector('.error-container') !== null;
 
-      if (!hasError && (identifier !== "" || user_id !== "")) {
+      if (identifier !== "" || user_id !== "") {
           webAuthnLogin();
-      }
-    } else if (view === "usernameless_web_authn_view") {
-      form.addEventListener("submit", function (e) {
-        if (e.submitter.id !== "usernameless-web-authn-sign-in-button") {
-          return;
-        }
-
-        e.preventDefault();
-        usernamelessWebAuthnLogin();
-      });
-
-      if (!document.querySelector('.error-container')) {
-        usernamelessWebAuthnLogin();
       }
     } else {
        form.addEventListener("submit", function (e) {
@@ -175,8 +141,6 @@
 
     webAuthnError.value = '';
 
-    var isCredentialError = false;
-
     fetch(window.location.pathname + "/webauthn/options?" + new URLSearchParams(params), {
       method: "POST",
       body: JSON.stringify({
@@ -185,11 +149,6 @@
       }),
     })
     .then(function (response) {
-      if (!response.ok) {
-        return response.json().then(function (body) {
-          throw new Error(body.error || "Server error: " + response.status);
-        });
-      }
       return response.json();
     })
     .then((credentialRequestOptions) => {
@@ -226,96 +185,10 @@
 
     })
     .catch((error) => {
-      webAuthnError.value = String(error);
-      if (error instanceof DOMException) {
-        isCredentialError = true;
-      }
+      webAuthnError.value = error;
     })
     .finally(() => {
       if (webAuthnError.value.startsWith("NotAllowedError:") || webAuthnError.value.startsWith("AbortError:")) {
-        webAuthnError.value = '';
-      } else if (isCredentialError) {
-        showWebAuthnError("Passkey authentication failed. Try a different method or contact your administrator.");
-        webAuthnError.value = '';
-      } else {
-        document.querySelector('form').submit();
-      }
-    });
-  }
-
-  function usernamelessWebAuthnLogin() {
-    var webAuthnError = document.querySelector("#hidden-text-field-webauthn-error");
-    var server_id = (new URL(document.location)).searchParams.get("server_id");
-    var login_id = (new URL(document.location)).searchParams.get("login_id");
-    var login_state = (new URL(document.location)).searchParams.get("login_state");
-    var params = { server_id: server_id };
-    if (login_id !== null) {
-      params.login_id = login_id;
-    }
-    if (login_state !== null) {
-      params.login_state = login_state;
-    }
-
-    webAuthnError.value = '';
-
-    var isCredentialError = false;
-
-    fetch(window.location.pathname + "/usernameless-webauthn/options?" + new URLSearchParams(params), {
-      method: "POST",
-    })
-    .then(function (response) {
-      if (!response.ok) {
-        return response.json().then(function (body) {
-          throw new Error(body.error || "Server error: " + response.status);
-        });
-      }
-      return response.json();
-    })
-    .then((credentialRequestOptions) => {
-      credentialRequestOptions.publicKey.challenge = bufferDecode(credentialRequestOptions.publicKey.challenge);
-      if (credentialRequestOptions.publicKey.allowCredentials) {
-        credentialRequestOptions.publicKey.allowCredentials.forEach(function (listItem) {
-          listItem.id = bufferDecode(listItem.id);
-        });
-      }
-
-      return navigator.credentials.get({
-        publicKey: credentialRequestOptions.publicKey
-      });
-    })
-    .then((assertion) => {
-      let authData = assertion.response.authenticatorData;
-      let clientDataJSON = assertion.response.clientDataJSON;
-      let rawId = assertion.rawId;
-      let sig = assertion.response.signature;
-      let userHandle = assertion.response.userHandle;
-
-      return fetch(window.location.pathname + "/usernameless-webauthn/finish?" + new URLSearchParams(params), {
-        method: "POST",
-        body: JSON.stringify({
-          id: assertion.id,
-          rawId: bufferEncode(rawId),
-          type: assertion.type,
-          response: {
-            authenticatorData: bufferEncode(authData),
-            clientDataJSON: bufferEncode(clientDataJSON),
-            signature: bufferEncode(sig),
-            userHandle: bufferEncode(userHandle),
-          },
-        }),
-      });
-    })
-    .catch((error) => {
-      webAuthnError.value = String(error);
-      if (error instanceof DOMException) {
-        isCredentialError = true;
-      }
-    })
-    .finally(() => {
-      if (webAuthnError.value.startsWith("NotAllowedError:") || webAuthnError.value.startsWith("AbortError:")) {
-        webAuthnError.value = '';
-      } else if (isCredentialError) {
-        showWebAuthnError("Passkey authentication failed. Try a different method or contact your administrator.");
         webAuthnError.value = '';
       } else {
         document.querySelector('form').submit();

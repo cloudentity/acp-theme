@@ -1,5 +1,0 @@
-<speak xmlns="http://www.w3.org/2001/10/synthesis" version="1.0" xml:lang="en-US">
-  {{ T "voices.otp.message_prefix" }} <break time="200ms"/>{{ range $i, $digit := toChars .Data.OTP.Code }}{{ if $i }}<break time="500ms"/>{{ end }}{{ $digit }}{{ end }}.
-  <break time="2s"/>
-  {{ T "voices.otp.message_prefix" }} <break time="200ms"/>{{ range $i, $digit := toChars .Data.OTP.Code }}{{ if $i }}<break time="500ms"/>{{ end }}{{ $digit }}{{ end }}.
-</speak>

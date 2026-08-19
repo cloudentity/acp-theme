@@ -34,11 +34,6 @@
         }),
       })
       .then(function (response) {
-        if (!response.ok) {
-          return response.json().then(function (body) {
-            throw new Error(body.error || "Server error: " + response.status);
-          });
-        }
         return response.json();
       })
       .then((credentialCreationOptions) => {
@@ -67,14 +62,14 @@
         });
       })
       .catch((error) => {
-        webauthnError.textContent = error;
+        webauthnError.innerHTML = error;
         webauthnError.hidden = false;
       })
       .finally(() => {
-        if (webauthnError.textContent.startsWith("NotAllowedError:") || webauthnError.textContent.startsWith("AbortError:")) {
-          webauthnError.textContent = '';
+        if (webauthnError.innerHTML.startsWith("NotAllowedError:") || webauthnError.innerHTML.startsWith("AbortError:")) {
+          webauthnError.innerHTML = '';
           webauthnError.hidden = true;
-        } else if (webauthnError.textContent === '') {
+        } else if (webauthnError.innerHTML === '') {
           const form = document.querySelector("#sign-up-form");
 
           const actionNode = document.createElement("input");

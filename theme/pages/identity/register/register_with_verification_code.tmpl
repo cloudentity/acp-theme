@@ -6,13 +6,13 @@
 <div class="steps-container">{{ T "identity.register.register_with_verification_code.step" }} <b>2</b> {{ T "identity.register.register_with_verification_code.of" }} <b>3</b></div>
 
 <div class="setup-credential-header-container">
-    <h1>Use {{ if eq .Data.OtpMode "email" }}email{{ else if eq .Data.OtpMode "sms" }}mobile{{ else if eq .Data.OtpMode "voice" }}mobile{{ else }}{{ .Data.EnteredIdentifierType }}{{ end }} for sign-in</h1>
+    <h1>Use {{ if eq .Data.OtpMode "email" }}email{{ else if eq .Data.OtpMode "sms" }}mobile{{ else }}{{ .Data.EnteredIdentifierType }}{{ end }} for sign-in</h1>
     {{ if .Data.Is2FAStep }}
         <img src="{{ .Config.Assets }}/static/images/2fa-icon.svg" alt="second factor step" class="icon-2fa"/>
     {{ end }}
 </div>
 
-<input id="from-view-input" name="from-view" type="text" value="{{ if eq .Data.OtpMode "email" }}email_{{ else if eq .Data.OtpMode "sms" }}sms_{{ else if eq .Data.OtpMode "voice" }}voice_{{ end }}otp" form="sign-up-form" hidden>
+<input id="from-view-input" name="from-view" type="text" value="{{ if eq .Data.OtpMode "email" }}email_{{ else if eq .Data.OtpMode "sms" }}sms_{{ end }}otp" form="sign-up-form" hidden>
 
 <div class="form-field">
   <label for="entered-identifier">
@@ -20,22 +20,17 @@
           {{ T "identity.register.register_with_verification_code.email" }}
       {{ else if eq .Data.OtpMode "sms" }}
           {{ T "identity.register.register_with_verification_code.mobile" }}
-      {{ else if eq .Data.OtpMode "voice" }}
-          {{ T "identity.register.register_with_verification_code.mobile" }}
       {{ else }}
           {{ T "identity.register.register_with_verification_code.email_or_mobile" }}
       {{ end }}
   </label>
-    {{ if or (eq .Data.OtpMode "") (eq .Data.OtpMode .Data.EnteredIdentifierType) (and (eq .Data.EnteredIdentifierType "mobile") (or (eq .Data.OtpMode "sms") (eq .Data.OtpMode "voice"))) }}
+    {{ if or (eq .Data.OtpMode "") (eq .Data.OtpMode .Data.EnteredIdentifierType) }}
       <input id="entered-identifier" name="notused" autocomplete="off" data-lpignore="true" type="hidden" value="{{ .Data.EnteredIdentifier }}" disabled>
       <div class="username-div">{{ .Data.EnteredIdentifier }}</div>
     {{ else if eq .Data.OtpMode "email" }}
       <input id="text-field-username-input" name="new_address" data-lpignore="true" form="sign-up-form">
       <div id="address-field-error" class="non-visible"></div>
     {{ else if eq .Data.OtpMode "sms" }}
-      <input id="text-field-username-input" name="new_address" data-lpignore="true" form="sign-up-form">
-      <div id="address-field-error" class="non-visible"></div>
-    {{ else if eq .Data.OtpMode "voice" }}
       <input id="text-field-username-input" name="new_address" data-lpignore="true" form="sign-up-form">
       <div id="address-field-error" class="non-visible"></div>
     {{ end }}

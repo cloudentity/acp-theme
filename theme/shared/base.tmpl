@@ -59,20 +59,6 @@
 
   </head>
   <body>
-    <script nonce="{{.Config.Nonce}}">
-      // Hide icons while fonts load, then reveal them
-      document.documentElement.classList.add('fonts-loading');
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(function() {
-          document.documentElement.classList.remove('fonts-loading');
-        });
-      } else {
-        // Fallback for older browsers
-        setTimeout(function() {
-          document.documentElement.classList.remove('fonts-loading');
-        }, 100);
-      }
-    </script>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <main>
       {{ template "content" . }}

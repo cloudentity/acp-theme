@@ -1,8 +1,0 @@
-{{ define "identifier_display" }}
-<div class="form-field">
-  <label>
-    {{ if contains "@" .Identifier }}{{ T "identity.identifier.label.email" }}{{ else }}{{ T "identity.identifier.label.mobile" }}{{ end }}
-  </label>
-  <div class="username-div">{{ .Identifier }}</div>
-</div>
-{{ end }}

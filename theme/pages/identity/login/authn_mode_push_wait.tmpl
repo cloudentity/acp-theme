@@ -14,7 +14,7 @@
     {{ end }}
   </div>
 
-  {{ if or (.Data.IsForceAuthMode) ( and (.Data.Is2FAStep) (eq .Data.Identifier ""))}}
+  {{ if .Data.IsForceAuthMode}}
     <div class="login-welcome-back-card">
       <img src="{{ .Config.Assets }}/static/images/person-icon.svg" alt="person icon"/>
       <div>
@@ -36,14 +36,9 @@
     </div>
   {{ end }}
 
-  <div class="push-loader-container">
-      {{ template "lottie_player" dict "Nonce" .Nonce "Assets" .Config.Assets "Src" "loader-push.json" }}
-      <div class="loader-text">{{ T "identity.login.authn_mode_push.waiting_for_approval" }}</div>
+  <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+    <span class="loader"></span>
   </div>
-
-  {{ template "expires_countdown" dict "Nonce" .Nonce "ExpiresAt" .Data.DeviceChallengeExpirationTime }}
-
-  {{ template "no_access_to_device" . }}
 
   {{ template "reduce_mfa_prompts" . }}
 
@@ -55,7 +50,16 @@
   <input type="hidden" name="authn_mode" value="push_wait" id="authnView-input">
   <input id="original-identifier-input" type="hidden" name="identifier" value="{{ .Data.Identifier }}">
 
-  {{ template "faye_subscribe" dict "FayeURL" .Data.FayeURL "Nonce" .Nonce "FormId" "sign-in-form" "Channel" .Data.Channel }}
+  <script src="{{ .Data.FayeURL }}/faye/faye.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var faye = new Faye.Client("{{ .Data.FayeURL }}/faye");
+      var form = document.getElementById("sign-in-form");
+      faye.subscribe("/messages/{{ .Data.Channel }}", function (data) {
+        form.submit();
+      });
+    });
+  </script>
 
   <div class="non-visible" id="version" data-version="identity-pool-login"></div>
 {{ end }}

@@ -22,10 +22,12 @@
         <div class="username-div">{{ .Data.EnteredIdentifier }}</div>
     </div>
 
+    <label for="text-field-totp-input">
+        <span id="authenticator-label">{{ T "identity.register.register_with_totp.scan_qr_code" }}</span>
+    </label>
     <div class="form-field totp-container with-setup" id="totp-container">
 
         <div class="totp-qrcode-container">
-            <div id="authenticator-label" class="authenticator-label">{{ T "identity.register.register_with_totp.scan_qr_code" }}</div>
             <div id="totp-qrcode" data-qrdata="{{.Data.TOTPRegistrationURL}}"></div>
             <div class="totp-setup-key-container">
                 <a id="setup-key-toggle" href="" onclick="toggleSetupKey(event, {{ T "identity.register.register_with_totp.cant_scan_qr_code" }}, {{ T "identity.register.register_with_totp.hide_qr_code" }})">{{ T "identity.register.register_with_totp.cant_scan_qr_code" }}</a>

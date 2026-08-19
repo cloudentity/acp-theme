@@ -69,8 +69,8 @@
       signInButton.disabled = !usernameInput.value || !passwordInput.value;
     }
 
-    addInputListeners(usernameInput, disableSignInButtonOnEmptyInputsChange);
-    addInputListeners(passwordInput, disableSignInButtonOnEmptyInputsChange);
+    usernameInput.addEventListener('input', disableSignInButtonOnEmptyInputsChange);
+    passwordInput.addEventListener('input', disableSignInButtonOnEmptyInputsChange);
   }
 
   function getCardImgSrc(idp) {

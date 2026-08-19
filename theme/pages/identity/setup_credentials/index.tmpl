@@ -1,6 +1,6 @@
 {{ template "base" . }}
 
-{{ define "title" }}{{ T "identity.setup_credentials.title" }}{{ end }}
+{{ define "title" }}Setup credential{{ end }}
 
 {{ define "content" }}
 
@@ -10,212 +10,149 @@
 
   <div class="card">
     <div class="content" id="main-content">
-      <form action="?login_id={{ .Data.SessionID }}&login_state={{ .Data.SessionState }}&server_id={{ .Data.ServerID }}&mode={{ .Data.Mode }}&methods={{ .Data.Methods }}&user_initialized={{ .Data.IsUserInitializedView }}&view={{ .Data.DeviceAuthnView }}" method="post">
+      <form action="?login_id={{ .Data.SessionID }}&login_state={{ .Data.SessionState }}&server_id={{ .Data.ServerID }}&mode={{ .Data.Mode }}&methods={{ .Data.Methods }}&user_initialized={{ .Data.IsUserInitializedView }}" method="post">
 
-        {{ range .Data.FormError.Errors }}
-          {{ template "error_message" . }}
-        {{ end }}
-
-        {{ if eq .Data.SingleMethodSetupKey "" }}
-          <h1 {{ if not .Data.IsUserInitializedView }}class="no-bottom-margin"{{ end }}>{{ T "identity.setup_credentials.setup_credential" }}</h1>
+        {{ if eq .Data.SingleMethodSetupPhrase "" }}
+          <h1>Setup credential</h1>
         {{ else }}
-          <h1 {{ if not .Data.IsUserInitializedView }}class="no-bottom-margin"{{ end }}>{{ T .Data.SingleMethodSetupKey }}</h1>
+            <h1>{{ .Data.SingleMethodSetupPhrase }}</h1>
         {{ end }}
 
         {{ if not .Data.IsUserInitializedView }}
-            <div class="header-bottom-info">{{ T "identity.setup_credentials.header_info" }}</div>
+          <span style="font-style: italic;">
+            We discovered that you don't have any authentication factor set to complete the flow. Please complete setup to continue.
+          </span>
         {{ end }}
 
         {{ if or (gt (len .Data.UserEmails) 0) (gt (len .Data.UserMobiles) 0) }}
-          {{ $totalAddresses := add (len .Data.UserEmails) (len .Data.UserMobiles) }}
-          {{ $isSingleAddress := eq $totalAddresses 1 }}
-          {{ $hasOnlyEmails := and (gt (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }}
-          {{ $hasOnlyMobiles := and (eq (len .Data.UserEmails) 0) (gt (len .Data.UserMobiles) 0) }}
           <div class="form-field">
-            <label class="label-with-link">
-               {{ if $isSingleAddress }}
-                 {{ if $hasOnlyEmails }}
-                   {{ T "identity.setup_credentials.email_address" }}
-                 {{ else }}
-                   {{ T "identity.setup_credentials.mobile_address" }}
-                 {{ end }}
-               {{ else }}
-                 {{ T "identity.setup_credentials.select_identifier" }}
-               {{ end }}
-            </label>
+            <h5>Select address for confirmation code</h5>
             {{ $first := true }}
             {{range $id, $value := .Data.UserEmails}}
-              <div class="href-card radio-card{{ if $isSingleAddress }} disabled{{ end }}">
+              <div class="href-card radio-card">
                 <div class="radio-card-left">
                   <img src="{{ $.Config.Assets }}/static/images/mail-icon.svg" alt="at"/>
-                  {{ if $isSingleAddress }}
-                    <span>{{$value}}</span>
-                  {{ else }}
-                    <label for="option-{{$id}}">{{$value}}</label>
-                  {{ end }}
+                  <label for="option-{{$id}}">{{$value}}</label>
                 </div>
-                {{ if $isSingleAddress }}
-                  <input type="hidden" name="destination_address_key" value="{{$id}}">
-                {{ else }}
-                  <input type="radio" name="destination_address_key" value="{{$id}}" id="option-{{$id}}" {{if $first}}checked{{end}} required>
-                {{ end }}
+                <input type="radio" name="destination_address_key" value="{{$id}}" id="option-{{$id}}" {{if $first}}checked{{end}} required>
               </div>
               {{ $first = false }}
             {{end}}
             {{range $id, $value := .Data.UserMobiles}}
-              <div class="href-card radio-card{{ if $isSingleAddress }} disabled{{ end }}">
+              <div class="href-card radio-card">
                 <div class="radio-card-left">
                   <img src="{{ $.Config.Assets }}/static/images/smartphone-icon.svg" alt="smartphone"/>
-                  {{ if $isSingleAddress }}
-                    <span>{{$value}}</span>
-                  {{ else }}
-                    <label for="option-{{$id}}">{{$value}}</label>
-                  {{ end }}
+                  <label for="option-{{$id}}">{{$value}}</label>
                 </div>
-                {{ if $isSingleAddress }}
-                  <input type="hidden" name="destination_address_key" value="{{$id}}">
-                {{ else }}
-                  <input type="radio" name="destination_address_key" value="{{$id}}" id="option-{{$id}}" {{if $first}}checked{{end}} required>
-                {{ end }}
+                <input type="radio" name="destination_address_key" value="{{$id}}" id="option-{{$id}}" {{if $first}}checked{{end}} required>
               </div>
               {{ $first = false }}
             {{end}}
           </div>
 
           {{ if not .Data.IsSingleMethodView }}
-          <label for="text-field-username-input" class="label-with-link">
-              {{ T "identity.setup_credentials.pick_method" }}
-          </label>
+            <h5>Pick a method you want to configure</h5>
           {{ end }}
 
         {{ else }}
-          <h5>{{ T "identity.setup_credentials.no_addresses" }}</h5>
+          <h5> It looks like you don't have any addresses that can be used for credential setup. Please contact your administrator</h5>
         {{ end }}
 
-        {{ if .Data.IsSingleMethodView }}
-          {{ if .Data.Password }}
+        {{ if .Data.Password }}
+          {{ if .Data.IsSingleMethodView }}
             <div class="buttons-container-full-width flex-row-reverse no-margin-bottom extra-top-margin">
               <button id="submit-next" class="submit-button" type="submit" name="action" value="setup_password" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                {{ T "identity.setup_credentials.next" }}
+                {{ T "identity.reset_password.next" }}
               </button>
               {{ if .Data.IsUserInitializedView }}
                 <a href="{{ .Data.LoginPath }}" class="text-button-link">
-                  {{ T "identity.setup_credentials.back" }}
+                  {{ T "identity.reset_password.back" }}
                 </a>
               {{ end }}
             </div>
+          {{ else }}
+            <button class="href-card" type="submit" name="action" value="setup_password" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
+              <div>
+                <span class="href-card-avatar href-card-avatar-with-img small-icon">
+                  <img src="{{ .Config.Assets }}/static/images/password-icon-2.svg" alt="password method image"/>
+                </span>
+                <span {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} style="color: #ccc;" {{ end }} >{{ T "identity.activate.activation_methods.password" }}</span>
+              </div>
+            </button>
           {{ end }}
+        {{ end }}
 
-          {{ if .Data.Passkey }}
+        {{ if .Data.Passkey }}
+          {{ if .Data.IsSingleMethodView }}
             <div class="buttons-container-full-width flex-row-reverse no-margin-bottom extra-top-margin">
               <button id="submit-next" class="submit-button" type="submit" name="action" value="setup_web_authn" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                {{ T "identity.setup_credentials.next" }}
+                {{ T "identity.reset_password.next" }}
               </button>
               {{ if .Data.IsUserInitializedView }}
                 <a href="{{ .Data.LoginPath }}" class="text-button-link">
-                  {{ T "identity.setup_credentials.back" }}
+                  {{ T "identity.reset_password.back" }}
                 </a>
               {{ end }}
             </div>
+          {{ else }}
+            <button class="href-card" type="submit" name="action" value="setup_web_authn" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
+              <div>
+                <span class="href-card-avatar href-card-avatar-with-img small-icon">
+                  <img src="{{ .Config.Assets }}/static/images/webauthn-icon.svg" alt="passkey method image"/>
+                </span>
+                <span {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} style="color: #ccc;" {{ end }} >{{ T "identity.activate.activation_methods.passkey" }}</span>
+              </div>
+            </button>
           {{ end }}
+        {{ end }}
 
-          {{ if .Data.UsernamelessPasskey }}
-            <div class="buttons-container-full-width flex-row-reverse no-margin-bottom extra-top-margin">
-              <button id="submit-next" class="submit-button" type="submit" name="action" value="setup_usernameless_web_authn" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                {{ T "identity.setup_credentials.next" }}
-              </button>
-              {{ if .Data.IsUserInitializedView }}
-                <a href="{{ .Data.LoginPath }}" class="text-button-link">
-                  {{ T "identity.setup_credentials.back" }}
-                </a>
-              {{ end }}
-            </div>
-          {{ end }}
-
-          {{ if .Data.TOTP }}
+        {{ if .Data.TOTP }}
+          {{ if .Data.IsSingleMethodView }}
             <div class="buttons-container-full-width flex-row-reverse no-margin-bottom extra-top-margin">
               <button id="submit-next" class="submit-button" type="submit" name="action" value="setup_totp" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                {{ T "identity.setup_credentials.next" }}
+                {{ T "identity.reset_password.next" }}
               </button>
               {{ if .Data.IsUserInitializedView }}
                 <a href="{{ .Data.LoginPath }}" class="text-button-link">
-                  {{ T "identity.setup_credentials.back" }}
+                  {{ T "identity.reset_password.back" }}
                 </a>
               {{ end }}
             </div>
+          {{ else }}
+            <button class="href-card" type="submit" name="action" value="setup_totp" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
+              <div>
+                <span class="href-card-avatar href-card-avatar-with-img small-icon">
+                  <img src="{{ .Config.Assets }}/static/images/smartphone-icon.svg" alt="authentication app method image"/>
+                </span>
+                <span {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} style="color: #ccc;" {{ end }} >{{ T "identity.activate.activation_methods.authenticator_app" }}</span>
+              </div>
+            </button>
           {{ end }}
+        {{ end }}
 
-          {{ if .Data.PairDevice }}
+
+        {{ if .Data.PairDevice }}
+          {{ if .Data.IsSingleMethodView }}
             <div class="buttons-container-full-width flex-row-reverse no-margin-bottom extra-top-margin">
               <button id="submit-next" class="submit-button" type="submit" name="action" value="pair_device" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                {{ T "identity.setup_credentials.next" }}
+                {{ T "identity.reset_password.next" }}
               </button>
               {{ if .Data.IsUserInitializedView }}
                 <a href="{{ .Data.LoginPath }}" class="text-button-link">
-                  {{ T "identity.setup_credentials.back" }}
+                  {{ T "identity.reset_password.back" }}
                 </a>
               {{ end }}
             </div>
+          {{ else }}
+          <button class="href-card" type="submit" name="action" value="pair_device" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
+            <div>
+              <span class="href-card-avatar href-card-avatar-with-img small-icon">
+                <img src="{{ .Config.Assets }}/static/images/push-icon.svg" alt="push method image"/>
+              </span>
+              <span {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} style="color: #ccc;" {{ end }} >{{ T "identity.activate.activation_methods.pair_device" }}</span>
+            </div>
+          </button>
           {{ end }}
-        {{ else }}
-          <div class="methods-grid" id="setup-credentials-methods-grid" style="display: flex; flex-wrap: wrap; gap: 8px;">
-            {{ if .Data.Password }}
-              <button class="href-card" type="submit" name="action" value="setup_password" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                <div>
-                  <span class="href-card-avatar href-card-avatar-with-img small-icon">
-                    <img src="{{ .Config.Assets }}/static/images/password-icon-2.svg" alt="password method image"/>
-                  </span>
-                  <span>{{ T "identity.activate.activation_methods.password" }}</span>
-                </div>
-              </button>
-            {{ end }}
-
-            {{ if .Data.Passkey }}
-              <button class="href-card" type="submit" name="action" value="setup_web_authn" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                <div>
-                  <span class="href-card-avatar href-card-avatar-with-img small-icon">
-                    <img src="{{ .Config.Assets }}/static/images/webauthn-icon.svg" alt="passkey method image"/>
-                  </span>
-                  <span>{{ T "identity.activate.activation_methods.passkey" }}</span>
-                </div>
-              </button>
-            {{ end }}
-
-            {{ if .Data.UsernamelessPasskey }}
-              <button class="href-card" type="submit" name="action" value="setup_usernameless_web_authn" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                <div>
-                  <span class="href-card-avatar href-card-avatar-with-img small-icon">
-                    <img src="{{ .Config.Assets }}/static/images/usernameless-webauthn-icon.svg" alt="smart passkey method image"/>
-                  </span>
-                  <span>{{ T "identity.activate.activation_methods.usernameless_passkey" }}</span>
-                </div>
-              </button>
-            {{ end }}
-
-            {{ if .Data.TOTP }}
-              <button class="href-card" type="submit" name="action" value="setup_totp" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                <div>
-                  <span class="href-card-avatar href-card-avatar-with-img small-icon">
-                    <img src="{{ .Config.Assets }}/static/images/smartphone-icon.svg" alt="authentication app method image"/>
-                  </span>
-                  <span>{{ T "identity.activate.activation_methods.authenticator_app" }}</span>
-                </div>
-              </button>
-            {{ end }}
-
-            {{ if .Data.PairDevice }}
-              <button class="href-card" type="submit" name="action" value="pair_device" {{ if and (eq (len .Data.UserEmails) 0) (eq (len .Data.UserMobiles) 0) }} disabled {{ end }} >
-                <div>
-                  <span class="href-card-avatar href-card-avatar-with-img small-icon">
-                    <img src="{{ .Config.Assets }}/static/images/sa-favicon.svg" alt="sa mobile app method image" />
-                  </span>
-                  <span>{{ T "identity.activate.activation_methods.pair_device" }}</span>
-                </div>
-              </button>
-            {{ end }}
-          </div>
-
-          {{ template "methods_grid_script" dict "Nonce" .Nonce "GridId" "setup-credentials-methods-grid" }}
         {{ end }}
 
       </form>

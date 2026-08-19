@@ -67,14 +67,10 @@
         });
       })
       .catch((error) => {
-        webauthnError.value = String(error);
+        webauthnError.value = error;
       })
       .finally(() => {
-        if (webauthnError.value.startsWith("NotAllowedError:") || webauthnError.value.startsWith("AbortError:")) {
-          webauthnError.value = '';
-        } else {
-          document.querySelector("#sign-up-form").submit();
-        }
+        document.querySelector("#sign-up-form").submit();
       });
     }
 

@@ -9,9 +9,9 @@
     {{ end }}
   </div>
 
-  {{ template "qr_code_scan_auth" . }}
+  <h4> {{ T "identity.login.authn_mode_qr_code.scan_instruction" }} </h4>
 
-  {{ template "no_access_to_device" . }}
+  <img src="data:image/png;base64, {{ .Data.AuthenticationQRCode }}"/>
 
   {{ template "reduce_mfa_prompts" . }}
 
@@ -22,7 +22,16 @@
   <input type="checkbox" name="qrCodeMode" id="qrCodeMode" checked class="non-visible">
   <input id="original-identifier-input" type="hidden" name="identifier" value="{{ .Data.Identifier }}">
 
-  {{ template "faye_subscribe" dict "FayeURL" .Data.FayeURL "Nonce" .Nonce "FormId" "sign-in-form" "Channel" .Data.Channel }}
+  <script src="{{ .Data.FayeURL }}/faye/faye.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var faye = new Faye.Client("{{ .Data.FayeURL }}/faye");
+      var form = document.getElementById("sign-in-form");
+      faye.subscribe("/messages/{{ .Data.Channel }}", function (data) {
+        form.submit();
+      });
+    });
+  </script>
 
   <div class="non-visible" id="version" data-version="identity-pool-login"></div>
 {{ end }}

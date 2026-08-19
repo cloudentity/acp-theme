@@ -26,15 +26,6 @@
               </div>
             </div>
             <i class="material-icons">chevron_right</i>
-          {{ else if eq .Mechanism "voice" }}
-            <div class="otp-method-info">
-              <i class="material-icons otp-method-icon">phone</i>
-              <div>
-                <span>{{ T "authorization.otp.otp_select.voice_verification" }}</span>
-                <p>{{ T "authorization.otp.otp_select.receive_voice_call" }} {{ index $.Data.Addresses .ID }}</p>
-              </div>
-            </div>
-            <i class="material-icons">chevron_right</i>
           {{ end }}
         </button>
       </div>
