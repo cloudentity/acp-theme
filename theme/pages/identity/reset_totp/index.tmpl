@@ -20,7 +20,7 @@
           <label for="text-field-identifier-input">
             {{ T "identity.reset_totp.email_or_mobile" }}
           </label>
-          <input id="text-field-identifier-input" name="identifier" value="">
+          <input id="text-field-identifier-input" name="identifier" value="{{ .Data.Identifier}}">
         </div>
 
         {{ if .Data.CaptchaSiteKeyV3 }}
